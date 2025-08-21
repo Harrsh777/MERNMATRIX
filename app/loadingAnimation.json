@@ -1,0 +1,108 @@
+{
+    "loadingAnimation": {
+      "duration": 3000,
+      "easing": "ease-in-out",
+      "backgroundColor": "#121212", 
+      "elements": [
+        {
+          "id": "mongoLogo",
+          "src": "/images/mongodb-logo.svg",
+          "alt": "MongoDB Logo",
+          "initialPosition": {
+            "x": "-100vw", 
+            "y": "50vh"    
+          },
+          "finalPosition": {
+            "x": "20%", 
+            "y": "50vh"
+          },
+          "animationDelay": 0, 
+          "size": "80px",       
+          "style": {
+            "filter": "drop-shadow(0px 0px 5px rgba(0, 255, 0, 0.7))" 
+          }
+        },
+        {
+          "id": "expressLogo",
+          "src": "/images/expressjs-logo.svg",
+          "alt": "Express.js Logo",
+          "initialPosition": {
+            "x": "50vw",
+            "y": "-100vh" 
+          },
+          "finalPosition": {
+            "x": "50%",
+            "y": "50vh"   
+          },
+          "animationDelay": 200, 
+          "size": "80px",
+          "style": {
+            "filter": "drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.7))" 
+          }
+        },
+        {
+          "id": "reactLogo",
+          "src": "/images/react-logo.svg",
+          "alt": "React.js Logo",
+          "initialPosition": {
+            "x": "100vw", 
+            "y": "50vh"
+          },
+          "finalPosition": {
+            "x": "80%", 
+            "y": "50vh"
+          },
+          "animationDelay": 400,
+          "size": "80px",
+          "style": {
+            "animation": "rotate 2s linear infinite", 
+            "filter": "drop-shadow(0px 0px 5px rgba(0, 100, 255, 0.7))" 
+          }
+        },
+        {
+          "id": "nodeLogo",
+          "src": "/images/nodejs-logo.svg",
+          "alt": "Node.js Logo",
+          "initialPosition": {
+            "x": "50vw",
+            "y": "100vh" 
+          },
+          "finalPosition": {
+            "x": "50%",
+            "y": "50vh"    
+          },
+          "animationDelay": 600,
+          "size": "80px",
+          "style": {
+            "filter": "drop-shadow(0px 0px 5px rgba(0, 255, 0, 0.7))" 
+          }
+        },
+        {
+          "id": "mernText",
+          "text": "MERN",
+          "fontFamily": "Arial, sans-serif",
+          "fontSize": "60px",
+          "color": "#FFFFFF",
+          "fontWeight": "bold",
+          "textAlign": "center",
+          "position": {
+            "x": "50%",
+            "y": "50%"
+          },
+          "opacity": 0, 
+          "animationDelay": 2000, 
+          "fadeDuration": 1000, 
+          "style": {
+              "textShadow": "2px 2px 4px rgba(0, 0, 0, 0.5)" 
+          }
+        }
+      ],
+      "onComplete": "redirectToHomePage" 
+    },
+    "globalStyles": {
+      "@keyframes rotate": {
+        "from": { "transform": "rotate(0deg)" },
+        "to": { "transform": "rotate(360deg)" }
+      }
+    }
+  }

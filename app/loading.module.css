@@ -1,0 +1,131 @@
+/* loading.module.css */
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Occupy the full viewport height */
+    width: 100vw;   /* Occupy the full viewport width */
+    background-color: #f0f0f0; /* Or your preferred background */
+    overflow: hidden; /* Prevent scrollbars during animation */
+  }
+  
+  .animationContainer {
+    position: relative;
+    width: 200px; /* Adjust size as needed */
+    height: 200px; /* Adjust size as needed */
+  }
+  
+  
+  .logo {
+    position: absolute;
+    width: 50px; /* Adjust logo size */
+    height: 50px; /* Adjust logo size */
+    animation-duration: 1s;  /* Duration of each logo's animation */
+    animation-timing-function: ease-out; /* Smooth animation */
+    animation-fill-mode: forwards; /* Keep the final state */
+  }
+  
+  .mongo {
+    top: -60px; /* Start position above */
+    left: 50%;
+    transform: translateX(-50%);
+    animation-name: slideInFromTop; /* Name of the animation */
+  }
+  
+  .express {
+    left: -60px; /* Start position to the left */
+    top: 50%;
+    transform: translateY(-50%);
+    animation-name: slideInFromLeft;
+    animation-delay: 0.2s; /* Stagger the animations */
+  }
+  
+  .react {
+    bottom: -60px; /* Start position below */
+    left: 50%;
+    transform: translateX(-50%);
+    animation-name: slideInFromBottom;
+    animation-delay: 0.4s;
+  }
+  
+  .node {
+    right: -60px; /* Start position to the right */
+    top: 50%;
+    transform: translateY(-50%);
+    animation-name: slideInFromRight;
+    animation-delay: 0.6s;
+  }
+  
+  .mernText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em; /* Adjust size */
+    font-weight: bold;
+    color: #333; /* Or your preferred color */
+    opacity: 0; /* Initially hidden */
+    animation: fadeIn 0.5s ease-in forwards; /* Fade in animation */
+    animation-delay: 1s; /* Show after logos animate */
+  }
+  
+  
+  /* Keyframes for animations */
+  
+  @keyframes slideInFromTop {
+    from {
+      top: -60px;
+      opacity: 0;
+    }
+    to {
+      top: 50%;
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  @keyframes slideInFromLeft {
+    from {
+      left: -60px;
+      opacity: 0;
+    }
+    to {
+      left: 50%;
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  @keyframes slideInFromBottom {
+    from {
+      bottom: -60px;
+      opacity: 0;
+    }
+    to {
+      bottom: 50%;
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  @keyframes slideInFromRight {
+    from {
+      right: -60px;
+      opacity: 0;
+    }
+    to {
+      right: 50%;
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
