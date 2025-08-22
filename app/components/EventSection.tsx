@@ -1,11 +1,26 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCalendarAlt, FaUsers, FaImage, FaChevronLeft, FaChevronRight, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaCalendarAlt, FaUsers, FaImage, FaChevronLeft, FaChevronRight, FaExternalLinkAlt, FaArrowRight } from 'react-icons/fa';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const EventsSection = () => {
   const events = [
+    {
+      id: 3,
+      title: "DAWN OF HACKATHON",
+      subtitle: "24-Hour Coding Marathon",
+      description: "Our flagship hackathon event brought together developers, designers, and innovators to build solutions for real-world problems. With mentors from top tech companies and exciting prizes, participants pushed their limits in this round-the-clock coding challenge.",
+      date: "January 20-21, 2024",
+      attendees: "300+",
+      images: [
+        "https://images.unsplash.com/photo-1550439062-609e1531270e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+      ],
+      color: "#FF5757",
+      hasDetails: true
+    },
     {
       id: 1,
       title: "DANCE",
@@ -17,7 +32,8 @@ const EventsSection = () => {
         "https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
       ],
-      color: "#A020F0"
+      color: "#A020F0",
+      hasDetails: false
     },
     {
       id: 2,
@@ -30,48 +46,33 @@ const EventsSection = () => {
         "https://images.unsplash.com/photo-1677442135135-416f8aa26a5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         "https://images.unsplash.com/photo-1573164713714-d95e436ab290?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
       ],
-      color: "#00FFFF"
-    },
-    {
-      id: 3,
-      title: "DAWN OF HACKATHON",
-      subtitle: "24-Hour Coding Marathon",
-      description: "Our flagship hackathon event brought together developers, designers, and innovators to build solutions for real-world problems. With mentors from top tech companies and exciting prizes, participants pushed their limits in this round-the-clock coding challenge.",
-      date: "January 20-21, 2024",
-      attendees: "300+",
-      images: [
-        "https://images.unsplash.com/photo-1550439062-609e1531270e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-      ],
-      color: "#FF5757"
+      color: "#00FFFF",
+      hasDetails: false
     }
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const [isHovered, setIsHovered] = useState(false);
+  const [direction, setDirection] = useState(0);
+  const [erroredImageByUrl, setErroredImageByUrl] = useState<Record<string, boolean>>({});
 
-  // Auto-rotate every 5 seconds only when not hovered
-  useEffect(() => {
-    if (isHovered) return;
-    
-    const interval = setInterval(() => {
-      setDirection(1);
-      setCurrentIndex((prev) => (prev + 1) % events.length);
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, [events.length, isHovered]);
+  const getSafeImageSrc = useCallback((url: string) => {
+    return erroredImageByUrl[url] ? "/vercel.svg" : url;
+  }, [erroredImageByUrl]);
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     setDirection(1);
     setCurrentIndex((prev) => (prev + 1) % events.length);
-  };
+  }, [events.length]);
 
-  const goToPrev = () => {
+  const goToPrev = useCallback(() => {
     setDirection(-1);
     setCurrentIndex((prev) => (prev - 1 + events.length) % events.length);
-  };
+  }, [events.length]);
+
+  const goToIndex = useCallback((index: number) => {
+    setDirection(index > currentIndex ? 1 : -1);
+    setCurrentIndex(index);
+  }, [currentIndex]);
 
   const variants = {
     enter: (direction: number) => ({
@@ -92,50 +93,23 @@ const EventsSection = () => {
   };
 
   return (
-    <section className="relative py-20 bg-gradient-to-b from-[#0A0118] to-[#1E0345] overflow-hidden">
-      {/* Enhanced decorative elements */}
+    <section className="relative py-12 md:py-16 bg-gradient-to-b from-[#0A0118] to-[#1E0345] overflow-hidden">
+      {/* Simplified decorative elements for better performance */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20">
-        <div className="absolute top-20 left-10 w-40 h-40 rounded-full bg-purple-600 blur-3xl animate-pulse-slow"></div>
-        <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-cyan-500 blur-3xl animate-pulse-slow"></div>
-        <div className="absolute top-1/2 left-1/4 w-32 h-32 rounded-full bg-[#FF5757] blur-3xl animate-ping-slow"></div>
+        <div className="absolute top-20 left-10 w-40 h-40 rounded-full bg-purple-600 blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-cyan-500 blur-3xl"></div>
       </div>
 
-      {/* Floating particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              background: `radial-gradient(circle, ${i % 3 === 0 ? '#A020F0' : i % 3 === 1 ? '#00FFFF' : '#FF5757'}20, transparent)`,
-              width: `${Math.random() * 30 + 10}px`,
-              height: `${Math.random() * 30 + 10}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              x: [0, Math.random() * 10 - 5, 0],
-            }}
-            transition={{
-              duration: Math.random() * 10 + 10,
-              repeat: Infinity,
-              ease: "easeInOut"
-            }}
-          />
-        ))}
-      </div>
-
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 md:mb-14"
         >
           <motion.span 
-            className="inline-block px-4 py-2 text-sm font-semibold text-[#A020F0] bg-[#A020F0]/10 rounded-full mb-4 border border-[#00FFFF]/20"
+            className="inline-block px-3 py-1 text-xs md:text-sm font-semibold text-[#A020F0] bg-[#A020F0]/10 rounded-full mb-3 border border-[#00FFFF]/20"
             whileHover={{ 
               scale: 1.05,
               boxShadow: "0 0 15px rgba(160, 32, 240, 0.5)"
@@ -143,19 +117,15 @@ const EventsSection = () => {
           >
             PAST EVENTS
           </motion.span>
-          <h2 className="text-4xl md:text-5xl font-bold text-[#F0F0F0] mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#F0F0F0] mb-3">
             Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A020F0] to-[#00FFFF]">Community</span> Highlights
           </h2>
-          <p className="text-lg text-[#E0E0E0] max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-[#E0E0E0] max-w-2xl mx-auto">
             Relive the unforgettable moments from our most popular events
           </p>
         </motion.div>
 
-        <div 
-          className="relative h-[650px] md:h-[700px]"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
+        <div className="relative h-[580px] md:h-[620px] lg:h-[650px]">
           <AnimatePresence custom={direction} initial={false}>
             <motion.div
               key={currentIndex}
@@ -171,16 +141,16 @@ const EventsSection = () => {
               }}
               className="absolute inset-0"
             >
-              <div className="bg-gradient-to-br from-[#0A0118]/90 via-[#0A0118]/80 to-[#1E0345]/90 backdrop-blur-md rounded-2xl overflow-hidden border border-[#1E0345] hover:border-[#A020F0]/40 transition-all duration-500 h-full flex flex-col shadow-2xl shadow-purple-900/20">
-                <div className="relative h-72 md:h-80 flex-shrink-0 overflow-hidden">
+              <div className="bg-gradient-to-br from-[#0A0118]/90 via-[#0A0118]/80 to-[#1E0345]/90 backdrop-blur-md rounded-xl md:rounded-2xl overflow-hidden border border-[#1E0345] hover:border-[#A020F0]/40 transition-all duration-500 h-full flex flex-col shadow-lg md:shadow-xl shadow-purple-900/20">
+                <div className="relative h-52 md:h-60 lg:h-72 flex-shrink-0 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
-                  <div className="absolute bottom-6 left-6 z-20">
-                    <h3 className="text-3xl md:text-4xl font-bold text-white drop-shadow-md">{events[currentIndex].title}</h3>
-                    <p className="text-[#00FFFF] text-lg md:text-xl mt-1 font-medium drop-shadow-md">{events[currentIndex].subtitle}</p>
+                  <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 z-20">
+                    <h3 className="text-2xl md:text-3xl font-bold text-white drop-shadow-md">{events[currentIndex].title}</h3>
+                    <p className="text-[#00FFFF] text-base md:text-lg mt-1 font-medium drop-shadow-md">{events[currentIndex].subtitle}</p>
                   </div>
-                  <div className="absolute top-4 right-4 z-20">
+                  <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
                     <motion.div 
-                      className="px-3 py-1 rounded-full text-xs font-semibold text-white"
+                      className="px-2 py-1 md:px-3 md:py-1 rounded-full text-xs font-semibold text-white"
                       style={{ backgroundColor: events[currentIndex].color }}
                       whileHover={{ scale: 1.05 }}
                     >
@@ -189,57 +159,77 @@ const EventsSection = () => {
                   </div>
                   <div className="w-full h-full bg-gray-800 relative">
                     <Image 
-                      src={events[currentIndex].images[0]} 
+                      src={getSafeImageSrc(events[currentIndex].images[0])}
                       alt={events[currentIndex].title}
                       fill
                       className="object-cover opacity-90"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+                      onError={() => setErroredImageByUrl(prev => ({ ...prev, [events[currentIndex].images[0]]: true }))}
+                      priority={currentIndex === 0}
                     />
                   </div>
                 </div>
 
-                <div className="p-6 md:p-8 flex-grow flex flex-col">
-                  <p className="text-[#E0E0E0] mb-6 flex-grow text-lg leading-relaxed">{events[currentIndex].description}</p>
+                <div className="p-4 md:p-6 flex-grow flex flex-col">
+                  <p className="text-[#E0E0E0] mb-4 md:mb-6 flex-grow text-sm md:text-base leading-relaxed">{events[currentIndex].description}</p>
                   
-                  <div className="flex flex-wrap gap-6 text-md text-[#C0C0C0] mb-6">
-                    <div className="flex items-center gap-3 bg-[#0A0118]/50 px-4 py-2 rounded-lg border border-[#1E0345]">
-                      <FaCalendarAlt className="text-[#A020F0] text-lg" />
-                      <span>{events[currentIndex].date}</span>
+                  <div className="flex flex-col sm:flex-row gap-3 md:gap-4 text-sm text-[#C0C0C0] mb-4 md:mb-6">
+                    <div className="flex items-center gap-2 bg-[#0A0118]/50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-[#1E0345]">
+                      <FaCalendarAlt className="text-[#A020F0] text-sm md:text-base" />
+                      <span className="text-xs md:text-sm">{events[currentIndex].date}</span>
                     </div>
-                    <div className="flex items-center gap-3 bg-[#0A0118]/50 px-4 py-2 rounded-lg border border-[#1E0345]">
-                      <FaUsers className="text-[#00FFFF] text-lg" />
-                      <span>{events[currentIndex].attendees} attendees</span>
+                    <div className="flex items-center gap-2 bg-[#0A0118]/50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-[#1E0345]">
+                      <FaUsers className="text-[#00FFFF] text-sm md:text-base" />
+                      <span className="text-xs md:text-sm">{events[currentIndex].attendees} attendees</span>
                     </div>
                   </div>
 
-                  <div className="flex gap-4 mt-auto">
+                  {/* Details button for Dawn of Hackathon */}
+                  {events[currentIndex].hasDetails && (
+                    <div className="mb-4 md:mb-6">
+                      <Link href="/events
+                      ">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#FF5757] to-[#FF8C42] text-white rounded-lg font-medium text-sm md:text-base"
+                        >
+                          View Full Details
+                          <FaArrowRight className="text-xs" />
+                        </motion.button>
+                      </Link>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 mt-auto">
                     {events[currentIndex].images.slice(0, 2).map((img, imgIndex) => (
                       <motion.div
                         key={imgIndex}
                         whileHover={{ scale: 1.05 }}
-                        className="relative h-36 w-36 md:h-44 md:w-44 rounded-xl overflow-hidden border-2 border-[#1E0345] flex-shrink-0 group"
+                        className="relative h-24 w-24 md:h-32 md:w-32 rounded-lg md:rounded-xl overflow-hidden border-2 border-[#1E0345] flex-shrink-0 group"
                       >
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          <FaExternalLinkAlt className="text-xl" />
+                          <FaExternalLinkAlt className="text-sm md:text-base" />
                         </div>
                         <div className="w-full h-full bg-gray-800 relative">
                           <Image 
-                            src={img} 
+                            src={getSafeImageSrc(img)} 
                             alt={`${events[currentIndex].title} ${imgIndex + 1}`}
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-500"
                             sizes="(max-width: 768px) 20vw, 15vw"
+                            onError={() => setErroredImageByUrl(prev => ({ ...prev, [img]: true }))}
                           />
                         </div>
                       </motion.div>
                     ))}
                     <motion.button 
                       whileHover={{ scale: 1.05 }}
-                      className="flex items-center justify-center h-36 w-36 md:h-44 md:w-44 rounded-xl border-2 border-dashed border-[#1E0345] text-[#C0C0C0] hover:text-[#A020F0] hover:border-[#A020F0] transition-colors flex-shrink-0"
+                      className="flex items-center justify-center h-24 w-24 md:h-32 md:w-32 rounded-lg md:rounded-xl border-2 border-dashed border-[#1E0345] text-[#C0C0C0] hover:text-[#A020F0] hover:border-[#A020F0] transition-colors flex-shrink-0"
                     >
                       <div className="text-center">
-                        <FaImage className="text-3xl mx-auto mb-2" />
-                        <span className="text-sm">View More</span>
+                        <FaImage className="text-xl md:text-2xl mx-auto mb-1" />
+                        <span className="text-xs">View More</span>
                       </div>
                     </motion.button>
                   </div>
@@ -253,33 +243,30 @@ const EventsSection = () => {
             whileHover={{ scale: 1.1, backgroundColor: "rgba(160, 32, 240, 0.3)" }}
             whileTap={{ scale: 0.9 }}
             onClick={goToPrev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-[#0A0118]/90 backdrop-blur-md p-4 rounded-full shadow-lg z-20 border border-[#00FFFF]/30 hover:border-[#A020F0] transition-colors"
+            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-[#0A0118]/90 backdrop-blur-md p-2 md:p-3 rounded-full shadow-lg z-20 border border-[#00FFFF]/30 hover:border-[#A020F0] transition-colors"
             aria-label="Previous event"
           >
-            <FaChevronLeft className="text-white text-xl" />
+            <FaChevronLeft className="text-white text-base md:text-xl" />
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.1, backgroundColor: "rgba(160, 32, 240, 0.3)" }}
             whileTap={{ scale: 0.9 }}
             onClick={goToNext}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-[#0A0118]/90 backdrop-blur-md p-4 rounded-full shadow-lg z-20 border border-[#00FFFF]/30 hover:border-[#A020F0] transition-colors"
+            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-[#0A0118]/90 backdrop-blur-md p-2 md:p-3 rounded-full shadow-lg z-20 border border-[#00FFFF]/30 hover:border-[#A020F0] transition-colors"
             aria-label="Next event"
           >
-            <FaChevronRight className="text-white text-xl" />
+            <FaChevronRight className="text-white text-base md:text-xl" />
           </motion.button>
         </div>
 
         {/* Event indicators */}
-        <div className="flex justify-center gap-3 mt-10">
+        <div className="flex justify-center gap-2 md:gap-3 mt-6 md:mt-8">
           {events.map((event, index) => (
             <motion.button
               key={index}
-              onClick={() => {
-                setDirection(index > currentIndex ? 1 : -1);
-                setCurrentIndex(index);
-              }}
+              onClick={() => goToIndex(index)}
               whileHover={{ scale: 1.2 }}
-              className={`h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-8 bg-[#A020F0]' : 'w-3 bg-[#1E0345] hover:bg-[#00FFFF]'}`}
+              className={`h-2 md:h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 md:w-8 bg-[#A020F0]' : 'w-2 md:w-3 bg-[#1E0345] hover:bg-[#00FFFF]'}`}
               aria-label={`Go to ${event.title} event`}
             />
           ))}

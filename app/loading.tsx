@@ -67,25 +67,24 @@ const MERNLoadingPage = () => {
     <div className="fixed inset-0 z-[9999] min-h-screen w-full bg-gradient-to-br from-slate-50 via-white to-blue-50 flex flex-col items-center justify-center">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full opacity-10 blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full opacity-10 blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-5 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute -top-40 -left-40 w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full opacity-10 blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-40 -right-40 w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full opacity-10 blur-3xl animate-pulse hidden sm:block" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full opacity-5 blur-3xl animate-pulse hidden sm:block" style={{ animationDelay: '1s' }}></div>
       </div>
 
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center">
         {/* Logo container */}
-        <div className="flex items-center justify-center space-x-20 mb-12">
+        <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16 mb-12 px-4">
           {/* MongoDB Logo */}
           <motion.div
             custom="left"
             variants={logoVariants}
             initial="hidden"
             animate="visible"
-            whileHover="hover"
             className="flex flex-col items-center"
           >
-            <div className="w-28 h-28 flex items-center justify-center mb-6">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
               <Image
                 src="/MongoDB.svg"
                 alt="MongoDB"
@@ -98,7 +97,7 @@ const MERNLoadingPage = () => {
               variants={textVariants}
               initial="hidden"
               animate="visible"
-              className="text-5xl font-bold text-green-600 tracking-wide"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-green-600 tracking-wide"
             >
               M
             </motion.div>
@@ -110,10 +109,9 @@ const MERNLoadingPage = () => {
             variants={logoVariants}
             initial="hidden"
             animate="visible"
-            whileHover="hover"
             className="flex flex-col items-center"
           >
-            <div className="w-28 h-28 flex items-center justify-center mb-6">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
               <Image
                 src="/Express.svg"
                 alt="Express"
@@ -126,7 +124,7 @@ const MERNLoadingPage = () => {
               variants={textVariants}
               initial="hidden"
               animate="visible"
-              className="text-5xl font-bold text-gray-800 tracking-wide"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 tracking-wide"
             >
               E
             </motion.div>
@@ -138,10 +136,9 @@ const MERNLoadingPage = () => {
             variants={logoVariants}
             initial="hidden"
             animate="visible"
-            whileHover="hover"
             className="flex flex-col items-center"
           >
-            <div className="w-28 h-28 flex items-center justify-center mb-6">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
               <Image
                 src="/React.svg"
                 alt="React"
@@ -154,7 +151,7 @@ const MERNLoadingPage = () => {
               variants={textVariants}
               initial="hidden"
               animate="visible"
-              className="text-5xl font-bold text-blue-500 tracking-wide"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-blue-500 tracking-wide"
             >
               R
             </motion.div>
@@ -166,10 +163,9 @@ const MERNLoadingPage = () => {
             variants={logoVariants}
             initial="hidden"
             animate="visible"
-            whileHover="hover"
             className="flex flex-col items-center"
           >
-            <div className="w-28 h-28 flex items-center justify-center mb-6">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
               <Image
                 src="/Node.svg"
                 alt="Node.js"
@@ -182,7 +178,7 @@ const MERNLoadingPage = () => {
               variants={textVariants}
               initial="hidden"
               animate="visible"
-              className="text-5xl font-bold text-green-600 tracking-wide"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-green-600 tracking-wide"
             >
               N
             </motion.div>

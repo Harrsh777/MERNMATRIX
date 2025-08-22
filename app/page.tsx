@@ -16,6 +16,7 @@ import { MERNTeamCarousel } from './components/MeetTeam';
 import {MERNClubTimeline } from './components/timeline';
 import { AnimatedTooltip } from '../components/ui/animated-tooltip';
 import { MERNBentoGrid } from './components/bentohover';
+import PortfolioGrid from './components/projects';
 
 
 
@@ -211,7 +212,7 @@ const HomePage = () => {
             <nav className="hidden md:flex items-center gap-6">
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                 <Link href="/tutorials" className="text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors">
-                  Tutorials
+                  Timeline
                 </Link>
               </motion.div>
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
@@ -445,10 +446,11 @@ const HomePage = () => {
             </motion.div>
           </motion.section>
         </main>
-        
-        <MERNClubTimeline/>
-        <MERNBentoGrid/>
         <EventsSection/>
+        <MERNClubTimeline/>
+      
+        
+        <PortfolioGrid/>
         <ColourfulTextDemo/>
         
         <MERNTeamCarousel/>

@@ -1,3 +1,4 @@
+
 "use client"
 import React from 'react';
 import { motion } from 'framer-motion';
@@ -25,9 +26,9 @@ const Footer = () => {
           </div>
 
           {/* Navigation columns */}
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-8">
+          <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 gap-8">
             {/* The Stack */}
-            <div>
+            <div className="stack-section">
               <h3 className="footer-heading">MERN STACK</h3>
               <ul className="space-y-3">
                 {['Home', 'Tutorials', 'Projects', 'Community', 'Events'].map((item) => (
@@ -44,7 +45,7 @@ const Footer = () => {
             </div>
 
             {/* The Legal */}
-            <div>
+            <div className="legal-section">
               <h3 className="footer-heading">THE LEGAL</h3>
               <ul className="space-y-3">
                 {['Terms of Service', 'Privacy Policy', 'Code of Conduct'].map((item) => (
@@ -61,7 +62,7 @@ const Footer = () => {
             </div>
 
             {/* The Network */}
-            <div>
+            <div className="network-section">
               <h3 className="footer-heading">THE NETWORK</h3>
               <ul className="space-y-3">
                 <motion.li whileHover={{ x: 3 }}>
@@ -88,7 +89,7 @@ const Footer = () => {
         <motion.div 
         initial={{ opacity: 0.96 }}
         whileHover={{ opacity: 1 }}
-        className="font-sans uppercase"
+        className="font-sans uppercase footer-matrix"
         style={{
           fontFamily: "'Inter Black', sans-serif",
           fontWeight: 900,
@@ -116,6 +117,7 @@ const Footer = () => {
           color: white;
           padding: 4rem 1.5rem; /* Adjusted for better visual */
           font-family: sans-serif;
+          position: relative;
         }
 
         .max-w-7xl {
@@ -238,8 +240,8 @@ const Footer = () => {
 
         /* Responsive Styles */
         @media (max-width: 768px) {
-          .sm\:grid-cols-3 {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
+          .grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
           .footer-brand-mark {
             font-size: 3rem; /* Adjust as needed */
@@ -248,17 +250,21 @@ const Footer = () => {
         }
 
         @media (max-width: 576px) {
+          /* Hide entire Network section on small phones to keep 8 links total */
+          .network-section { display: none; }
+          /* Limit Stack to first 4 items on phones */
+          .stack-section ul li:nth-child(n+5) { display: none; }
+          /* Legal has 3 items already; if more are added later, cap at 4 */
+          .legal-section ul li:nth-child(n+5) { display: none; }
+          /* Ensure two equal columns on very small screens */
           .footer-brand-mark {
             font-size: 2.5rem; /* Adjust as needed */
           }
           .gap-12 {
             gap: 2rem; /* Adjust gap size here to avoid overflow */
           }
-
-          .grid {
-              display: flex;
-              flex-direction: column;
-          }
+          /* Stick MERN MATRIX to bottom with slight overlap */
+          .footer-matrix { position: sticky; bottom: -5px; }
         }
       `}</style>
     </footer>
