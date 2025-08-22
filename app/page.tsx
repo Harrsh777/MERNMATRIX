@@ -17,6 +17,7 @@ import {MERNClubTimeline } from './components/timeline';
 import { AnimatedTooltip } from '../components/ui/animated-tooltip';
 import { MERNBentoGrid } from './components/bentohover';
 import PortfolioGrid from './components/projects';
+import MERNMasterySection from './components/merncheat';
 
 
 
@@ -132,8 +133,8 @@ const HomePage = () => {
       
       <MERNLoadingPage />
       <div className={`min-h-screen font-sans overflow-hidden text-[#F0F0F0] bg-black relative`}>
-        {/* Hyperspeed Background - constrained to top 19cm */}
-        <div className="absolute top-0 left-0 right-0 h-[15cm] z-0">
+        {/* Hyperspeed Background - 19cm height with interactive functionality */}
+        <div className="absolute top-0 left-0 right-0 h-[19.5cm] z-0">
           <Hyperspeed
             effectOptions={{
               onSpeedUp: () => { },
@@ -394,7 +395,7 @@ const HomePage = () => {
                   whileTap={{ scale: 0.97 }}
                   className="bg-[#A020F0] text-[#0A0118] px-8 py-3 rounded-lg font-medium transition-all shadow-md hover:shadow-lg border border-[#CBC3E3]/20 flex items-center gap-2 mx-auto"
                 >
-                  Join the Matrix <FaArrowRight className="text-sm" />
+                  Register For Hackathon <FaArrowRight className="text-sm" />
                 </motion.button>
               </Link>
               <Link href="/projects">
@@ -449,10 +450,9 @@ const HomePage = () => {
         <EventsSection/>
         <MERNClubTimeline/>
       
-        
         <PortfolioGrid/>
         <ColourfulTextDemo/>
-        
+      <MERNMasterySection/>  
         <MERNTeamCarousel/>
         
         <Footer/>

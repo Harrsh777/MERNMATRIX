@@ -16,54 +16,55 @@ type PortfolioItem = {
 const PortfolioGrid = () => {
   const portfolioItems: PortfolioItem[] = [
     {
-      id: 1,
-      title: 'Flatpur.com',
-      imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      link: 'https://www.flatpur.com',
-      category: 'E-commerce',
-      description: 'A modern Real-Estate startup with AI-powered recommendations'
-    },
-    {
-      id: 2,
-      title: 'SafeSurf',
-      imageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      link: 'https://github.com/Harrsh777/SafeSurfJr',
-      category: 'Cybersecurity',
-      description: 'Browser extension for real-time phishing protection'
-    },
-    {
-      id: 3,
-      title: 'Deplox',
-      imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      link: 'https://github.com/Harrsh777/DeployX',
-      category: 'DevOps',
-      description: 'CI/CD automation platform for seamless deployments'
-    },
-    {
-      id: 4,
-      title: 'The Plotify.com',
-      imageUrl: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      link: 'https://www.theplotify.com',
-      category: 'Freelance',
-      description: 'A modern Real-Estate listing platform'
-    },
-    {
-      id: 5,
-      title: 'The MERN Stack Alchemist',
-      imageUrl: 'https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      link: 'https://www.harshsrivastava.in/book',
-      category: 'Educational',
-      description: 'Comprehensive guide to mastering full-stack development'
-    },
-    {
-      id: 6,
-      title: 'Supply Chain Management',
-      imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      link: 'https://sdpl.vercel.app/',
-      category: 'Web Application',
-      description: 'Biggest Distributon and Supply Chain Management Firm in Uttar Pradesh'
-    },
-  ];
+        id: 1,
+        title: 'Flatpur.com',
+        imageUrl: '/flatpur.png',
+        link: 'https://www.flatpur.com',
+        category: 'E-commerce',
+        description: 'A modern Real-Estate startup with AI-powered recommendations'
+      },
+      {
+        id: 2,
+        title: 'SafeSurf',
+        imageUrl: '/safesu.png',
+        link: 'https://github.com/Harrsh777/SafeSurfJr',
+        category: 'Cybersecurity',
+        description: 'Browser extension for real-time phishing protection'
+      },
+      {
+        id: 3,
+        title: 'Deplox',
+        imageUrl: '/deployx.png',
+        link: 'https://github.com/Harrsh777/DeployX',
+        category: 'DevOps',
+        description: 'CI/CD automation platform for seamless deployments'
+      },
+      {
+        id: 4,
+        title: 'The Plotify.com',
+        imageUrl: '/plotify.png',
+        link: 'https://www.theplotify.com',
+        category: 'Freelance',
+        description: 'A modern Real-Estate listing platform'
+      },
+      {
+        id: 5,
+        title: 'The MERN Stack Alchemist',
+        imageUrl: '/1.png',
+        link: 'https://www.harshsrivastava.in/book',
+        category: 'Educational',
+        description: 'Comprehensive guide to mastering full-stack development'
+      },
+      {
+        id: 6,
+        title: 'Supply Chain Management',
+        imageUrl: '/sdpl.png',
+        link: 'https://sdpl.vercel.app/',
+        category: 'Web Application',
+        description: 'Biggest Distributon and Supply Chain Management Firm in Uttar Pradesh'
+      },
+    ];
+  
 
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-gradient-to-b from-[#0A0118] to-black">
@@ -85,7 +86,7 @@ const PortfolioGrid = () => {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-[#C084FC]"
         >
-          My Digital Creations
+          Our Projects
         </motion.h2>
 
         <motion.p

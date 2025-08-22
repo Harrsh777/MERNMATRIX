@@ -75,7 +75,7 @@ const MERNLoadingPage = () => {
       {/* Main content */}
       <div className="relative z-10 flex flex-col items-center">
         {/* Logo container */}
-        <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16 mb-12 px-4">
+        <div className="flex items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 mb-12 px-4 min-w-full">
           {/* MongoDB Logo */}
           <motion.div
             custom="left"
@@ -84,7 +84,7 @@ const MERNLoadingPage = () => {
             animate="visible"
             className="flex flex-col items-center"
           >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 flex items-center justify-center mb-3 sm:mb-4 md:mb-5 lg:mb-6">
               <Image
                 src="/MongoDB.svg"
                 alt="MongoDB"
@@ -111,7 +111,7 @@ const MERNLoadingPage = () => {
             animate="visible"
             className="flex flex-col items-center"
           >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 flex items-center justify-center mb-3 sm:mb-4 md:mb-5 lg:mb-6">
               <Image
                 src="/Express.svg"
                 alt="Express"
@@ -138,7 +138,7 @@ const MERNLoadingPage = () => {
             animate="visible"
             className="flex flex-col items-center"
           >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 flex items-center justify-center mb-3 sm:mb-4 md:mb-5 lg:mb-6">
               <Image
                 src="/React.svg"
                 alt="React"
@@ -165,7 +165,7 @@ const MERNLoadingPage = () => {
             animate="visible"
             className="flex flex-col items-center"
           >
-            <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center mb-4 sm:mb-5 md:mb-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 flex items-center justify-center mb-3 sm:mb-4 md:mb-5 lg:mb-6">
               <Image
                 src="/Node.svg"
                 alt="Node.js"
