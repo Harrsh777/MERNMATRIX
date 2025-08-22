@@ -544,12 +544,18 @@ const useMobileDetection = () => {
 
   useEffect(() => {
     const checkMobile = () =>
-      setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+      setIsMobile(typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT);
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
+    if (typeof window !== 'undefined') {
+      window.addEventListener("resize", checkMobile);
+    }
 
-    return () => window.removeEventListener("resize", checkMobile);
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener("resize", checkMobile);
+      }
+    };
   }, []);
 
   return isMobile;

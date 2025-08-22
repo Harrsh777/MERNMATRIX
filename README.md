@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MERN Matrix Club Website
+
+A modern, interactive website for the MERN Matrix Club featuring stunning animations, 3D graphics, and a responsive design.
+
+## Features
+
+- 🎨 Modern UI with Framer Motion animations
+- 🌟 Interactive 3D background with Three.js
+- 📱 Fully responsive design
+- ⚡ Built with Next.js 15 and React 19
+- 🎯 TypeScript for type safety
+- 🎨 Tailwind CSS for styling
+
+## Tech Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motion, GSAP
+- **3D Graphics**: Three.js, @react-three/fiber
+- **Icons**: React Icons, Tabler Icons
+- **Deployment**: Vercel
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm 8+
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/Harrsh777/MERNMATRIX.git
+cd MERNMATRIX
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+### Vercel Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Vercel will automatically detect Next.js and deploy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Environment Variables
 
-## Deploy on Vercel
+No environment variables are required for basic functionality.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Build Configuration
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The project includes optimized build settings:
+- `.npmrc` with network retry settings for Vercel
+- `vercel.json` with build configuration
+- Optimized package imports for better performance
+
+## Troubleshooting
+
+### Build Errors
+
+If you encounter build errors:
+
+1. **Clear cache**: Delete `.next` folder and `node_modules`
+2. **Reinstall dependencies**: `npm ci`
+3. **Check Node version**: Ensure you're using Node.js 18+
+
+### SSR Issues
+
+The project includes proper client-side guards for all browser APIs:
+- All `window` access is protected with `typeof window !== 'undefined'`
+- Components using browser APIs are marked with `"use client"`
+
+### Network Issues on Vercel
+
+The `.npmrc` file includes:
+- Network retry settings
+- Extended timeouts
+- Registry configuration
+
+## Project Structure
+
+```
+mern/
+├── app/                    # Next.js 13+ app directory
+│   ├── components/        # Reusable components
+│   ├── globals.css       # Global styles
+│   ├── layout.tsx        # Root layout
+│   └── page.tsx          # Home page
+├── components/            # Shared components
+│   ├── ui/               # UI components
+│   └── magicui/          # Magic UI components
+├── lib/                   # Utility functions
+├── hooks/                 # Custom React hooks
+└── public/                # Static assets
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support, please open an issue on GitHub or contact the development team.

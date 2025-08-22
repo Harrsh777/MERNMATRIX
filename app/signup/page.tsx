@@ -40,8 +40,8 @@ const TeamOnboarding = () => {
     const ctx = canvas.getContext('2d');
     let animationFrameId: number;
     const particles: any[] = Array.from({ length: 30 }, () => ({
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
+      x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 800),
+      y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 600),
       r: Math.random() * 2 + 1,
       dx: (Math.random() - 0.5) * 0.5,
       dy: (Math.random() - 0.5) * 0.5,
@@ -49,7 +49,7 @@ const TeamOnboarding = () => {
     }));
     const draw = () => {
       if (!ctx) return;
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      ctx.clearRect(0, 0, typeof window !== 'undefined' ? window.innerWidth : 800, typeof window !== 'undefined' ? window.innerHeight : 600);
       particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
@@ -59,8 +59,8 @@ const TeamOnboarding = () => {
         ctx.fill();
         p.x += p.dx;
         p.y += p.dy;
-        if (p.x < 0 || p.x > window.innerWidth) p.dx *= -1;
-        if (p.y < 0 || p.y > window.innerHeight) p.dy *= -1;
+        if (p.x < 0 || p.x > (typeof window !== 'undefined' ? window.innerWidth : 800)) p.dx *= -1;
+        if (p.y < 0 || p.y > (typeof window !== 'undefined' ? window.innerHeight : 600)) p.dy *= -1;
       });
       animationFrameId = requestAnimationFrame(draw);
     };
