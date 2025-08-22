@@ -1,8 +1,9 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import { motion, AnimatePresence, useMotionValue, useTransform, animate } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 const COLORS = {
   bgGradient: 'bg-gradient-to-br from-[#0A0118] to-[#1E0345]',
@@ -27,6 +28,8 @@ const TeamOnboarding = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   interface TeamMember {
     name: string;
@@ -39,17 +42,28 @@ const TeamOnboarding = () => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let animationFrameId: number;
+    
+    // Set canvas size to match window
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
     const particles: any[] = Array.from({ length: 30 }, () => ({
-      x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 800),
-      y: Math.random() * (typeof window !== 'undefined' ? window.innerHeight : 600),
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
       r: Math.random() * 2 + 1,
       dx: (Math.random() - 0.5) * 0.5,
       dy: (Math.random() - 0.5) * 0.5,
       color: `rgba(${200 + Math.random() * 55},${195 + Math.random() * 60},${227 + Math.random() * 28},0.15)`
     }));
+    
     const draw = () => {
       if (!ctx) return;
-      ctx.clearRect(0, 0, typeof window !== 'undefined' ? window.innerWidth : 800, typeof window !== 'undefined' ? window.innerHeight : 600);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI);
@@ -59,18 +73,25 @@ const TeamOnboarding = () => {
         ctx.fill();
         p.x += p.dx;
         p.y += p.dy;
-        if (p.x < 0 || p.x > (typeof window !== 'undefined' ? window.innerWidth : 800)) p.dx *= -1;
-        if (p.y < 0 || p.y > (typeof window !== 'undefined' ? window.innerHeight : 600)) p.dy *= -1;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
       });
       animationFrameId = requestAnimationFrame(draw);
     };
+    
     draw();
-    return () => cancelAnimationFrame(animationFrameId);
+    
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', resizeCanvas);
+    };
   }, []);
 
   const handleAddMember = () => {
-    setTeamMembers([...teamMembers, { name: '', registrationNumber: '' }]);
-    setActiveStep(teamMembers.length);
+    if (teamMembers.length < 4) {
+      setTeamMembers([...teamMembers, { name: '', registrationNumber: '' }]);
+      setActiveStep(teamMembers.length);
+    }
   };
 
   const handleRemoveMember = (index: number) => {
@@ -88,9 +109,61 @@ const TeamOnboarding = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    setShowSummary(true);
-    setTimeout(() => setIsSubmitted(true), 1200);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Validate UTR ID
+      if (teamUtrId.length !== 12 || !/^\d{12}$/.test(teamUtrId)) {
+        throw new Error("Please enter a valid 12-digit UTR ID");
+      }
+
+      // Validate team members
+      if (teamMembers.length < 1) {
+        throw new Error("Please add at least one team member");
+      }
+
+      // Validate all member fields
+      for (let i = 0; i < teamMembers.length; i++) {
+        const member = teamMembers[i];
+        if (!member.name || !member.registrationNumber) {
+          throw new Error(`Please fill in all fields for Member ${i + 1}`);
+        }
+      }
+
+      // Prepare data for database
+      const teamData = {
+        team_name: teamName,
+        team_leader_name: teamLeaderName,
+        member_utr_id: teamUtrId,
+        member_name_1: teamMembers[0].name,
+        member_registration_number_1: teamMembers[0].registrationNumber,
+        member_name_2: teamMembers[1]?.name || null,
+        member_registration_number_2: teamMembers[1]?.registrationNumber || null,
+        member_name_3: teamMembers[2]?.name || null,
+        member_registration_number_3: teamMembers[2]?.registrationNumber || null,
+        member_name_4: teamMembers[3]?.name || null,
+        member_registration_number_4: teamMembers[3]?.registrationNumber || null,
+      };
+
+      // Insert into database
+      const { data, error: dbError } = await supabase
+        .from('team_registrations')
+        .insert([teamData])
+        .select();
+
+      if (dbError) {
+        throw new Error(dbError.message);
+      }
+
+      // Show success
+      setShowSummary(true);
+      setTimeout(() => setIsSubmitted(true), 1200);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const steps = [
@@ -107,6 +180,27 @@ const TeamOnboarding = () => {
       <div className={`relative min-h-screen overflow-hidden ${COLORS.bgGradient} font-sans text-[#F0F0F0]`}>
         {/* Animated Particle Background */}
         <canvas id="signup-particles" className="fixed inset-0 w-full h-full z-0 pointer-events-none" style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh' }} />
+        
+        {/* Error message display */}
+        {error && (
+          <motion.div 
+            className="fixed top-4 right-4 z-50 bg-red-600 text-white p-4 rounded-lg shadow-lg max-w-md"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+          >
+            <div className="flex justify-between items-center">
+              <span>{error}</span>
+              <button 
+                onClick={() => setError(null)}
+                className="ml-4 text-white hover:text-gray-200"
+              >
+                ×
+              </button>
+            </div>
+          </motion.div>
+        )}
+
         {/* Floating Back to Home Button */}
         <Link href="/">
           <motion.button
@@ -116,6 +210,7 @@ const TeamOnboarding = () => {
             ← Home
           </motion.button>
         </Link>
+        
         <div className="relative z-10 flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
           <motion.div
             className="w-full max-w-4xl"
@@ -152,6 +247,7 @@ const TeamOnboarding = () => {
                   </motion.p>
                 </div>
               </div>
+              
               {/* Stepper */}
               <div className="px-8 pt-6 pb-2">
                 <div className="flex items-center justify-between relative">
@@ -193,6 +289,7 @@ const TeamOnboarding = () => {
                   ))}
                 </div>
               </div>
+              
               <div className="p-8">
                 <AnimatePresence mode="wait">
                   {!isSubmitted && !showSummary ? (
@@ -281,11 +378,18 @@ const TeamOnboarding = () => {
                               type="button"
                               className={`flex items-center justify-center px-6 py-2 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
                               onClick={() => {
-                                // Validate UTR ID before proceeding
-                                if (teamUtrId.length !== 12 || !/^\d{12}$/.test(teamUtrId)) {
-                                  alert("Please enter a valid 12-digit UTR ID");
+                                // Validate required fields before proceeding
+                                if (!teamName || !teamLeaderName || !teamUtrId) {
+                                  setError("Please fill in all required fields");
                                   return;
                                 }
+                                
+                                // Validate UTR ID before proceeding
+                                if (teamUtrId.length !== 12 || !/^\d{12}$/.test(teamUtrId)) {
+                                  setError("Please enter a valid 12-digit UTR ID");
+                                  return;
+                                }
+                                
                                 setActiveStep(1);
                               }}
                               whileHover={{ scale: 1.04 }}
@@ -299,6 +403,7 @@ const TeamOnboarding = () => {
                           </div>
                         </motion.div>
                       )}
+                      
                       {/* Team Members Sections */}
                       {activeStep > 0 && activeStep <= teamMembers.length && (
                         <motion.div
@@ -343,7 +448,6 @@ const TeamOnboarding = () => {
                                   required
                                 />
                               </div>
-
                             </div>
                           </div>
                           <div className="flex justify-between">
@@ -375,7 +479,15 @@ const TeamOnboarding = () => {
                                 <motion.button
                                   type="button"
                                   className={`flex items-center justify-center px-6 py-2 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
-                                  onClick={() => setActiveStep(activeStep + 1)}
+                                  onClick={() => {
+                                    // Validate current member before proceeding
+                                    const currentMember = teamMembers[activeStep-1];
+                                    if (!currentMember.name || !currentMember.registrationNumber) {
+                                      setError(`Please fill in all fields for Member ${activeStep}`);
+                                      return;
+                                    }
+                                    setActiveStep(activeStep + 1);
+                                  }}
                                   whileHover={{ scale: 1.04 }}
                                   whileTap={{ scale: 0.98 }}
                                 >
@@ -385,23 +497,26 @@ const TeamOnboarding = () => {
                                   </svg>
                                 </motion.button>
                               ) : (
-                                <motion.button
-                                  type="button"
-                                  className="flex items-center justify-center px-6 py-2 bg-green-600/90 text-white rounded-xl font-medium hover:bg-green-500 transition-colors"
-                                  onClick={handleAddMember}
-                                  whileHover={{ scale: 1.04 }}
-                                  whileTap={{ scale: 0.98 }}
-                                >
-                                  <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                  </svg>
-                                  Add Member
-                                </motion.button>
+                                teamMembers.length < 4 && (
+                                  <motion.button
+                                    type="button"
+                                    className="flex items-center justify-center px-6 py-2 bg-green-600/90 text-white rounded-xl font-medium hover:bg-green-500 transition-colors"
+                                    onClick={handleAddMember}
+                                    whileHover={{ scale: 1.04 }}
+                                    whileTap={{ scale: 0.98 }}
+                                  >
+                                    <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    Add Member
+                                  </motion.button>
+                                )
                               )}
                             </div>
                           </div>
                         </motion.div>
                       )}
+                      
                       {/* Submit Button (shown on last step) */}
                       {activeStep > 0 && activeStep === teamMembers.length && (
                         <motion.div
@@ -412,14 +527,27 @@ const TeamOnboarding = () => {
                         >
                           <motion.button
                             type="submit"
-                            className="w-full py-4 px-6 bg-gradient-to-r from-[#A020F0] to-[#CBC3E3] text-[#0A0118] font-bold rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center shadow-lg border border-[#CBC3E3]/20"
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
+                            className="w-full py-4 px-6 bg-gradient-to-r from-[#A020F0] to-[#CBC3E3] text-[#0A0118] font-bold rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center shadow-lg border border-[#CBC3E3]/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                            whileHover={{ scale: isLoading ? 1 : 1.01 }}
+                            whileTap={{ scale: isLoading ? 1 : 0.99 }}
+                            disabled={isLoading}
                           >
-                            <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            Complete Registration
+                            {isLoading ? (
+                              <>
+                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-[#0A0118]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Processing...
+                              </>
+                            ) : (
+                              <>
+                                <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                Complete Registration
+                              </>
+                            )}
                           </motion.button>
                         </motion.div>
                       )}
