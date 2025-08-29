@@ -10,7 +10,7 @@ import Head from 'next/head';
 import Footer from './components/footer';
 import BlogsSection from './components/blogsection';
 import Hyperspeed from './components/background';
-import { LinkPreviewDemo } from './components/HyperLink';
+
 import { ColourfulTextDemo } from './components/colourfultext';
 import { MERNTeamCarousel } from './components/MeetTeam';
 import {MERNClubTimeline } from './components/timeline';
@@ -18,6 +18,7 @@ import { AnimatedTooltip } from '../components/ui/animated-tooltip';
 import { MERNBentoGrid } from './components/bentohover';
 import PortfolioGrid from './components/projects';
 import MERNMasterySection from './components/merncheat';
+import CommunitySection from './components/socials';
 
 
 
@@ -101,26 +102,26 @@ const HomePage = () => {
   const developers = [
     {
       id: 1,
-      name: "Sarah Johnson",
-      designation: "React Specialist",
+      name: "Shreyansh",
+      designation: "President",
       image: "https://randomuser.me/api/portraits/women/44.jpg"
     },
     {
       id: 2,
-      name: "Michael Chen",
-      designation: "Node.js Expert",
+      name: "Arushi Puri",
+      designation: "Vice President",
       image: "https://randomuser.me/api/portraits/men/32.jpg"
     },
     {
       id: 3,
-      name: "Emma Williams",
-      designation: "MongoDB Architect",
+      name: "Harsh Srivastava",
+      designation: "Technical Lead",
       image: "https://randomuser.me/api/portraits/women/68.jpg"
     },
     {
       id: 4,
-      name: "David Kim",
-      designation: "Full Stack Dev",
+      name: "Ashhar",
+      designation: "Core Team",
       image: "https://randomuser.me/api/portraits/men/75.jpg"
     }
   ];
@@ -211,26 +212,66 @@ const HomePage = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link href="/tutorials" className="text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors">
-                  Timeline
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link href="/projects" className="text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors">
-                  Projects
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link href="/community" className="text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors">
-                  Community
-                </Link>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                <Link href="/events" className="text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors">
-                  Events
-                </Link>
-              </motion.div>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  const el = document.getElementById('timeline');
+                  if (el) {
+                    const headerHeight = 80; // Approximate header height
+                    const elementPosition = el.offsetTop - headerHeight;
+                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                  }
+                }}
+                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+              >
+                Timeline
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  const el = document.getElementById('projects');
+                  if (el) {
+                    const headerHeight = 80; // Approximate header height
+                    const elementPosition = el.offsetTop - headerHeight;
+                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                  }
+                }}
+                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+              >
+                Projects
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  const el = document.getElementById('community');
+                  if (el) {
+                    const headerHeight = 80; // Approximate header height
+                    const elementPosition = el.offsetTop - headerHeight;
+                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                  }
+                }}
+                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+              >
+                Community
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  const el = document.getElementById('events');
+                  if (el) {
+                    const headerHeight = 80; // Approximate header height
+                    const elementPosition = el.offsetTop - headerHeight;
+                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                  }
+                }}
+                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+              >
+                Events
+              </motion.button>
 
               <Link href="/signup">
                 <motion.button
@@ -267,24 +308,76 @@ const HomePage = () => {
             >
               <div className="flex flex-col space-y-6 mt-8">
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
-                  <Link href="/tutorials" className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block">
-                    Tutorials
-                  </Link>
+                  <a
+                    href="#timeline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById('timeline');
+                      if (el) {
+                        const headerHeight = 80;
+                        const elementPosition = el.offsetTop - headerHeight;
+                        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                      }
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
+                  >
+                    Timeline
+                  </a>
                 </motion.div>
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
-                  <Link href="/projects" className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block">
+                  <a
+                    href="#projects"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById('projects');
+                      if (el) {
+                        const headerHeight = 80;
+                        const elementPosition = el.offsetTop - headerHeight;
+                        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                      }
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
+                  >
                     Projects
-                  </Link>
+                  </a>
                 </motion.div>
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
-                  <Link href="/community" className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block">
+                  <a
+                    href="#community"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById('community');
+                      if (el) {
+                        const headerHeight = 80;
+                        const elementPosition = el.offsetTop - headerHeight;
+                        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                      }
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
+                  >
                     Community
-                  </Link>
+                  </a>
                 </motion.div>
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
-                  <Link href="/events" className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block">
+                  <a
+                    href="#events"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById('events');
+                      if (el) {
+                        const headerHeight = 80;
+                        const elementPosition = el.offsetTop - headerHeight;
+                        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                      }
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
+                  >
                     Events
-                  </Link>
+                  </a>
                 </motion.div>
                 <Link href="/signup">
                   <motion.button
@@ -398,7 +491,7 @@ const HomePage = () => {
                   Register For Hackathon <FaArrowRight className="text-sm" />
                 </motion.button>
               </Link>
-              <Link href="/projects">
+              <Link href="/hackathon-details">
                 <motion.button
                   whileHover={{
                     scale: 1.03,
@@ -409,7 +502,7 @@ const HomePage = () => {
                   whileTap={{ scale: 0.97 }}
                   className="border border-[#1E0345] bg-[#0A0118]/50 hover:border-[#CBC3E3] text-[#E0E0E0] px-8 py-3 rounded-lg font-medium transition-all shadow-sm hover:shadow-md"
                 >
-                  View Projects
+                  Details
                 </motion.button>
               </Link>
             </motion.div>
@@ -447,12 +540,18 @@ const HomePage = () => {
             </motion.div>
           </motion.section>
         </main>
-        <EventsSection/>
-        <MERNClubTimeline/>
-      
-        <PortfolioGrid/>
+        <div id="events" className="scroll-mt-32">
+          <EventsSection/>
+        </div>
+        <div id="timeline" className="scroll-mt-32">
+          <MERNClubTimeline/>
+        </div>
+        <div id="projects" className="scroll-mt-32">
+          <PortfolioGrid/>
+        </div>
         <ColourfulTextDemo/>
-      <MERNMasterySection/>  
+       
+        <MERNMasterySection/>  
         <MERNTeamCarousel/>
         
         <Footer/>

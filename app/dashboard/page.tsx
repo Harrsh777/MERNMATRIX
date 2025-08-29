@@ -35,9 +35,11 @@ interface Team {
   member_name_4?: string;
   member_registration_number_4?: string;
   member_utr_id?: string;
+  problem_statement?: string;
   created_at: string;
   has_entered: boolean;
   archived: boolean;
+  present: boolean;
 }
 
 interface ProjectIdea {
@@ -63,6 +65,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [showArchived, setShowArchived] = useState<boolean>(false);
+  const [showPresent, setShowPresent] = useState<boolean>(true);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'created_at', direction: 'desc' });
 
   // Fetch teams from Supabase
@@ -111,9 +114,65 @@ const AdminDashboard = () => {
       if (error) throw error;
       
       // Update local state
-      setTeams(teams.filter(team => team.id !== teamId));
+      setTeams(teams.map(team => 
+        team.id === teamId ? { ...team, archived: true } : team
+      ));
     } catch (error: any) {
       console.error('Error archiving team:', error.message);
+    }
+  };
+
+  const unarchiveTeam = async (teamId: string): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('team_registrations')
+        .update({ archived: false })
+        .eq('id', teamId);
+
+      if (error) throw error;
+      
+      // Update local state
+      setTeams(teams.map(team => 
+        team.id === teamId ? { ...team, archived: false } : team
+      ));
+    } catch (error: any) {
+      console.error('Error unarchiving team:', error.message);
+    }
+  };
+
+  const markTeamPresent = async (teamId: string): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('team_registrations')
+        .update({ present: true })
+        .eq('id', teamId);
+
+      if (error) throw error;
+      
+      // Update local state
+      setTeams(teams.map(team => 
+        team.id === teamId ? { ...team, present: true } : team
+      ));
+    } catch (error: any) {
+      console.error('Error marking team as present:', error.message);
+    }
+  };
+
+  const markTeamAbsent = async (teamId: string): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('team_registrations')
+        .update({ present: false })
+        .eq('id', teamId);
+
+      if (error) throw error;
+      
+      // Update local state
+      setTeams(teams.map(team => 
+        team.id === teamId ? { ...team, present: false } : team
+      ));
+    } catch (error: any) {
+      console.error('Error marking team as absent:', error.message);
     }
   };
 
@@ -220,14 +279,23 @@ const AdminDashboard = () => {
     });
   };
 
-  const sortedTeams = safeSort(teams, sortConfig.key, sortConfig.direction);
+  // Sort teams with present teams at the bottom
+  const sortedTeams = safeSort(teams, sortConfig.key, sortConfig.direction)
+    .sort((a, b) => {
+      if (a.present && !b.present) return 1;
+      if (!a.present && b.present) return -1;
+      return 0;
+    });
+    
   const sortedProjectIdeas = safeSort(projectIdeas, sortConfig.key, sortConfig.direction);
 
   const filteredTeams = sortedTeams.filter(team => 
-    (showArchived || !team.archived) && (
+    (showArchived || !team.archived) && 
+    (showPresent || !team.present) && (
       team.team_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       team.team_leader_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (team.member_utr_id && team.member_utr_id.includes(searchTerm))
+      (team.member_utr_id && team.member_utr_id.includes(searchTerm)) ||
+      team.problem_statement?.toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
 
@@ -296,6 +364,15 @@ const AdminDashboard = () => {
               {showArchived ? <FaEyeSlash className="mr-2" /> : <FaEye className="mr-2" />}
               {showArchived ? 'Hide Archived' : 'Show Archived'}
             </button>
+            {activeTab === 'registrations' && (
+              <button 
+                className="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105"
+                onClick={() => setShowPresent(!showPresent)}
+              >
+                {showPresent ? <FaEyeSlash className="mr-2" /> : <FaEye className="mr-2" />}
+                {showPresent ? 'Hide Present' : 'Show Present'}
+              </button>
+            )}
           </div>
         </div>
 
@@ -312,8 +389,11 @@ const AdminDashboard = () => {
               <TeamRegistrations 
                 teams={filteredTeams} 
                 onArchive={archiveTeam}
+                onUnarchive={unarchiveTeam}
                 onMarkEntered={markTeamEntered}
                 onUnmarkEntered={unmarkTeamEntered}
+                onMarkPresent={markTeamPresent}
+                onMarkAbsent={markTeamAbsent}
               />
             ) : (
               <ProjectIdeas 
@@ -333,15 +413,21 @@ const AdminDashboard = () => {
 interface TeamRegistrationsProps {
   teams: Team[];
   onArchive: (teamId: string) => void;
+  onUnarchive: (teamId: string) => void;
   onMarkEntered: (teamId: string) => void;
   onUnmarkEntered: (teamId: string) => void;
+  onMarkPresent: (teamId: string) => void;
+  onMarkAbsent: (teamId: string) => void;
 }
 
 const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({ 
   teams, 
   onArchive, 
+  onUnarchive,
   onMarkEntered, 
-  onUnmarkEntered
+  onUnmarkEntered,
+  onMarkPresent,
+  onMarkAbsent
 }) => {
   const [expandedTeams, setExpandedTeams] = useState<Record<string, boolean>>({});
 
@@ -371,17 +457,21 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className={`px-4 py-5 sm:px-6 ${team.has_entered ? 'bg-purple-900/20' : ''}`}
+              className={`px-4 py-5 sm:px-6 ${team.has_entered ? 'bg-purple-900/20' : ''} ${team.present ? 'bg-green-900/20' : 'bg-red-900/20'}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <button
-                    onClick={() => team.has_entered ? onUnmarkEntered(team.id) : onMarkEntered(team.id)}
-                    className={`mr-4 flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center ${team.has_entered ? 'bg-green-500 text-white' : 'border border-purple-500'}`}
-                    title={team.has_entered ? 'Mark as not entered' : 'Mark as entered'}
-                  >
-                    {team.has_entered && <FaCheck className="h-3 w-3" />}
-                  </button>
+                  <div className="flex flex-col mr-4">
+                    <button
+                      onClick={() => team.present ? onMarkAbsent(team.id) : onMarkPresent(team.id)}
+                      className={`flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center ${team.present ? 'bg-green-500 text-white' : 'border border-red-500'}`}
+                      title={team.present ? 'Mark as absent' : 'Mark as present'}
+                    >
+                      {team.present && <FaCheck className="h-3 w-3" />}
+                      {!team.present && <FaTimes className="h-3 w-3 text-red-500" />}
+                    </button>
+                    <span className="text-xs mt-1 text-center">{team.present ? 'Present' : 'Absent'}</span>
+                  </div>
                   <div>
                     <h4 className="text-lg font-medium text-white">{team.team_name}</h4>
                     <p className="text-sm text-purple-300">Leader: {team.team_leader_name}</p>
@@ -395,13 +485,23 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
                   >
                     {expandedTeams[team.id] ? <FaChevronUp /> : <FaChevronDown />}
                   </button>
-                  <button
-                    onClick={() => onArchive(team.id)}
-                    className="p-1.5 text-red-400 hover:text-red-300 transition-colors"
-                    title="Archive team"
-                  >
-                    <FaArchive className="h-4 w-4" />
-                  </button>
+                  {team.archived ? (
+                    <button
+                      onClick={() => onUnarchive(team.id)}
+                      className="p-1.5 text-green-400 hover:text-green-300 transition-colors"
+                      title="Unarchive team"
+                    >
+                      <FaEye className="h-4 w-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onArchive(team.id)}
+                      className="p-1.5 text-red-400 hover:text-red-300 transition-colors"
+                      title="Archive team"
+                    >
+                      <FaArchive className="h-4 w-4" />
+                    </button>
+                  )}
                 </div>
               </div>
               
@@ -426,22 +526,33 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
                     
                     <div>
                       <h5 className="text-sm font-medium text-purple-400">Additional Information</h5>
-                      <dl className="mt-1 text-sm text-white">
+                      <dl className="mt-1 text-sm text-white space-y-2">
                         <div className="flex">
                           <dt className="font-medium">UTR ID:</dt>
                           <dd className="ml-2">{team.member_utr_id || 'Not provided'}</dd>
                         </div>
                         <div className="flex">
+                          <dt className="font-medium">Problem Statement:</dt>
+                          <dd className="ml-2">{team.problem_statement || 'Not provided'}</dd>
+                        </div>
+                        <div className="flex">
                           <dt className="font-medium">Registered:</dt>
                           <dd className="ml-2">{new Date(team.created_at).toLocaleDateString()}</dd>
                         </div>
-                        <div className="flex">
+                        <div className="flex items-center">
                           <dt className="font-medium">Status:</dt>
                           <dd className="ml-2">
                             <span className={`px-2 py-1 rounded-full text-xs ${team.has_entered ? 'bg-green-500/20 text-green-300' : 'bg-yellow-500/20 text-yellow-300'}`}>
                               {team.has_entered ? 'Entered' : 'Not Entered'}
                             </span>
                           </dd>
+                          <button
+                            onClick={() => team.has_entered ? onUnmarkEntered(team.id) : onMarkEntered(team.id)}
+                            className="ml-2 p-1 text-sm bg-gray-700 rounded"
+                            title={team.has_entered ? 'Mark as not entered' : 'Mark as entered'}
+                          >
+                            {team.has_entered ? <FaTimes className="h-3 w-3 text-red-400" /> : <FaCheck className="h-3 w-3 text-green-400" />}
+                          </button>
                         </div>
                       </dl>
                     </div>
@@ -465,12 +576,28 @@ interface ProjectIdeasProps {
 
 const ProjectIdeas: React.FC<ProjectIdeasProps> = ({ ideas, onRate, onDelete }) => {
   const [expandedIdeas, setExpandedIdeas] = useState<Record<string, boolean>>({});
+  const [editingIdea, setEditingIdea] = useState<string | null>(null);
+  const [editRating, setEditRating] = useState<number>(0);
 
   const toggleExpand = (ideaId: string) => {
     setExpandedIdeas(prev => ({
       ...prev,
       [ideaId]: !prev[ideaId]
     }));
+  };
+
+  const startEditing = (ideaId: string, currentRating: number = 0) => {
+    setEditingIdea(ideaId);
+    setEditRating(currentRating);
+  };
+
+  const saveRating = (ideaId: string) => {
+    onRate(ideaId, editRating);
+    setEditingIdea(null);
+  };
+
+  const cancelEditing = () => {
+    setEditingIdea(null);
   };
 
   return (
@@ -501,7 +628,43 @@ const ProjectIdeas: React.FC<ProjectIdeasProps> = ({ ideas, onRate, onDelete }) 
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="text-sm text-purple-400">{idea.word_count}/300 words</div>
-                  <RatingStars rating={idea.rating} onRate={(rating) => onRate(idea.id, rating)} />
+                  {editingIdea === idea.id ? (
+                    <div className="flex items-center">
+                      <input
+                        type="number"
+                        min="0"
+                        max="10"
+                        value={editRating}
+                        onChange={(e) => setEditRating(Number(e.target.value))}
+                        className="w-12 h-8 bg-gray-700 text-white text-center rounded mr-2"
+                      />
+                      <button
+                        onClick={() => saveRating(idea.id)}
+                        className="p-1 text-green-400 hover:text-green-300"
+                        title="Save rating"
+                      >
+                        <FaCheck className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={cancelEditing}
+                        className="p-1 text-red-400 hover:text-red-300"
+                        title="Cancel editing"
+                      >
+                        <FaTimes className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <RatingStars rating={idea.rating} />
+                      <button
+                        onClick={() => startEditing(idea.id, idea.rating)}
+                        className="ml-2 p-1 text-purple-400 hover:text-purple-300"
+                        title="Edit rating"
+                      >
+                        <FaEdit className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -531,9 +694,6 @@ const ProjectIdeas: React.FC<ProjectIdeasProps> = ({ ideas, onRate, onDelete }) 
                   Submitted: {new Date(idea.created_at).toLocaleDateString()}
                 </div>
                 <div className="flex space-x-2">
-                  <button className="inline-flex items-center px-3 py-1.5 border border-purple-700/30 shadow-sm text-sm font-medium rounded-lg text-purple-300 bg-gray-800/50 hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors">
-                    <FaEdit className="mr-1.5 h-4 w-4" /> Edit
-                  </button>
                   <button 
                     onClick={() => onDelete(idea.id)}
                     className="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-red-600/80 hover:bg-red-500/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
@@ -553,25 +713,18 @@ const ProjectIdeas: React.FC<ProjectIdeasProps> = ({ ideas, onRate, onDelete }) 
 // Rating Stars Component Props
 interface RatingStarsProps {
   rating?: number;
-  onRate: (rating: number) => void;
 }
 
-const RatingStars: React.FC<RatingStarsProps> = ({ rating = 0, onRate }) => {
-  const [hoverRating, setHoverRating] = useState<number>(0);
-
+const RatingStars: React.FC<RatingStarsProps> = ({ rating = 0 }) => {
   return (
     <div className="flex items-center space-x-1">
       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((star) => (
-        <button
+        <span
           key={star}
-          className={`p-0.5 transition-transform hover:scale-125 ${star <= (hoverRating || rating) ? 'text-yellow-400' : 'text-gray-500'}`}
-          onClick={() => onRate(star)}
-          onMouseEnter={() => setHoverRating(star)}
-          onMouseLeave={() => setHoverRating(0)}
-          title={`Rate ${star} out of 10`}
+          className={`${star <= rating ? 'text-yellow-400' : 'text-gray-500'}`}
         >
-          <FaStar className="h-5 w-5" />
-        </button>
+          <FaStar className="h-4 w-4" />
+        </span>
       ))}
       <span className="text-sm font-medium text-white ml-1">{rating}/10</span>
     </div>

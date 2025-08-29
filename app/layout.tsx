@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MERN Stack Club",
+  title: "MERN STACK CLUB",
   description: "Made by Harsh Srivastava",
 };
 

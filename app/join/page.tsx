@@ -17,10 +17,21 @@ const COLORS = {
   stepInactive: 'bg-[#1E0345] text-[#CBC3E3]/60',
 };
 
+// Temporary problem statements
+const PROBLEM_STATEMENTS = [
+  "How can we reduce food waste in urban areas?",
+  "Developing sustainable transportation solutions for crowded cities",
+  "Improving mental health awareness and accessibility in educational institutions",
+  "Creating affordable renewable energy solutions for rural communities",
+  "Developing technology to bridge the digital divide for elderly populations"
+];
+
 const TeamOnboarding = () => {
   const [teamName, setTeamName] = useState('');
   const [teamLeaderName, setTeamLeaderName] = useState('');
   const [teamUtrId, setTeamUtrId] = useState('');
+  const [problemStatement, setProblemStatement] = useState('');
+  const [isProblemDropdownOpen, setIsProblemDropdownOpen] = useState(false);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     { name: '', registrationNumber: '' },
   ]);
@@ -90,7 +101,7 @@ const TeamOnboarding = () => {
   const handleAddMember = () => {
     if (teamMembers.length < 4) {
       setTeamMembers([...teamMembers, { name: '', registrationNumber: '' }]);
-      setActiveStep(teamMembers.length);
+      setActiveStep(teamMembers.length + 1); // +1 to account for problem statement step
     }
   };
 
@@ -98,13 +109,18 @@ const TeamOnboarding = () => {
     const newTeamMembers = [...teamMembers];
     newTeamMembers.splice(index, 1);
     setTeamMembers(newTeamMembers);
-    setActiveStep(Math.min(activeStep, newTeamMembers.length - 1));
+    setActiveStep(Math.min(activeStep, newTeamMembers.length + 1)); // +1 to account for problem statement step
   };
 
   const handleMemberChange = (index: number, field: string, value: string) => {
     const newTeamMembers = [...teamMembers];
     newTeamMembers[index][field as keyof TeamMember] = value;
     setTeamMembers(newTeamMembers);
+  };
+
+  const handleSelectProblemStatement = (statement: string) => {
+    setProblemStatement(statement);
+    setIsProblemDropdownOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -116,6 +132,11 @@ const TeamOnboarding = () => {
       // Validate UTR ID
       if (teamUtrId.length !== 12 || !/^\d{12}$/.test(teamUtrId)) {
         throw new Error("Please enter a valid 12-digit UTR ID");
+      }
+
+      // Validate problem statement
+      if (!problemStatement) {
+        throw new Error("Please select a problem statement");
       }
 
       // Validate team members
@@ -136,6 +157,7 @@ const TeamOnboarding = () => {
         team_name: teamName,
         team_leader_name: teamLeaderName,
         member_utr_id: teamUtrId,
+        problem_statement: problemStatement,
         member_name_1: teamMembers[0].name,
         member_registration_number_1: teamMembers[0].registrationNumber,
         member_name_2: teamMembers[1]?.name || null,
@@ -168,7 +190,8 @@ const TeamOnboarding = () => {
 
   const steps = [
     { id: 0, name: 'Team Info', icon: '👥' },
-    ...teamMembers.map((_, i) => ({ id: i + 1, name: `Member ${i + 1}`, icon: '🧑‍💻' }))
+    { id: 1, name: 'Problem Statement', icon: '🎯' },
+    ...teamMembers.map((_, i) => ({ id: i + 2, name: `Member ${i + 1}`, icon: '🧑‍💻' }))
   ];
 
   return (
@@ -184,7 +207,7 @@ const TeamOnboarding = () => {
         {/* Error message display */}
         {error && (
           <motion.div 
-            className="fixed top-4 right-4 z-50 bg-red-600 text-white p-4 rounded-lg shadow-lg max-w-md"
+            className="fixed top-4 right-4 z-50 bg-red-600/90 text-white p-4 rounded-lg shadow-lg max-w-md border border-red-400/50"
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -50 }}
@@ -193,7 +216,7 @@ const TeamOnboarding = () => {
               <span>{error}</span>
               <button 
                 onClick={() => setError(null)}
-                className="ml-4 text-white hover:text-gray-200"
+                className="ml-4 text-white hover:text-gray-200 text-lg"
               >
                 ×
               </button>
@@ -395,6 +418,87 @@ const TeamOnboarding = () => {
                               whileHover={{ scale: 1.04 }}
                               whileTap={{ scale: 0.98 }}
                             >
+                              Next: Problem Statement
+                              <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </motion.button>
+                          </div>
+                        </motion.div>
+                      )}
+                      
+                      {/* Problem Statement Section */}
+                      {activeStep === 1 && (
+                        <motion.div
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <div className="mb-6">
+                            <label className="block text-sm font-medium text-[#CBC3E3] mb-2">
+                              Problem Statement <span className="text-[#A020F0]">*</span>
+                            </label>
+                            <div className="relative">
+                              <button
+                                type="button"
+                                onClick={() => setIsProblemDropdownOpen(!isProblemDropdownOpen)}
+                                className={`w-full ${COLORS.input} rounded-xl py-3 px-4 text-left flex justify-between items-center cursor-pointer transition-all ${isProblemDropdownOpen ? 'ring-2 ring-[#A020F0]' : ''}`}
+                              >
+                                <span className={problemStatement ? "text-[#F0F0F0]" : "text-[#CBC3E3]/60"}>
+                                  {problemStatement || "Select a problem statement"}
+                                </span>
+                                <svg 
+                                  className={`w-5 h-5 text-[#A020F0] transition-transform ${isProblemDropdownOpen ? 'rotate-180' : ''}`}
+                                  fill="none" 
+                                  viewBox="0 0 24 24" 
+                                  stroke="currentColor"
+                                >
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </button>
+                              
+                              {isProblemDropdownOpen && (
+                                <div className="absolute z-10 w-full mt-1 bg-[#1E0345] border border-[#CBC3E3]/20 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto">
+                                  {PROBLEM_STATEMENTS.map((statement, index) => (
+                                    <div
+                                      key={index}
+                                      onClick={() => handleSelectProblemStatement(statement)}
+                                      className="px-4 py-3 hover:bg-[#A020F0]/20 cursor-pointer transition-colors duration-200 border-b border-[#CBC3E3]/10 last:border-b-0"
+                                    >
+                                      <p className="text-[#F0F0F0] text-sm leading-relaxed">{statement}</p>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <p className="text-xs text-[#CBC3E3]/70 mt-1">Choose the problem your team will solve</p>
+                          </div>
+                          <div className="flex justify-between">
+                            <motion.button
+                              type="button"
+                              className="flex items-center justify-center px-6 py-2 bg-[#1E0345] text-[#CBC3E3] rounded-xl font-medium hover:bg-[#A020F0]/80 hover:text-[#F0F0F0] transition-colors border border-[#CBC3E3]/20"
+                              onClick={() => setActiveStep(0)}
+                              whileHover={{ scale: 1.04 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                              </svg>
+                              Back
+                            </motion.button>
+                            <motion.button
+                              type="button"
+                              className={`flex items-center justify-center px-6 py-2 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
+                              onClick={() => {
+                                if (!problemStatement) {
+                                  setError("Please select a problem statement");
+                                  return;
+                                }
+                                setActiveStep(2);
+                              }}
+                              whileHover={{ scale: 1.04 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
                               Next: Add Members
                               <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -405,7 +509,7 @@ const TeamOnboarding = () => {
                       )}
                       
                       {/* Team Members Sections */}
-                      {activeStep > 0 && activeStep <= teamMembers.length && (
+                      {activeStep >= 2 && activeStep <= teamMembers.length + 1 && (
                         <motion.div
                           key={`member-${activeStep}`}
                           initial={{ x: 20, opacity: 0 }}
@@ -415,36 +519,36 @@ const TeamOnboarding = () => {
                           <div className="mb-6">
                             <h3 className="text-xl font-semibold text-[#CBC3E3] mb-4 flex items-center">
                               <span className="bg-[#A020F0]/30 text-[#A020F0] rounded-full w-8 h-8 flex items-center justify-center mr-2">
-                                {activeStep}
+                                {activeStep - 1}
                               </span>
-                              Team Member {activeStep}
+                              Team Member {activeStep - 1}
                             </h3>
                             <div className="space-y-4">
                               <div>
-                                <label htmlFor={`memberName-${activeStep-1}`} className="block text-sm font-medium text-[#CBC3E3] mb-2">
+                                <label htmlFor={`memberName-${activeStep-2}`} className="block text-sm font-medium text-[#CBC3E3] mb-2">
                                   Full Name
                                 </label>
                                 <input
                                   type="text"
-                                  id={`memberName-${activeStep-1}`}
+                                  id={`memberName-${activeStep-2}`}
                                   className={`w-full ${COLORS.input} rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#A020F0] focus:border-transparent transition-all`}
                                   placeholder="Enter member's full name"
-                                  value={teamMembers[activeStep-1].name}
-                                  onChange={(e) => handleMemberChange(activeStep-1, 'name', e.target.value)}
+                                  value={teamMembers[activeStep-2].name}
+                                  onChange={(e) => handleMemberChange(activeStep-2, 'name', e.target.value)}
                                   required
                                 />
                               </div>
                               <div>
-                                <label htmlFor={`registrationNumber-${activeStep-1}`} className="block text-sm font-medium text-[#CBC3E3] mb-2">
+                                <label htmlFor={`registrationNumber-${activeStep-2}`} className="block text-sm font-medium text-[#CBC3E3] mb-2">
                                   Registration Number
                                 </label>
                                 <input
                                   type="text"
-                                  id={`registrationNumber-${activeStep-1}`}
+                                  id={`registrationNumber-${activeStep-2}`}
                                   className={`w-full ${COLORS.input} rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#A020F0] focus:border-transparent transition-all`}
                                   placeholder="Enter registration number"
-                                  value={teamMembers[activeStep-1].registrationNumber}
-                                  onChange={(e) => handleMemberChange(activeStep-1, 'registrationNumber', e.target.value)}
+                                  value={teamMembers[activeStep-2].registrationNumber}
+                                  onChange={(e) => handleMemberChange(activeStep-2, 'registrationNumber', e.target.value)}
                                   required
                                 />
                               </div>
@@ -468,22 +572,22 @@ const TeamOnboarding = () => {
                                 <motion.button
                                   type="button"
                                   className="flex items-center justify-center px-6 py-2 bg-red-600/90 text-white rounded-xl font-medium hover:bg-red-500 transition-colors"
-                                  onClick={() => handleRemoveMember(activeStep-1)}
+                                  onClick={() => handleRemoveMember(activeStep-2)}
                                   whileHover={{ scale: 1.04 }}
                                   whileTap={{ scale: 0.98 }}
                                 >
                                   Remove
                                 </motion.button>
                               )}
-                              {activeStep < teamMembers.length ? (
+                              {activeStep < teamMembers.length + 1 ? (
                                 <motion.button
                                   type="button"
                                   className={`flex items-center justify-center px-6 py-2 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
                                   onClick={() => {
                                     // Validate current member before proceeding
-                                    const currentMember = teamMembers[activeStep-1];
+                                    const currentMember = teamMembers[activeStep-2];
                                     if (!currentMember.name || !currentMember.registrationNumber) {
-                                      setError(`Please fill in all fields for Member ${activeStep}`);
+                                      setError(`Please fill in all fields for Member ${activeStep - 1}`);
                                       return;
                                     }
                                     setActiveStep(activeStep + 1);
@@ -518,7 +622,7 @@ const TeamOnboarding = () => {
                       )}
                       
                       {/* Submit Button (shown on last step) */}
-                      {activeStep > 0 && activeStep === teamMembers.length && (
+                      {activeStep > 0 && activeStep === teamMembers.length + 1 && (
                         <motion.div
                           className="mt-8 pt-6 border-t border-[#CBC3E3]/10"
                           initial={{ opacity: 0 }}
@@ -605,6 +709,15 @@ const TeamOnboarding = () => {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             <span className="font-medium">Members:</span> {teamMembers.length}
+                          </li>
+                          <li className="flex items-start">
+                            <svg className="h-5 w-5 text-green-400 mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <div>
+                              <span className="font-medium">Problem Statement:</span>
+                              <p className="text-[#CBC3E3] text-sm mt-1">{problemStatement}</p>
+                            </div>
                           </li>
                         </ul>
                         <div className="mt-4">
