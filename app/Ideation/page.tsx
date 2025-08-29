@@ -3,10 +3,13 @@
 import { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create Supabase client lazily to avoid build-time env access
+const getSupabaseClient = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+  return createClient(supabaseUrl, supabaseAnonKey);
+};
 
 interface IdeaFormData {
   teamNumber: string;
@@ -74,6 +77,11 @@ export default function IdeationPage() {
     setMessage({ text: '', type: '' });
     
     try {
+      const supabase = getSupabaseClient();
+      if (!supabase) {
+        throw new Error('Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.');
+      }
+
       const { data, error } = await supabase
         .from('project_ideas')
         .insert([
