@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import CountdownClock from '../components/CountdownClock';
 
 const COLORS = {
   bgGradient: 'bg-gradient-to-br from-[#0A0118] to-[#1E0345]',
@@ -19,19 +20,103 @@ const COLORS = {
 
 // Problem statements from Dawn of Code hackathon
 const PROBLEM_STATEMENTS = [
-  "AI-Powered Cyber Defense - Small organizations and startups often lack the resources to invest in advanced cybersecurity infrastructure, making them highly vulnerable to cyberattacks. The challenge is to design an affordable, AI-driven security framework that can detect, prevent, and respond to threats in real time — providing enterprise-level protection at a fraction of the cost.",
-  "SafeSearch – Child-Safe Internet Experience - Children are exposed to illicit online content, cyberbullying, and harmful interactions while accessing the internet for education or entertainment. Parents cannot always monitor every activity, nor should privacy be compromised. The problem is to create a safe and controlled digital environment where children can freely explore educational and creative resources while being automatically shielded from inappropriate content and harmful interactions.",
-  "Transparent Governance - Government welfare schemes and subsidies often suffer from inefficiencies, corruption, and diversion of funds by intermediaries. Citizens face difficulty in verifying whether benefits are reaching the intended recipients. The challenge is to leverage technology to enable transparent, accountable, and tamper-proof governance systems that ensure public funds are utilized effectively and reach the right beneficiaries without leakage.",
-  "Transparent NGO Donations - Donors often lack visibility into how their contributions are being used by NGOs, which creates distrust and reduces funding for genuine initiatives. The problem is to develop a real-time donation tracking platform that uses technologies such as blockchain and IoT to provide end-to-end transparency — ensuring that every rupee/dollar donated can be traced to its final impact in areas like food distribution, education, or healthcare.",
-  "Cloud Outage Resilience for Critical Services - Critical services such as banking, healthcare, and governance rely heavily on cloud infrastructure, but unexpected cloud outages can cause severe disruptions. Existing backup solutions are either too costly or insufficient. The challenge is to build a resilient, cost-effective system that ensures zero downtime for mission-critical applications by using multi-cloud failover, intelligent workload migration, and edge computing to maintain seamless continuity during outages."
+  {
+    id: 1,
+    domain: "Cybersecurity & Privacy",
+    title: "Cyber Resilience & Digital Safety",
+    description: "Small businesses, children, and everyday users all face cyber threats but lack strong defenses. How can we design affordable, practical, and user-friendly solutions that protect individuals and organizations from online risks while giving them more control over their data and privacy?",
+    icon: "🛡️"
+  },
+  {
+    id: 2,
+    domain: "Cybersecurity & Privacy",
+    title: "Truth & Trust in the Digital Age",
+    description: "From deepfakes to AI manipulation, it's becoming harder to know what's real online. How can we verify authenticity, fight misinformation, and secure AI systems against malicious manipulation to build a safer digital world?",
+    icon: "🔍"
+  },
+  {
+    id: 3,
+    domain: "Cybersecurity & Privacy",
+    title: "Privacy as a Right",
+    description: "People's data is constantly collected, often without their knowledge or consent. How can we give individuals control over their personal information, enable fair data usage, and generate privacy-preserving alternatives for developers and researchers?",
+    icon: "🔒"
+  },
+  {
+    id: 4,
+    domain: "Governance & FinTech",
+    title: "Transparent & Accountable Systems",
+    description: "Corruption and lack of clarity make it hard to trust public services, donations, and digital finance. How can we design transparent systems for welfare, NGOs, and finance that ensure funds reach the right people and help users make informed, safer financial decisions?",
+    icon: "💎"
+  },
+  {
+    id: 5,
+    domain: "Developer Tools & Cloud Infrastructure",
+    title: "Reliable & Resilient Digital Services",
+    description: "Downtime, outages, and hidden cloud costs disrupt critical applications. How can we create resilient systems that stay online during failures, simplify cloud management, detect unusual spending, and make infrastructure more accessible to developers?",
+    icon: "☁️"
+  },
+  {
+    id: 6,
+    domain: "Developer Tools & Cloud Infrastructure",
+    title: "Fair & Collaborative AI Development",
+    description: "AI is powerful but often a black box — hard to explain, sometimes biased, and tricky to work with in teams. How can we make AI more explainable and fair, while building better collaboration tools for developers working with models, prompts, and APIs?",
+    icon: "🤖"
+  },
+  {
+    id: 7,
+    domain: "Healthcare & MedTech",
+    title: "Privacy-Friendly Healthcare Innovation",
+    description: "Medical research needs patient participation and data, but privacy is a big concern. How can we connect patients with research opportunities and enable hospitals to collaborate without exposing sensitive personal data?",
+    icon: "🏥"
+  },
+  {
+    id: 8,
+    domain: "Education & Collaboration",
+    title: "Smarter Knowledge Sharing",
+    description: "Students, researchers, and teams juggle articles, notes, and references across tools. How can we create unified platforms where knowledge can be collected, shared, annotated, and built upon collaboratively?",
+    icon: "📚"
+  },
+  {
+    id: 9,
+    domain: "Sustainability & Smart Living",
+    title: "Sustainable Technology & the Right to Repair",
+    description: "E-waste is rising as devices are thrown away instead of reused. How can we empower people to repair, recycle, and extend the life of electronics to reduce waste and promote sustainability?",
+    icon: "♻️"
+  },
+  {
+    id: 10,
+    domain: "Sustainability & Smart Living",
+    title: "Smarter Farming & Cities",
+    description: "Farmers and cities face resource challenges — from irrigation inefficiencies to waste collection. How can we design simple, data-driven tools that help farmers increase yields and cities manage waste more effectively?",
+    icon: "🌱"
+  }
+];
+
+// Available domains for selection
+const DOMAINS = [
+  "Cybersecurity & Privacy",
+  "Governance & FinTech", 
+  "Developer Tools & Cloud Infrastructure",
+  "Healthcare & MedTech",
+  "Education & Collaboration",
+  "Sustainability & Smart Living"
+];
+
+// Available sessions
+const SESSIONS = [
+  { id: 1, time: "2:00 PM – 3:30 PM", label: "Session 1" },
+  { id: 2, time: "3:45 PM – 5:15 PM", label: "Session 2" }
 ];
 
 const TeamOnboarding = () => {
   const [teamName, setTeamName] = useState('');
   const [teamLeaderName, setTeamLeaderName] = useState('');
-  const [teamUtrId, setTeamUtrId] = useState('');
-  const [problemStatement, setProblemStatement] = useState('');
+  const [teamLeaderMobile, setTeamLeaderMobile] = useState('');
+  const [teamLeaderEmail, setTeamLeaderEmail] = useState('');
+  const [selectedDomain, setSelectedDomain] = useState('');
+  const [selectedProblem, setSelectedProblem] = useState<any>(null);
   const [isProblemDropdownOpen, setIsProblemDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([
     { name: '', registrationNumber: '' },
   ]);
@@ -41,6 +126,7 @@ const TeamOnboarding = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showRegistration, setShowRegistration] = useState(false);
 
   interface TeamMember {
     name: string;
@@ -118,10 +204,25 @@ const TeamOnboarding = () => {
     setTeamMembers(newTeamMembers);
   };
 
-  const handleSelectProblemStatement = (statement: string) => {
-    setProblemStatement(statement);
+  const handleSelectProblemStatement = (problem: any) => {
+    setSelectedProblem(problem);
     setIsProblemDropdownOpen(false);
   };
+
+  const handleSelectDomain = (domain: string) => {
+    setSelectedDomain(domain);
+    setIsDomainDropdownOpen(false);
+  };
+
+  const handleSelectSession = (id: number) => {
+    setSelectedSession(id);
+    setIsSessionDropdownOpen(false);
+  };
+
+  const [isDomainDropdownOpen, setIsDomainDropdownOpen] = useState(false);
+  const [isSessionDropdownOpen, setIsSessionDropdownOpen] = useState(false);
+  const [participantType, setParticipantType] = useState<'VIT' | 'External'>('VIT');
+  const [selectedSession, setSelectedSession] = useState<number | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -129,14 +230,19 @@ const TeamOnboarding = () => {
     setError(null);
 
     try {
-      // Validate UTR ID
-      if (teamUtrId.length !== 12 || !/^\d{12}$/.test(teamUtrId)) {
-        throw new Error("Please enter a valid 12-digit UTR ID");
+      // Validate problem statement
+      if (!selectedProblem) {
+        throw new Error("Please select a problem statement");
       }
 
-      // Validate problem statement
-      if (!problemStatement) {
-        throw new Error("Please select a problem statement");
+      // Validate domain
+      if (!selectedDomain) {
+        throw new Error("Please select a domain");
+      }
+
+      // Validate session
+      if (!selectedSession) {
+        throw new Error("Please select a session");
       }
 
       // Validate team members
@@ -154,10 +260,14 @@ const TeamOnboarding = () => {
 
       // Prepare data for database
       const teamData = {
+        participant_type: participantType,
         team_name: teamName,
         team_leader_name: teamLeaderName,
-        member_utr_id: teamUtrId,
-        problem_statement: problemStatement,
+        team_leader_mobile: teamLeaderMobile,
+        team_leader_email: teamLeaderEmail,
+        selected_domain: selectedDomain,
+        problem_statement: selectedProblem.description,
+        selected_session: selectedSession,
         member_name_1: teamMembers[0].name,
         member_registration_number_1: teamMembers[0].registrationNumber,
         member_name_2: teamMembers[1]?.name || null,
@@ -189,10 +299,37 @@ const TeamOnboarding = () => {
   };
 
   const steps = [
-    { id: 0, name: 'Team Info', icon: '👥' },
-    { id: 1, name: 'Problem Statement', icon: '🎯' },
-    ...teamMembers.map((_, i) => ({ id: i + 2, name: `Member ${i + 1}`, icon: '🧑‍💻' }))
+    { id: 0, name: 'Participant Type', icon: '👤' },
+    { id: 1, name: 'Team Info', icon: '👥' },
+    { id: 2, name: 'Domain & Problem', icon: '🎯' },
+    { id: 3, name: 'Session', icon: '⏰' },
+    ...teamMembers.map((_, i) => ({ id: i + 4, name: `Member ${i + 1}`, icon: '🧑‍💻' }))
   ];
+
+  // Check if it's time to show registration (after 9:00 AM tomorrow)
+  useEffect(() => {
+    const checkTime = () => {
+      const now = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(9, 0, 0, 0);
+      
+      if (now >= tomorrow) {
+        setShowRegistration(true);
+      }
+    };
+    
+    checkTime();
+    const interval = setInterval(checkTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Show countdown if registration is not yet available
+  if (!showRegistration) {
+    return (
+      <CountdownClock onTimeUp={() => setShowRegistration(true)} />
+    );
+  }
 
   return (
     <>
@@ -323,7 +460,7 @@ const TeamOnboarding = () => {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      {/* Team Info Section */}
+                      {/* Participant Type Section */}
                       {activeStep === 0 && (
                         <motion.div
                           initial={{ x: -20, opacity: 0 }}
@@ -331,8 +468,67 @@ const TeamOnboarding = () => {
                           transition={{ duration: 0.4 }}
                         >
                           <div className="mb-6">
+                            <label className="block text-sm font-medium text-[#CBC3E3] mb-4">
+                              Select whether you are a VIT Participant or an External Participant
+                            </label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <label className="flex items-center p-4 border-2 border-[#CBC3E3]/20 rounded-xl cursor-pointer transition-all hover:border-[#A020F0]/40 hover:bg-[#A020F0]/10">
+                                <input
+                                  type="radio"
+                                  name="participantType"
+                                  value="VIT"
+                                  checked={participantType === 'VIT'}
+                                  onChange={() => setParticipantType('VIT')}
+                                  className="mr-3 w-5 h-5 text-[#A020F0] focus:ring-[#A020F0]"
+                                />
+                                <div>
+                                  <div className="font-semibold text-[#F0F0F0]">VIT Student</div>
+                                  <div className="text-sm text-[#CBC3E3]/70">Currently enrolled at VIT</div>
+                                </div>
+                              </label>
+                              <label className="flex items-center p-4 border-2 border-[#CBC3E3]/20 rounded-xl cursor-pointer transition-all hover:border-[#A020F0]/40 hover:bg-[#A020F0]/10">
+                                <input
+                                  type="radio"
+                                  name="participantType"
+                                  value="External"
+                                  checked={participantType === 'External'}
+                                  onChange={() => setParticipantType('External')}
+                                  className="mr-3 w-5 h-5 text-[#A020F0] focus:ring-[#A020F0]"
+                                />
+                                <div>
+                                  <div className="font-semibold text-[#F0F0F0]">External Participant</div>
+                                  <div className="text-sm text-[#CBC3E3]/70">From other institutions</div>
+                                </div>
+                              </label>
+                            </div>
+                          </div>
+                          <div className="flex justify-end">
+                            <motion.button
+                              type="button"
+                              className={`flex items-center justify-center px-6 py-3 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
+                              onClick={() => setActiveStep(1)}
+                              whileHover={{ scale: 1.04 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              Next: Team Info
+                              <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </motion.button>
+                          </div>
+                        </motion.div>
+                      )}
+                      
+                      {/* Team Info Section */}
+                      {activeStep === 1 && (
+                        <motion.div
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <div className="mb-6">
                             <label htmlFor="teamName" className="block text-sm font-medium text-[#CBC3E3] mb-2">
-                              Team Name
+                              Team Name <span className="text-[#A020F0]">*</span>
                             </label>
                             <div className="relative">
                               <input
@@ -353,7 +549,7 @@ const TeamOnboarding = () => {
                           </div>
                           <div className="mb-6">
                             <label htmlFor="teamLeaderName" className="block text-sm font-medium text-[#CBC3E3] mb-2">
-                              Team Leader
+                              Team Leader Name <span className="text-[#A020F0]">*</span>
                             </label>
                             <div className="relative">
                               <input
@@ -373,52 +569,62 @@ const TeamOnboarding = () => {
                             </div>
                           </div>
                           <div className="mb-6">
-                            <label htmlFor="teamUtrId" className="block text-sm font-medium text-[#CBC3E3] mb-2">
-                              Transaction UTR ID <span className="text-[#A020F0]">*</span>
+                            <label htmlFor="teamLeaderMobile" className="block text-sm font-medium text-[#CBC3E3] mb-2">
+                              Team Leader Mobile Number <span className="text-[#A020F0]">*</span>
                             </label>
                             <div className="relative">
                               <input
-                                type="text"
-                                id="teamUtrId"
+                                type="tel"
+                                id="teamLeaderMobile"
                                 className={`w-full ${COLORS.input} rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#A020F0] focus:border-transparent transition-all`}
-                                placeholder="Enter 12-digit UTR ID"
-                                value={teamUtrId}
-                                onChange={(e) => setTeamUtrId(e.target.value)}
-                                maxLength={12}
-                                pattern="[0-9]{12}"
+                                placeholder="Enter team leader mobile number"
+                                value={teamLeaderMobile}
+                                onChange={(e) => setTeamLeaderMobile(e.target.value)}
                                 required
                               />
                               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                 <svg className="h-5 w-5 text-[#A020F0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                 </svg>
                               </div>
                             </div>
-                            <p className="text-xs text-[#CBC3E3]/70 mt-1">UTR ID must be exactly 12 digits</p>
+                          </div>
+                          <div className="mb-6">
+                            <label htmlFor="teamLeaderEmail" className="block text-sm font-medium text-[#CBC3E3] mb-2">
+                              Team Leader Email ID <span className="text-[#A020F0]">*</span>
+                            </label>
+                            <div className="relative">
+                              <input
+                                type="email"
+                                id="teamLeaderEmail"
+                                className={`w-full ${COLORS.input} rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#A020F0] focus:border-transparent transition-all`}
+                                placeholder="Enter team leader email"
+                                value={teamLeaderEmail}
+                                onChange={(e) => setTeamLeaderEmail(e.target.value)}
+                                required
+                              />
+                              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <svg className="h-5 w-5 text-[#A020F0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                              </div>
+                            </div>
                           </div>
                           <div className="flex justify-end">
                             <motion.button
                               type="button"
-                              className={`flex items-center justify-center px-6 py-2 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
+                              className={`flex items-center justify-center px-6 py-3 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
                               onClick={() => {
-                                // Validate required fields before proceeding
-                                if (!teamName || !teamLeaderName || !teamUtrId) {
+                                if (!teamName || !teamLeaderName || !teamLeaderMobile || !teamLeaderEmail) {
                                   setError("Please fill in all required fields");
                                   return;
                                 }
-                                
-                                // Validate UTR ID before proceeding
-                                if (teamUtrId.length !== 12 || !/^\d{12}$/.test(teamUtrId)) {
-                                  setError("Please enter a valid 12-digit UTR ID");
-                                  return;
-                                }
-                                
-                                setActiveStep(1);
+                                setActiveStep(2);
                               }}
                               whileHover={{ scale: 1.04 }}
                               whileTap={{ scale: 0.98 }}
                             >
-                              Next: Problem Statement
+                              Next: Domain & Problem
                               <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                               </svg>
@@ -427,16 +633,42 @@ const TeamOnboarding = () => {
                         </motion.div>
                       )}
                       
-                      {/* Problem Statement Section */}
-                      {activeStep === 1 && (
+                      {/* Domain & Problem Section */}
+                      {activeStep === 2 && (
                         <motion.div
                           initial={{ x: -20, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ duration: 0.4 }}
                         >
                           <div className="mb-6">
+                            <label htmlFor="selectedDomain" className="block text-sm font-medium text-[#CBC3E3] mb-2">
+                              Select your Domain <span className="text-[#A020F0]">*</span>
+                            </label>
+                            <div className="relative">
+                              <select
+                                id="selectedDomain"
+                                className={`w-full ${COLORS.input} rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#A020F0] focus:border-transparent transition-all`}
+                                value={selectedDomain}
+                                onChange={(e) => setSelectedDomain(e.target.value)}
+                                required
+                              >
+                                <option value="">Choose a domain</option>
+                                {DOMAINS.map((domain) => (
+                                  <option key={domain} value={domain}>
+                                    {domain}
+                                  </option>
+                                ))}
+                              </select>
+                              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <svg className="h-5 w-5 text-[#A020F0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mb-6">
                             <label className="block text-sm font-medium text-[#CBC3E3] mb-2">
-                              Problem Statement <span className="text-[#A020F0]">*</span>
+                              Select a Problem Statement <span className="text-[#A020F0]">*</span>
                             </label>
                             <div className="relative">
                               <button
@@ -444,8 +676,13 @@ const TeamOnboarding = () => {
                                 onClick={() => setIsProblemDropdownOpen(!isProblemDropdownOpen)}
                                 className={`w-full ${COLORS.input} rounded-xl py-3 px-4 text-left flex justify-between items-center cursor-pointer transition-all ${isProblemDropdownOpen ? 'ring-2 ring-[#A020F0]' : ''}`}
                               >
-                                <span className={problemStatement ? "text-[#F0F0F0]" : "text-[#CBC3E3]/60"}>
-                                  {problemStatement || "Select a problem statement"}
+                                <span className={selectedProblem ? "text-[#F0F0F0]" : "text-[#CBC3E3]/60"}>
+                                  {selectedProblem ? (
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-lg">{selectedProblem.icon}</span>
+                                      <span className="truncate">{selectedProblem.title}</span>
+                                    </div>
+                                  ) : "Select a problem statement"}
                                 </span>
                                 <svg 
                                   className={`w-5 h-5 text-[#A020F0] transition-transform ${isProblemDropdownOpen ? 'rotate-180' : ''}`}
@@ -458,16 +695,130 @@ const TeamOnboarding = () => {
                               </button>
                               
                               {isProblemDropdownOpen && (
-                                <div className="absolute z-10 w-full mt-1 bg-[#1E0345] border border-[#CBC3E3]/20 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto">
-                                  {PROBLEM_STATEMENTS.map((statement, index) => (
-                                    <div
-                                      key={index}
-                                      onClick={() => handleSelectProblemStatement(statement)}
-                                      className="px-4 py-3 hover:bg-[#A020F0]/20 cursor-pointer transition-colors duration-200 border-b border-[#CBC3E3]/10 last:border-b-0"
-                                    >
-                                      <p className="text-[#F0F0F0] text-sm leading-relaxed">{statement}</p>
+                                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+                                  <motion.div 
+                                    className="w-[95vw] max-w-6xl h-[90vh] bg-[#1E0345] border border-[#CBC3E3]/20 rounded-2xl shadow-2xl overflow-hidden"
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    transition={{ duration: 0.2 }}
+                                  >
+                                    {/* Modal Header */}
+                                    <div className="flex items-center justify-between p-6 border-b border-[#CBC3E3]/20 bg-[#0A0118]/60">
+                                      <h3 className="text-2xl font-bold text-[#F0F0F0]">Select Problem Statement</h3>
+                                      <button
+                                        onClick={() => setIsProblemDropdownOpen(false)}
+                                        className="p-3 hover:bg-[#A020F0]/20 rounded-lg transition-colors"
+                                      >
+                                        <svg className="w-7 h-7 text-[#CBC3E3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                      </button>
                                     </div>
-                                  ))}
+
+                                    {/* Search Section */}
+                                    <div className="p-6 border-b border-[#CBC3E3]/20 bg-[#1E0345]">
+                                      <div className="relative">
+                                        <input
+                                          type="text"
+                                          placeholder="Search problem statements..."
+                                          value={searchQuery}
+                                          onChange={(e) => setSearchQuery(e.target.value)}
+                                          className="w-full px-5 py-4 bg-[#0A0118]/60 border border-[#CBC3E3]/20 rounded-xl text-[#F0F0F0] placeholder-[#CBC3E3]/60 focus:outline-none focus:ring-2 focus:ring-[#A020F0] focus:border-transparent text-lg"
+                                        />
+                                        {searchQuery ? (
+                                          <button
+                                            onClick={() => setSearchQuery('')}
+                                            className="absolute right-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-[#CBC3E3]/60 hover:text-[#A020F0] transition-colors"
+                                          >
+                                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                          </button>
+                                        ) : (
+                                          <svg className="absolute right-5 top-1/2 transform -translate-y-1/2 w-6 h-6 text-[#CBC3E3]/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                          </svg>
+                                        )}
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Problem Statements List */}
+                                    <div className="overflow-y-auto h-[calc(90vh-280px)] p-4">
+                                      {PROBLEM_STATEMENTS
+                                        .filter(problem => 
+                                          problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                          problem.domain.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                          problem.description.toLowerCase().includes(searchQuery.toLowerCase())
+                                        )
+                                        .map((problem) => (
+                                          <motion.div
+                                            key={problem.id}
+                                            onClick={() => handleSelectProblemStatement(problem)}
+                                            className="px-6 py-5 hover:bg-[#A020F0]/20 cursor-pointer transition-all duration-200 border-b border-[#CBC3E3]/10 last:border-b-0 group rounded-lg mx-2 mb-3"
+                                            whileHover={{ x: 5, backgroundColor: 'rgba(160, 32, 240, 0.15)' }}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                          >
+                                            <div className="flex items-start gap-5">
+                                              <div className="text-4xl group-hover:scale-110 transition-transform duration-200">
+                                                {problem.icon}
+                                              </div>
+                                              <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-4 mb-3">
+                                                  <h4 className="font-bold text-[#F0F0F0] text-lg group-hover:text-[#A020F0] transition-colors">
+                                                    {problem.title}
+                                                  </h4>
+                                                  <span className="px-4 py-2 rounded-full text-sm font-medium bg-[#A020F0]/20 text-[#A020F0] border border-[#A020F0]/30">
+                                                    {problem.domain}
+                                                  </span>
+                                                </div>
+                                                <p className="text-base text-[#CBC3E3]/80 mb-3 leading-relaxed">
+                                                  {problem.description}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          </motion.div>
+                                        ))}
+                                      
+                                      {/* No results message */}
+                                      {PROBLEM_STATEMENTS.filter(problem => 
+                                        problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                        problem.domain.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                        problem.description.toLowerCase().includes(searchQuery.toLowerCase())
+                                      ).length === 0 && searchQuery && (
+                                        <motion.div
+                                          initial={{ opacity: 0 }}
+                                          animate={{ opacity: 1 }}
+                                          className="px-6 py-16 text-center text-[#CBC3E3]/60"
+                                        >
+                                          <div className="text-6xl mb-4">🔍</div>
+                                          <p className="text-xl mb-3">No problem statements found matching "{searchQuery}"</p>
+                                          <p className="text-base">Try different keywords or browse all problems</p>
+                                        </motion.div>
+                                      )}
+                                    </div>
+
+                                    {/* Modal Footer */}
+                                    <div className="p-6 border-t border-[#CBC3E3]/20 bg-[#0A0118]/60">
+                                      <div className="flex justify-between items-center">
+                                        <p className="text-base text-[#CBC3E3]/70">
+                                          {PROBLEM_STATEMENTS.filter(problem => 
+                                            problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                            problem.domain.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                            problem.description.toLowerCase().includes(searchQuery.toLowerCase())
+                                          ).length} problem statements available
+                                        </p>
+                                        <button
+                                          onClick={() => setIsProblemDropdownOpen(false)}
+                                          className="px-8 py-3 bg-[#1E0345] text-[#CBC3E3] rounded-lg font-medium hover:bg-[#A020F0]/80 hover:text-[#F0F0F0] transition-colors border border-[#CBC3E3]/20"
+                                        >
+                                          Cancel
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </motion.div>
                                 </div>
                               )}
                             </div>
@@ -476,8 +827,8 @@ const TeamOnboarding = () => {
                           <div className="flex justify-between">
                             <motion.button
                               type="button"
-                              className="flex items-center justify-center px-6 py-2 bg-[#1E0345] text-[#CBC3E3] rounded-xl font-medium hover:bg-[#A020F0]/80 hover:text-[#F0F0F0] transition-colors border border-[#CBC3E3]/20"
-                              onClick={() => setActiveStep(0)}
+                              className="flex items-center justify-center px-6 py-3 bg-[#1E0345] text-[#CBC3E3] rounded-xl font-medium hover:bg-[#A020F0]/80 hover:text-[#F0F0F0] transition-colors border border-[#CBC3E3]/20"
+                              onClick={() => setActiveStep(1)}
                               whileHover={{ scale: 1.04 }}
                               whileTap={{ scale: 0.98 }}
                             >
@@ -488,13 +839,89 @@ const TeamOnboarding = () => {
                             </motion.button>
                             <motion.button
                               type="button"
-                              className={`flex items-center justify-center px-6 py-2 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
+                              className={`flex items-center justify-center px-6 py-3 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
                               onClick={() => {
-                                if (!problemStatement) {
+                                if (!selectedDomain) {
+                                  setError("Please select a domain");
+                                  return;
+                                }
+                                if (!selectedProblem) {
                                   setError("Please select a problem statement");
                                   return;
                                 }
-                                setActiveStep(2);
+                                setActiveStep(3);
+                              }}
+                              whileHover={{ scale: 1.04 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              Next: Session
+                              <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            </motion.button>
+                          </div>
+                        </motion.div>
+                      )}
+                      
+                      {/* Session Section */}
+                      {activeStep === 3 && (
+                        <motion.div
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <div className="mb-6">
+                            <label className="block text-sm font-medium text-[#CBC3E3] mb-4">
+                              Choose a Session in which you want to pitch <span className="text-[#A020F0]">*</span>
+                            </label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {SESSIONS.map((session) => (
+                                <label
+                                  key={session.id}
+                                  className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                                    selectedSession === session.id
+                                      ? 'border-[#A020F0] bg-[#A020F0]/10'
+                                      : 'border-[#CBC3E3]/20 hover:border-[#A020F0]/40 hover:bg-[#A020F0]/5'
+                                  }`}
+                                >
+                                  <input
+                                    type="radio"
+                                    name="selectedSession"
+                                    value={session.id}
+                                    checked={selectedSession === session.id}
+                                    onChange={() => setSelectedSession(session.id)}
+                                    className="mr-3 w-5 h-5 text-[#A020F0] focus:ring-[#A020F0]"
+                                  />
+                                  <div>
+                                    <div className="font-semibold text-[#F0F0F0]">{session.label}</div>
+                                    <div className="text-sm text-[#CBC3E3]/70">{session.time}</div>
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="flex justify-between">
+                            <motion.button
+                              type="button"
+                              className="flex items-center justify-center px-6 py-3 bg-[#1E0345] text-[#CBC3E3] rounded-xl font-medium hover:bg-[#A020F0]/80 hover:text-[#F0F0F0] transition-colors border border-[#CBC3E3]/20"
+                              onClick={() => setActiveStep(2)}
+                              whileHover={{ scale: 1.04 }}
+                              whileTap={{ scale: 0.98 }}
+                            >
+                              <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                              </svg>
+                              Back
+                            </motion.button>
+                            <motion.button
+                              type="button"
+                              className={`flex items-center justify-center px-6 py-3 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
+                              onClick={() => {
+                                if (!selectedSession) {
+                                  setError("Please select a session");
+                                  return;
+                                }
+                                setActiveStep(4);
                               }}
                               whileHover={{ scale: 1.04 }}
                               whileTap={{ scale: 0.98 }}
@@ -509,7 +936,7 @@ const TeamOnboarding = () => {
                       )}
                       
                       {/* Team Members Sections */}
-                      {activeStep >= 2 && activeStep <= teamMembers.length + 1 && (
+                      {activeStep >= 4 && activeStep <= teamMembers.length + 3 && (
                         <motion.div
                           key={`member-${activeStep}`}
                           initial={{ x: 20, opacity: 0 }}
@@ -519,36 +946,36 @@ const TeamOnboarding = () => {
                           <div className="mb-6">
                             <h3 className="text-xl font-semibold text-[#CBC3E3] mb-4 flex items-center">
                               <span className="bg-[#A020F0]/30 text-[#A020F0] rounded-full w-8 h-8 flex items-center justify-center mr-2">
-                                {activeStep - 1}
+                                {activeStep - 3}
                               </span>
-                              Team Member {activeStep - 1}
+                              Team Member {activeStep - 3}
                             </h3>
                             <div className="space-y-4">
                               <div>
-                                <label htmlFor={`memberName-${activeStep-2}`} className="block text-sm font-medium text-[#CBC3E3] mb-2">
+                                <label htmlFor={`memberName-${activeStep-4}`} className="block text-sm font-medium text-[#CBC3E3] mb-2">
                                   Full Name
                                 </label>
                                 <input
                                   type="text"
-                                  id={`memberName-${activeStep-2}`}
+                                  id={`memberName-${activeStep-4}`}
                                   className={`w-full ${COLORS.input} rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#A020F0] focus:border-transparent transition-all`}
                                   placeholder="Enter member's full name"
-                                  value={teamMembers[activeStep-2].name}
-                                  onChange={(e) => handleMemberChange(activeStep-2, 'name', e.target.value)}
+                                  value={teamMembers[activeStep-4].name}
+                                  onChange={(e) => handleMemberChange(activeStep-4, 'name', e.target.value)}
                                   required
                                 />
                               </div>
                               <div>
-                                <label htmlFor={`registrationNumber-${activeStep-2}`} className="block text-sm font-medium text-[#CBC3E3] mb-2">
+                                <label htmlFor={`registrationNumber-${activeStep-4}`} className="block text-sm font-medium text-[#CBC3E3] mb-2">
                                   Registration Number
                                 </label>
                                 <input
                                   type="text"
-                                  id={`registrationNumber-${activeStep-2}`}
+                                  id={`registrationNumber-${activeStep-4}`}
                                   className={`w-full ${COLORS.input} rounded-xl py-3 px-4 focus:outline-none focus:ring-2 focus:ring-[#A020F0] focus:border-transparent transition-all`}
                                   placeholder="Enter registration number"
-                                  value={teamMembers[activeStep-2].registrationNumber}
-                                  onChange={(e) => handleMemberChange(activeStep-2, 'registrationNumber', e.target.value)}
+                                  value={teamMembers[activeStep-4].registrationNumber}
+                                  onChange={(e) => handleMemberChange(activeStep-4, 'registrationNumber', e.target.value)}
                                   required
                                 />
                               </div>
@@ -572,22 +999,22 @@ const TeamOnboarding = () => {
                                 <motion.button
                                   type="button"
                                   className="flex items-center justify-center px-6 py-2 bg-red-600/90 text-white rounded-xl font-medium hover:bg-red-500 transition-colors"
-                                  onClick={() => handleRemoveMember(activeStep-2)}
+                                  onClick={() => handleRemoveMember(activeStep-4)}
                                   whileHover={{ scale: 1.04 }}
                                   whileTap={{ scale: 0.98 }}
                                 >
                                   Remove
                                 </motion.button>
                               )}
-                              {activeStep < teamMembers.length + 1 ? (
+                              {activeStep < teamMembers.length + 3 ? (
                                 <motion.button
                                   type="button"
                                   className={`flex items-center justify-center px-6 py-2 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
                                   onClick={() => {
                                     // Validate current member before proceeding
-                                    const currentMember = teamMembers[activeStep-2];
+                                    const currentMember = teamMembers[activeStep-4];
                                     if (!currentMember.name || !currentMember.registrationNumber) {
-                                      setError(`Please fill in all fields for Member ${activeStep - 1}`);
+                                      setError(`Please fill in all fields for Member ${activeStep - 3}`);
                                       return;
                                     }
                                     setActiveStep(activeStep + 1);
@@ -622,7 +1049,7 @@ const TeamOnboarding = () => {
                       )}
                       
                       {/* Submit Button (shown on last step) */}
-                      {activeStep > 0 && activeStep === teamMembers.length + 1 && (
+                      {activeStep > 0 && activeStep === teamMembers.length + 3 && (
                         <motion.div
                           className="mt-8 pt-6 border-t border-[#CBC3E3]/10"
                           initial={{ opacity: 0 }}
@@ -702,7 +1129,43 @@ const TeamOnboarding = () => {
                             <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
+                            <span className="font-medium">Participant Type:</span> {participantType}
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <span className="font-medium">Team Name:</span> {teamName}
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
                             <span className="font-medium">Leader:</span> {teamLeaderName}
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                            </svg>
+                            <span className="font-medium">Mobile:</span> {teamLeaderMobile}
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span className="font-medium">Email:</span> {teamLeaderEmail}
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                            <span className="font-medium">Domain:</span> {selectedDomain}
+                          </li>
+                          <li className="flex items-center">
+                            <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="font-medium">Session:</span> {SESSIONS.find(s => s.id === selectedSession)?.label} ({SESSIONS.find(s => s.id === selectedSession)?.time})
                           </li>
                           <li className="flex items-center">
                             <svg className="h-5 w-5 text-green-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -716,7 +1179,7 @@ const TeamOnboarding = () => {
                             </svg>
                             <div>
                               <span className="font-medium">Problem Statement:</span>
-                              <p className="text-[#CBC3E3] text-sm mt-1">{problemStatement}</p>
+                              <p className="text-[#CBC3E3] text-sm mt-1">{selectedProblem?.description}</p>
                             </div>
                           </li>
                         </ul>
@@ -732,15 +1195,7 @@ const TeamOnboarding = () => {
                             ))}
                           </ul>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-[#CBC3E3]/10">
-                          <div className="flex items-center gap-2 text-[#CBC3E3]">
-                            <svg className="h-5 w-5 text-[#A020F0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="font-medium">Team UTR ID:</span>
-                            <span className="text-[#A020F0] font-mono">{teamUtrId}</span>
-                          </div>
-                        </div>
+
                       </div>
                       <Link href="/">
                         <motion.button
