@@ -115,7 +115,7 @@ const EventSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[80vh] bg-gradient-to-b from-black via-purple-950 to-black text-white overflow-hidden relative">
+    <div className="min-h-[96vh] bg-gradient-to-b from-black via-purple-950 to-black text-white overflow-hidden relative">
       {/* Animated Background */}
       <div className="fixed inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-purple-950/40 to-black/60"></div>
@@ -228,7 +228,7 @@ const EventSection: React.FC = () => {
       </section>
 
       {/* Event Content */}
-      <section className="relative py-8 px-4 sm:px-6 lg:px-8 z-10">
+      <section className="relative py-12 px-4 sm:px-6 lg:px-8 z-10">
         <div className="max-w-7xl mx-auto">
           <AnimatePresence mode="wait">
             {currentEvent && (
@@ -238,46 +238,46 @@ const EventSection: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className={`bg-black/30 backdrop-blur-md rounded-2xl border p-6 md:p-8 shadow-xl transition-all duration-700 ${getDynamicBorderColor()}`}
+                className={`bg-black/30 backdrop-blur-md rounded-2xl border p-8 md:p-10 shadow-xl transition-all duration-700 ${getDynamicBorderColor()}`}
               >
                 {/* Event Header */}
-                <div className="grid lg:grid-cols-2 gap-8 items-center mb-8">
+                <div className="grid lg:grid-cols-2 gap-10 items-center mb-10">
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
                   >
                     <motion.div
-                      className={`inline-flex items-center px-3 py-2 ${currentEvent.bgColor} rounded-full mb-4 border ${currentEvent.borderColor} backdrop-blur-sm`}
+                      className={`inline-flex items-center px-4 py-2 ${currentEvent.bgColor} rounded-full mb-6 border ${currentEvent.borderColor} backdrop-blur-sm`}
                     >
                       <currentEvent.icon className="mr-2" />
                       {currentEvent.subtitle}
                     </motion.div>
                     
-                    <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
                       {currentEvent.title}
                     </h2>
                     
-                    <p className="text-base text-[#E0E0E0] leading-relaxed mb-4">
+                    <p className="text-lg text-[#E0E0E0] leading-relaxed mb-6">
                       {currentEvent.description}
                     </p>
                     
-                    <div className="grid grid-cols-2 gap-3 mb-4">
+                    <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="flex items-center gap-2">
                         <FaCalendarAlt className="text-purple-400" />
-                        <span className="text-xs">{currentEvent.date}</span>
+                        <span className="text-sm">{currentEvent.date}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <FaClock className="text-purple-400" />
-                        <span className="text-xs">{currentEvent.time}</span>
+                        <span className="text-sm">{currentEvent.time}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <FaMapMarkerAlt className="text-purple-400" />
-                        <span className="text-xs">{currentEvent.venue}</span>
+                        <span className="text-sm">{currentEvent.venue}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <FaUsers className="text-purple-400" />
-                        <span className="text-xs">Open to All</span>
+                        <span className="text-sm">Open to All</span>
                       </div>
                     </div>
                   </motion.div>
@@ -297,8 +297,8 @@ const EventSection: React.FC = () => {
                           src={currentEvent.image}
                           alt={currentEvent.title}
                           width={400}
-                          height={300}
-                          className="w-full h-60 object-cover"
+                          height={350}
+                          className="w-full h-72 md:h-80 object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       </motion.div>
