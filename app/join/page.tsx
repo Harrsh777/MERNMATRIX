@@ -114,6 +114,7 @@ const TeamOnboarding = () => {
   const [teamLeaderMobile, setTeamLeaderMobile] = useState('');
   const [teamLeaderEmail, setTeamLeaderEmail] = useState('');
   const [selectedDomain, setSelectedDomain] = useState('');
+  const [problemStatement, setProblemStatement] = useState('');
   const [selectedProblem, setSelectedProblem] = useState<any>(null);
   const [isProblemDropdownOpen, setIsProblemDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -205,6 +206,7 @@ const TeamOnboarding = () => {
   };
 
   const handleSelectProblemStatement = (problem: any) => {
+    setProblemStatement(problem.description);
     setSelectedProblem(problem);
     setIsProblemDropdownOpen(false);
   };
@@ -1195,7 +1197,6 @@ const TeamOnboarding = () => {
                             ))}
                           </ul>
                         </div>
-
                       </div>
                       <Link href="/">
                         <motion.button

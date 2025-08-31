@@ -90,21 +90,7 @@ export default function CountdownClock({ onTimeUp }: CountdownClockProps) {
           </div>
         </motion.div>
 
-        {/* Bypass Button for Testing */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="mt-8"
-        >
-          <button
-            onClick={() => onTimeUp()}
-            className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 border border-red-500/30 shadow-lg"
-          >
-            🚀 Bypass Countdown (Testing Only)
-          </button>
-          <p className="text-xs text-gray-500 mt-2">Click this button to test the registration form</p>
-        </motion.div>
+
 
         {/* Floating particles background */}
         <div className="fixed inset-0 pointer-events-none">
