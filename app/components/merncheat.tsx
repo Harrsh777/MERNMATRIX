@@ -14,11 +14,11 @@ const ParticleBackground = () => {
   const particles = useMemo(() => 
     Array.from({ length: 15 }, (_, i) => ({
       id: i,
-      size: Math.random() * 60 + 30,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      duration: Math.random() * 15 + 20,
-      delay: Math.random() * 5
+      size: 30 + (i * 3) % 60, // Deterministic size based on index
+      x: (i * 7) % 100, // Deterministic x position
+      y: (i * 11) % 100, // Deterministic y position
+      duration: 20 + (i * 2) % 15, // Deterministic duration
+      delay: (i * 0.5) % 5 // Deterministic delay
     })), []
   );
 
@@ -36,8 +36,8 @@ const ParticleBackground = () => {
             left: `${particle.x}%`,
           }}
           animate={{
-            x: [0, Math.random() * 40 - 20],
-            y: [0, Math.random() * 40 - 20],
+            x: [0, (particle.id % 3 - 1) * 20], // Deterministic movement
+            y: [0, (particle.id % 2) * 20 - 10], // Deterministic movement
             scale: [1, 1.2, 1],
           }}
           transition={{
@@ -56,32 +56,32 @@ const ParticleBackground = () => {
 // Enhanced Floating Elements with better performance
 const FloatingElements = () => {
   const icons = useMemo(() => [
-    { Icon: SiMongodb, color: 'text-green-400', delay: 0 },
-    { Icon: SiExpress, color: 'text-gray-300', delay: 1 },
-    { Icon: SiReact, color: 'text-blue-400', delay: 2 },
-    { Icon: SiNodedotjs, color: 'text-green-500', delay: 3 },
-    { Icon: SiTypescript, color: 'text-blue-500', delay: 4 },
-    { Icon: SiTailwindcss, color: 'text-cyan-400', delay: 5 }
+    { Icon: SiMongodb, color: 'text-green-400', delay: 0, index: 0 },
+    { Icon: SiExpress, color: 'text-gray-300', delay: 1, index: 1 },
+    { Icon: SiReact, color: 'text-blue-400', delay: 2, index: 2 },
+    { Icon: SiNodedotjs, color: 'text-green-500', delay: 3, index: 3 },
+    { Icon: SiTypescript, color: 'text-blue-500', delay: 4, index: 4 },
+    { Icon: SiTailwindcss, color: 'text-cyan-400', delay: 5, index: 5 }
   ], []);
   
   return (
     <div className="absolute inset-0 overflow-hidden -z-10">
-      {icons.map(({ Icon, color, delay }, i) => (
+      {icons.map(({ Icon, color, delay, index }) => (
         <motion.div
-          key={i}
+          key={index}
           className={`absolute ${color} opacity-20`}
           style={{
-            fontSize: Math.random() * 50 + 30,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
+            fontSize: 30 + (index * 7) % 50, // Deterministic font size
+            top: `${(index * 17) % 100}%`, // Deterministic top position
+            left: `${(index * 23) % 100}%`, // Deterministic left position
           }}
           animate={{
-            y: [0, Math.random() * 30 - 15],
+            y: [0, (index % 2) * 20 - 10], // Deterministic movement
             rotate: [0, 360],
             scale: [1, 1.1, 1],
           }}
           transition={{
-            duration: Math.random() * 15 + 20,
+            duration: 20 + (index * 3) % 15, // Deterministic duration
             delay: delay * 0.5,
             repeat: Infinity,
             repeatType: "loop",
