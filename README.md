@@ -1,123 +1,168 @@
 # MERN Matrix Club Website
 
-A modern, interactive website for the MERN Matrix Club featuring stunning animations, 3D graphics, and a responsive design.
+A modern, responsive website for the MERN Matrix Club built with Next.js, TypeScript, Tailwind CSS, and Framer Motion.
 
-## Features
+## 🚀 Features
 
-- 🎨 Modern UI with Framer Motion animations
-- 🌟 Interactive 3D background with Three.js
-- 📱 Fully responsive design
-- ⚡ Built with Next.js 15 and React 19
-- 🎯 TypeScript for type safety
-- 🎨 Tailwind CSS for styling
+- **Responsive Design**: Optimized for all screen sizes (mobile, tablet, desktop)
+- **Modern UI/UX**: Beautiful animations and interactions using Framer Motion
+- **Performance Optimized**: Next.js Image optimization and lazy loading
+- **Dark Theme**: Elegant dark purple and black color scheme
+- **Interactive Components**: Carousel, animations, and smooth transitions
+- **SEO Ready**: Meta tags and proper semantic HTML structure
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 15, React 19, TypeScript
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
 - **Styling**: Tailwind CSS
-- **Animations**: Framer Motion, GSAP
-- **3D Graphics**: Three.js, @react-three/fiber
-- **Icons**: React Icons, Tabler Icons
+- **Animations**: Framer Motion
+- **Icons**: React Icons
 - **Deployment**: Vercel
 
-## Getting Started
+## 📱 Responsive Breakpoints
+
+- **Mobile**: < 640px
+- **Tablet**: 640px - 1024px  
+- **Desktop**: > 1024px
+
+## 🚀 Deployment to Vercel
 
 ### Prerequisites
+- Vercel account
+- GitHub repository connected to Vercel
 
-- Node.js 18+ 
-- npm 8+
+### Steps
+1. **Push to GitHub**: Ensure all changes are committed and pushed
+2. **Vercel Dashboard**: Go to your Vercel dashboard
+3. **Import Project**: Import your GitHub repository
+4. **Environment Variables**: Add any required environment variables
+5. **Deploy**: Click deploy and wait for build completion
 
-### Installation
+### Build Settings
+- **Framework Preset**: Next.js
+- **Build Command**: `npm run build` (default)
+- **Output Directory**: `.next` (default)
+- **Install Command**: `npm install` (default)
 
-1. Clone the repository:
-```bash
-git clone https://github.com/Harrsh777/MERNMATRIX.git
-cd MERNMATRIX
+### Environment Variables (if needed)
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-2. Install dependencies:
+## 🔧 Local Development
+
+### Installation
 ```bash
 npm install
 ```
 
-3. Run the development server:
+### Development Server
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Deployment
-
-### Vercel Deployment
-
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Vercel will automatically detect Next.js and deploy
-
-### Environment Variables
-
-No environment variables are required for basic functionality.
-
-### Build Configuration
-
-The project includes optimized build settings:
-- `.npmrc` with network retry settings for Vercel
-- `vercel.json` with build configuration
-- Optimized package imports for better performance
-
-## Troubleshooting
-
-### Build Errors
-
-If you encounter build errors:
-
-1. **Clear cache**: Delete `.next` folder and `node_modules`
-2. **Reinstall dependencies**: `npm ci`
-3. **Check Node version**: Ensure you're using Node.js 18+
-
-### SSR Issues
-
-The project includes proper client-side guards for all browser APIs:
-- All `window` access is protected with `typeof window !== 'undefined'`
-- Components using browser APIs are marked with `"use client"`
-
-### Network Issues on Vercel
-
-The `.npmrc` file includes:
-- Network retry settings
-- Extended timeouts
-- Registry configuration
-
-## Project Structure
-
-```
-mern/
-├── app/                    # Next.js 13+ app directory
-│   ├── components/        # Reusable components
-│   ├── globals.css       # Global styles
-│   ├── layout.tsx        # Root layout
-│   └── page.tsx          # Home page
-├── components/            # Shared components
-│   ├── ui/               # UI components
-│   └── magicui/          # Magic UI components
-├── lib/                   # Utility functions
-├── hooks/                 # Custom React hooks
-└── public/                # Static assets
+### Build
+```bash
+npm run build
 ```
 
-## Contributing
+### Production Preview
+```bash
+npm run start
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+## 📁 Project Structure
 
-## License
+```
+├── app/                    # Next.js app directory
+│   ├── components/         # Reusable components
+│   ├── dashboard/          # Dashboard page
+│   ├── events/             # Events page
+│   ├── hackathon-details/  # Hackathon details page
+│   ├── Ideation/           # Ideation page
+│   ├── join/               # Join page
+│   ├── login/              # Login page
+│   ├── signup/             # Signup page
+│   ├── team/               # Team page
+│   ├── globals.css         # Global styles
+│   ├── layout.tsx          # Root layout
+│   └── page.tsx            # Home page
+├── components/              # Shared components
+│   ├── ui/                 # UI components
+│   └── magicui/            # Magic UI components
+├── lib/                     # Utility functions
+├── hooks/                   # Custom React hooks
+├── public/                  # Static assets
+└── package.json            # Dependencies
+```
+
+## 🎨 Design System
+
+### Colors
+- **Primary**: Purple (#9333EA)
+- **Secondary**: Pink (#EC4899)
+- **Background**: Black (#000000) to Purple (#1E0345)
+- **Text**: White (#FFFFFF) to Gray (#E0E0E0)
+
+### Typography
+- **Font Family**: Poppins
+- **Headings**: Bold weights (600, 700)
+- **Body**: Regular weight (400, 500)
+
+### Spacing
+- **Mobile**: 16px base spacing
+- **Tablet**: 24px base spacing
+- **Desktop**: 32px base spacing
+
+## 📱 Mobile-First Approach
+
+The website is built with a mobile-first approach ensuring:
+- Touch-friendly interactions
+- Optimized images for mobile
+- Responsive navigation
+- Proper viewport settings
+- Mobile-optimized carousels
+
+## 🚀 Performance Optimizations
+
+- **Image Optimization**: Next.js Image component with proper sizing
+- **Lazy Loading**: Images load only when needed
+- **Code Splitting**: Automatic route-based code splitting
+- **Minification**: Production builds are minified
+- **Caching**: Proper cache headers for static assets
+
+## 🔍 SEO & Accessibility
+
+- **Meta Tags**: Proper title, description, and Open Graph tags
+- **Semantic HTML**: Proper heading hierarchy and semantic elements
+- **Alt Text**: Descriptive alt text for all images
+- **ARIA Labels**: Proper accessibility labels for interactive elements
+- **Keyboard Navigation**: Full keyboard navigation support
+
+## 🐛 Known Issues & Solutions
+
+### Image Blur Issue (Fixed)
+- **Problem**: First 3 team member images appeared blurred
+- **Solution**: Updated BlurImage component to use Next.js Image with proper priority loading
+
+### Server-Side Rendering (Fixed)
+- **Problem**: ReferenceError: index is not defined
+- **Solution**: Added proper index prop handling in BlurImage component
+
+## 📞 Support
+
+For any issues or questions:
+1. Check the known issues section above
+2. Review the console for error messages
+3. Ensure all dependencies are properly installed
+4. Verify environment variables are set correctly
+
+## 📄 License
 
 This project is licensed under the MIT License.
 
-## Support
+---
 
-For support, please open an issue on GitHub or contact the development team.
+**Ready for Production Deployment! 🚀**

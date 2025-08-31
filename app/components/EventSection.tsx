@@ -1,279 +1,414 @@
-"use client"
-import React, { useState, useEffect, useCallback } from 'react';
+"use client";
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCalendarAlt, FaUsers, FaImage, FaChevronLeft, FaChevronRight, FaExternalLinkAlt, FaArrowRight } from 'react-icons/fa';
+import { 
+  FaCalendarAlt, 
+  FaUsers, 
+  FaTrophy, 
+  FaMoneyBillWave, 
+  FaBook, 
+  FaLightbulb, 
+  FaUserTie, 
+  FaChevronDown, 
+  FaChevronUp,
+  FaArrowLeft,
+  FaDiscord,
+  FaTwitter,
+  FaLinkedin,
+  FaInstagram,
+  FaMapMarkerAlt,
+  FaClock,
+  FaCode,
+  FaRocket,
+  FaRegStar,
+  FaStar,
+  FaMusic,
+  FaUserFriends,
+  FaCamera,
+  FaGift,
+  FaBrain,
+  FaGlobe,
+  FaLaptop,
+  FaTshirt,
+  FaUtensils
+} from 'react-icons/fa';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const EventsSection = () => {
+const EventSection: React.FC = () => {
+  const [activeEvent, setActiveEvent] = useState<string>('dawn-of-code');
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [scrollY, setScrollY] = useState<number>(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setScrollY(currentScrollY);
+      setIsScrolled(currentScrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const events = [
     {
-      id: 3,
-      title: "DAWN OF HACKATHON",
-      subtitle: "24-Hour Coding Marathon",
-      description: "Our flagship hackathon event brought together developers, designers, and innovators to build solutions for real-world problems. With mentors from top tech companies and exciting prizes, participants pushed their limits in this round-the-clock coding challenge.",
-      date: "January 20-21, 2024",
-      attendees: "300+",
-      images: [
-        "https://images.unsplash.com/photo-1550439062-609e1531270e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-      ],
-      color: "#FF5757",
-      hasDetails: true
+      id: 'dawn-of-code',
+      title: 'DAWN OF CODE',
+      subtitle: 'Inter-college Hackathon',
+      date: 'September 04-25, 2025',
+      time: 'Month-long Event',
+      venue: 'VIT Bhopal',
+      image: '/Dawn Of hackathon.jpg',
+      color: 'from-green-500 to-emerald-500',
+      bgColor: 'from-green-500/20 to-emerald-500/20',
+      borderColor: 'border-green-500/30',
+      icon: FaCode,
+      description: 'Get ready to code, innovate, and hack your way to glory! Mern Stack Club at VIT Bhopal proudly presents Dawn of Code, an Inter-college electrifying hackathon designed to challenge your skills, spark creativity, and connect you with like-minded tech enthusiasts.',
+      highlights: ['₹40K+ Prize Pool', 'Government Internships', 'Teams of 2-5', 'Entry Fee: ₹120'],
+      link: '/hackathon-details'
     },
     {
-      id: 1,
-      title: "DANCE",
-      subtitle: "Rhythm Revolution",
-      description: "Our annual dance showcase brought together the best urban dance crews for an electrifying night of movement and music. Participants enjoyed workshops and an open dance competition.",
-      date: "November 15, 2023",
-      attendees: "240+",
-      images: [
-        "https://images.unsplash.com/photo-1547153760-18fc86324498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1508700929628-666bc8bd84ea?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-      ],
-      color: "#A020F0",
-      hasDetails: false
+      id: 'elegance-disguise',
+      title: 'ELEGANCE IN DISGUISE',
+      subtitle: 'Prom Day Event',
+      date: '20th February',
+      time: '12:00 PM – 3:00 PM',
+      venue: 'AB416',
+      image: '/Dance.jpg',
+      color: 'from-purple-500 to-pink-500',
+      bgColor: 'from-purple-500/20 to-pink-500/20',
+      borderColor: 'border-purple-500/30',
+      icon: FaMusic,
+      description: 'Get ready for a night of style, music, and unforgettable memories at "Elegance in Disguise," hosted by MERN MATRIX CLUB! This Prom Day event is your chance to dress up, dance, and celebrate in style.',
+      highlights: ['Live DJ & Dance Floor', 'Dance-Off & Ramp Walk', 'Polaroid & Selfie Booths', 'Delicious Treats & Prizes']
     },
     {
-      id: 2,
-      title: "BUILDAIENGINE",
-      subtitle: "Future of AI Development",
-      description: "A hands-on workshop where participants built their own AI engines from scratch. Covered neural networks, machine learning pipelines, and deployment strategies with industry experts.",
-      date: "December 3-5, 2023",
-      attendees: "180+",
-      images: [
-        "https://images.unsplash.com/photo-1677442135135-416f8aa26a5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        "https://images.unsplash.com/photo-1573164713714-d95e436ab290?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-      ],
-      color: "#00FFFF",
-      hasDetails: false
+      id: 'mern-ai-hackathon',
+      title: 'MERNxAI HACKATHON',
+      subtitle: 'Web Development Challenge',
+      date: 'March 29-30',
+      time: 'Online + Offline',
+      venue: 'AB1 Auditorium',
+      image: '/BuildAi1.jpg',
+      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'from-blue-500/20 to-cyan-500/20',
+      borderColor: 'border-blue-500/30',
+      icon: FaBrain,
+      description: 'Showcase your web development skills and compete for paid internship opportunities! Join the MERNxAI Hackathon and build something amazing.',
+      highlights: ['Paid Internship Opportunity', 'Webinar with Global Tech Leaders', 'Gift Coupons & Trophies', 'Free Lunch & Dinner']
     }
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
-  const [erroredImageByUrl, setErroredImageByUrl] = useState<Record<string, boolean>>({});
+  const currentEvent = events.find(event => event.id === activeEvent);
 
-  const getSafeImageSrc = useCallback((url: string) => {
-    return erroredImageByUrl[url] ? "/vercel.svg" : url;
-  }, [erroredImageByUrl]);
-
-  const goToNext = useCallback(() => {
-    setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % events.length);
-  }, [events.length]);
-
-  const goToPrev = useCallback(() => {
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + events.length) % events.length);
-  }, [events.length]);
-
-  const goToIndex = useCallback((index: number) => {
-    setDirection(index > currentIndex ? 1 : -1);
-    setCurrentIndex(index);
-  }, [currentIndex]);
-
-  const variants = {
-    enter: (direction: number) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-      scale: 0.95
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1
-    },
-    exit: (direction: number) => ({
-      x: direction < 0 ? 300 : -300,
-      opacity: 0,
-      scale: 0.95
-    })
+  // Dynamic border color based on scroll position and active event
+  const getDynamicBorderColor = () => {
+    if (scrollY < 100) return 'border-gray-600/30';
+    
+    const eventIndex = events.findIndex(event => event.id === activeEvent);
+    if (eventIndex === 0) return 'border-green-500/50';
+    if (eventIndex === 1) return 'border-purple-500/50';
+    if (eventIndex === 2) return 'border-blue-500/50';
+    
+    return 'border-gray-600/30';
   };
 
   return (
-    <section className="relative py-12 md:py-16 bg-gradient-to-b from-[#0A0118] to-[#1E0345] overflow-hidden">
-      {/* Simplified decorative elements for better performance */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20">
-        <div className="absolute top-20 left-10 w-40 h-40 rounded-full bg-purple-600 blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-cyan-500 blur-3xl"></div>
+    <div className="min-h-[80vh] bg-gradient-to-b from-black via-purple-950 to-black text-white overflow-hidden relative">
+      {/* Animated Background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-purple-950/40 to-black/60"></div>
+        
+        {/* Floating geometric shapes */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-purple-500/10 to-transparent blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-gradient-to-tl from-purple-600/15 to-transparent blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-gradient-to-r from-purple-400/20 to-transparent blur-xl animate-pulse delay-2000"></div>
+        
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full" style={{
+            backgroundImage: `linear-gradient(rgba(147, 51, 234, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(147, 51, 234, 0.1) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px'
+          }}></div>
+        </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="text-center mb-10 md:mb-14"
-        >
-          <motion.span 
-            className="inline-block px-3 py-1 text-xs md:text-sm font-semibold text-[#A020F0] bg-[#A020F0]/10 rounded-full mb-3 border border-[#00FFFF]/20"
-            whileHover={{ 
-              scale: 1.05,
-              boxShadow: "0 0 15px rgba(160, 32, 240, 0.5)"
-            }}
-          >
-            PAST EVENTS
-          </motion.span>
-          <h2 className="text-3xl md:text-4xl font-bold text-[#F0F0F0] mb-3">
-            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#A020F0] to-[#00FFFF]">Community</span> Highlights
-          </h2>
-          <p className="text-base md:text-lg text-[#E0E0E0] max-w-2xl mx-auto">
-            Relive the unforgettable moments from our most popular events
-          </p>
-        </motion.div>
-
-        <div className="relative h-[580px] md:h-[620px] lg:h-[650px]">
-          <AnimatePresence custom={direction} initial={false}>
-            <motion.div
-              key={currentIndex}
-              custom={direction}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.3 },
-                scale: { duration: 0.4 }
-              }}
-              className="absolute inset-0"
+      {/* Header */}
+      <motion.header 
+        className={`fixed top-0 w-full py-3 px-4 sm:px-6 lg:px-8 z-50 transition-all duration-500 ${isScrolled ? 'bg-black/90 backdrop-blur-md border-b border-purple-500/30' : 'bg-transparent'}`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <Link href="/">
+            <motion.button
+              whileHover={{ scale: 1.05, x: -5 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 px-3 py-2 bg-purple-900/50 rounded-lg border border-purple-500/30 hover:border-purple-400 transition-all backdrop-blur-sm"
             >
-              <div className="bg-gradient-to-br from-[#0A0118]/90 via-[#0A0118]/80 to-[#1E0345]/90 backdrop-blur-md rounded-xl md:rounded-2xl overflow-hidden border border-[#1E0345] hover:border-[#A020F0]/40 transition-all duration-500 h-full flex flex-col shadow-lg md:shadow-xl shadow-purple-900/20">
-                <div className="relative h-52 md:h-60 lg:h-72 flex-shrink-0 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10"></div>
-                  <div className="absolute bottom-4 left-4 md:bottom-6 md:left-6 z-20">
-                    <h3 className="text-2xl md:text-3xl font-bold text-white drop-shadow-md">{events[currentIndex].title}</h3>
-                    <p className="text-[#00FFFF] text-base md:text-lg mt-1 font-medium drop-shadow-md">{events[currentIndex].subtitle}</p>
-                  </div>
-                  <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
-                    <motion.div 
-                      className="px-2 py-1 md:px-3 md:py-1 rounded-full text-xs font-semibold text-white"
-                      style={{ backgroundColor: events[currentIndex].color }}
-                      whileHover={{ scale: 1.05 }}
+              <FaArrowLeft className="text-sm" />
+              Back to Home
+            </motion.button>
+          </Link>
+          
+          <motion.h1 
+            className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            MERN Matrix Events
+          </motion.h1>
+        </div>
+      </motion.header>
+
+      {/* Hero Section */}
+      <section className="relative py-16 md:py-20 px-4 sm:px-6 lg:px-8 z-10">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full mb-4 border border-purple-500/30 backdrop-blur-sm"
+          >
+            <FaCalendarAlt className="mr-2" />
+            Upcoming Events
+          </motion.div>
+          
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-5xl font-bold mb-4"
+          >
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-200">EXPLORE OUR</span>{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">EVENTS</span>
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg md:text-xl text-[#E0E0E0] max-w-3xl mx-auto mb-6 leading-relaxed"
+          >
+            From hackathons to cultural events, discover exciting opportunities to learn, compete, and connect with the MERN Matrix community.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Event Navigation */}
+      <section className="relative py-4 px-4 sm:px-6 lg:px-8 z-10">
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            className="flex flex-wrap gap-3 justify-center mb-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            {events.map((event) => (
+              <motion.button
+                key={event.id}
+                onClick={() => setActiveEvent(event.id)}
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className={`px-5 py-2 rounded-xl font-medium transition-all ${
+                  activeEvent === event.id 
+                    ? `bg-gradient-to-r ${event.color} text-white shadow-lg shadow-${event.color.split('-')[1]}-500/30` 
+                    : 'bg-purple-900/50 text-[#E0E0E0] hover:bg-purple-500/20 backdrop-blur-sm border border-purple-500/30'
+                }`}
+              >
+                {event.title}
+              </motion.button>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Event Content */}
+      <section className="relative py-8 px-4 sm:px-6 lg:px-8 z-10">
+        <div className="max-w-7xl mx-auto">
+          <AnimatePresence mode="wait">
+            {currentEvent && (
+              <motion.div
+                key={currentEvent.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className={`bg-black/30 backdrop-blur-md rounded-2xl border p-6 md:p-8 shadow-xl transition-all duration-700 ${getDynamicBorderColor()}`}
+              >
+                {/* Event Header */}
+                <div className="grid lg:grid-cols-2 gap-8 items-center mb-8">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <motion.div
+                      className={`inline-flex items-center px-3 py-2 ${currentEvent.bgColor} rounded-full mb-4 border ${currentEvent.borderColor} backdrop-blur-sm`}
                     >
-                      Featured Event
+                      <currentEvent.icon className="mr-2" />
+                      {currentEvent.subtitle}
                     </motion.div>
-                  </div>
-                  <div className="w-full h-full bg-gray-800 relative">
-                    <Image 
-                      src={getSafeImageSrc(events[currentIndex].images[0])}
-                      alt={events[currentIndex].title}
-                      fill
-                      className="object-cover opacity-90"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                      onError={() => setErroredImageByUrl(prev => ({ ...prev, [events[currentIndex].images[0]]: true }))}
-                      priority={currentIndex === 0}
-                    />
-                  </div>
+                    
+                    <h2 className="text-3xl md:text-4xl font-bold mb-3">
+                      {currentEvent.title}
+                    </h2>
+                    
+                    <p className="text-base text-[#E0E0E0] leading-relaxed mb-4">
+                      {currentEvent.description}
+                    </p>
+                    
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="flex items-center gap-2">
+                        <FaCalendarAlt className="text-purple-400" />
+                        <span className="text-xs">{currentEvent.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaClock className="text-purple-400" />
+                        <span className="text-xs">{currentEvent.time}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaMapMarkerAlt className="text-purple-400" />
+                        <span className="text-xs">{currentEvent.venue}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaUsers className="text-purple-400" />
+                        <span className="text-xs">Open to All</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="relative"
+                  >
+                    <div className="relative group">
+                      <motion.div
+                        whileHover={{ scale: 1.05, rotate: 2 }}
+                        className="relative overflow-hidden rounded-xl"
+                      >
+                        <Image
+                          src={currentEvent.image}
+                          alt={currentEvent.title}
+                          width={400}
+                          height={300}
+                          className="w-full h-60 object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                      </motion.div>
+                      
+                      {/* Floating highlights */}
+                      {currentEvent.id === 'dawn-of-code' && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5 }}
+                          className="absolute -bottom-3 -right-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full shadow-lg text-sm"
+                        >
+                          <FaRocket className="inline mr-1" />
+                          Register Now!
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
                 </div>
 
-                <div className="p-4 md:p-6 flex-grow flex flex-col">
-                  <p className="text-[#E0E0E0] mb-4 md:mb-6 flex-grow text-sm md:text-base leading-relaxed">{events[currentIndex].description}</p>
-                  
-                  <div className="flex flex-col sm:flex-row gap-3 md:gap-4 text-sm text-[#C0C0C0] mb-4 md:mb-6">
-                    <div className="flex items-center gap-2 bg-[#0A0118]/50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-[#1E0345]">
-                      <FaCalendarAlt className="text-[#A020F0] text-sm md:text-base" />
-                      <span className="text-xs md:text-sm">{events[currentIndex].date}</span>
-                    </div>
-                    <div className="flex items-center gap-2 bg-[#0A0118]/50 px-3 py-1.5 md:px-4 md:py-2 rounded-lg border border-[#1E0345]">
-                      <FaUsers className="text-[#00FFFF] text-sm md:text-base" />
-                      <span className="text-xs md:text-sm">{events[currentIndex].attendees} attendees</span>
-                    </div>
-                  </div>
-
-                  {/* Details button for Dawn of Hackathon */}
-                  {events[currentIndex].hasDetails && (
-                    <div className="mb-4 md:mb-6">
-                      <Link href="/events
-                      ">
-                        <motion.button
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#FF5757] to-[#FF8C42] text-white rounded-lg font-medium text-sm md:text-base"
-                        >
-                          View Full Details
-                          <FaArrowRight className="text-xs" />
-                        </motion.button>
-                      </Link>
-                    </div>
-                  )}
-
-                  <div className="flex gap-3 mt-auto">
-                    {events[currentIndex].images.slice(0, 2).map((img, imgIndex) => (
+                {/* Event Highlights */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="mb-6"
+                >
+                  <h3 className="text-xl font-bold mb-4 text-center">✨ Event Highlights</h3>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {currentEvent.highlights.map((highlight, index) => (
                       <motion.div
-                        key={imgIndex}
-                        whileHover={{ scale: 1.05 }}
-                        className="relative h-24 w-24 md:h-32 md:w-32 rounded-lg md:rounded-xl overflow-hidden border-2 border-[#1E0345] flex-shrink-0 group"
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 + index * 0.1 }}
+                        whileHover={{ y: -3, scale: 1.02 }}
+                        className="bg-black/50 p-3 rounded-lg border border-purple-500/30 hover:border-purple-400 transition-all text-center"
                       >
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                          <FaExternalLinkAlt className="text-sm md:text-base" />
-                        </div>
-                        <div className="w-full h-full bg-gray-800 relative">
-                          <Image 
-                            src={getSafeImageSrc(img)} 
-                            alt={`${events[currentIndex].title} ${imgIndex + 1}`}
-                            fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-500"
-                            sizes="(max-width: 768px) 20vw, 15vw"
-                            onError={() => setErroredImageByUrl(prev => ({ ...prev, [img]: true }))}
-                          />
-                        </div>
+                        <div className="text-lg mb-1">🎯</div>
+                        <p className="text-xs text-purple-200">{highlight}</p>
                       </motion.div>
                     ))}
-                    <motion.button 
-                      whileHover={{ scale: 1.05 }}
-                      className="flex items-center justify-center h-24 w-24 md:h-32 md:w-32 rounded-lg md:rounded-xl border-2 border-dashed border-[#1E0345] text-[#C0C0C0] hover:text-[#A020F0] hover:border-[#A020F0] transition-colors flex-shrink-0"
-                    >
-                      <div className="text-center">
-                        <FaImage className="text-xl md:text-2xl mx-auto mb-1" />
-                        <span className="text-xs">View More</span>
-                      </div>
-                    </motion.button>
                   </div>
-                </div>
-              </div>
-            </motion.div>
+                </motion.div>
+
+                {/* Call to Action - Only for Dawn of Code */}
+                {currentEvent.id === 'dawn-of-code' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="text-center mt-6 pt-4 border-t border-purple-500/30"
+                  >
+                    <Link href={currentEvent.link || '#'}>
+                      <motion.button
+                        whileHover={{ scale: 1.05, y: -3 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-green-500/40 transition-all flex items-center gap-2 mx-auto"
+                      >
+                        <FaRocket className="text-lg" />
+                        View Full Details
+                      </motion.button>
+                    </Link>
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
           </AnimatePresence>
-
-          {/* Navigation arrows */}
-          <motion.button
-            whileHover={{ scale: 1.1, backgroundColor: "rgba(160, 32, 240, 0.3)" }}
-            whileTap={{ scale: 0.9 }}
-            onClick={goToPrev}
-            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-[#0A0118]/90 backdrop-blur-md p-2 md:p-3 rounded-full shadow-lg z-20 border border-[#00FFFF]/30 hover:border-[#A020F0] transition-colors"
-            aria-label="Previous event"
-          >
-            <FaChevronLeft className="text-white text-base md:text-xl" />
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.1, backgroundColor: "rgba(160, 32, 240, 0.3)" }}
-            whileTap={{ scale: 0.9 }}
-            onClick={goToNext}
-            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-[#0A0118]/90 backdrop-blur-md p-2 md:p-3 rounded-full shadow-lg z-20 border border-[#00FFFF]/30 hover:border-[#A020F0] transition-colors"
-            aria-label="Next event"
-          >
-            <FaChevronRight className="text-white text-base md:text-xl" />
-          </motion.button>
         </div>
+      </section>
 
-        {/* Event indicators */}
-        <div className="flex justify-center gap-2 md:gap-3 mt-6 md:mt-8">
-          {events.map((event, index) => (
-            <motion.button
-              key={index}
-              onClick={() => goToIndex(index)}
-              whileHover={{ scale: 1.2 }}
-              className={`h-2 md:h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'w-6 md:w-8 bg-[#A020F0]' : 'w-2 md:w-3 bg-[#1E0345] hover:bg-[#00FFFF]'}`}
-              aria-label={`Go to ${event.title} event`}
-            />
-          ))}
+      {/* Footer */}
+      <footer className="relative py-8 px-4 sm:px-6 lg:px-8 border-t border-purple-500/30 z-10">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.div 
+            className="flex justify-center gap-4 mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+          >
+            {[
+              { icon: <FaInstagram className="text-lg" />, color: "#E1306C" },
+              { icon: <FaLinkedin className="text-lg" />, color: "#0077B5" },
+              { icon: <FaDiscord className="text-lg" />, color: "#5865F2" },
+              { icon: <FaTwitter className="text-lg" />, color: "#1DA1F2" }
+            ].map((social, index) => (
+              <motion.a 
+                key={index}
+                whileHover={{ scale: 1.2, y: -3, backgroundColor: social.color }}
+                href="#" 
+                className="p-2 rounded-full bg-purple-900/50 transition-all border border-purple-500/30 backdrop-blur-sm"
+              >
+                {social.icon}
+              </motion.a>
+            ))}
+          </motion.div>
+          <motion.p 
+            className="text-[#A0A0A0] text-xs"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            © 2024 MERN Matrix Club. All rights reserved.
+          </motion.p>
         </div>
-      </div>
-    </section>
+      </footer>
+    </div>
   );
 };
 
-export default EventsSection;
+export default EventSection;

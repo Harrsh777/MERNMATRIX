@@ -102,27 +102,27 @@ const HomePage = () => {
   const developers = [
     {
       id: 1,
-      name: "Shreyansh",
+      name: "Shreyash Dubey",
       designation: "President",
-      image: "https://randomuser.me/api/portraits/women/44.jpg"
+      image: "/President.JPG"
     },
     {
       id: 2,
       name: "Arushi Puri",
       designation: "Vice President",
-      image: "https://randomuser.me/api/portraits/men/32.jpg"
+      image: "/Vice-President.JPG"
     },
     {
       id: 3,
       name: "Harsh Srivastava",
-      designation: "Technical Lead",
-      image: "https://randomuser.me/api/portraits/women/68.jpg"
+      designation: "Technical Team Lead",
+      image: "/Harsh.jpeg"
     },
     {
       id: 4,
-      name: "Ashhar",
-      designation: "Core Team",
-      image: "https://randomuser.me/api/portraits/men/75.jpg"
+      name: "Mohd. Ashhar Khan",
+      designation: "Operations Manager",
+      image: "/Operations Manager Mohd. Ashhar Khan.jpg"
     }
   ];
 

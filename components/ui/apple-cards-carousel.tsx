@@ -93,7 +93,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
     >
       <div className="relative w-full">
         <div
-          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] md:py-20"
+          className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-6 md:py-10 lg:py-20 scrollbar-hide"
           ref={carouselRef}
           onScroll={checkScrollability}
         >
@@ -211,7 +211,7 @@ export const Card = ({
               exit={{ opacity: 0 }}
               ref={containerRef}
               layoutId={layout ? `card-${card.title}` : undefined}
-              className="relative z-[60] mx-auto my-10 h-fit max-w-5xl rounded-3xl bg-white p-4 font-sans md:p-10 dark:bg-neutral-900"
+              className="relative z-[60] mx-auto my-4 md:my-10 h-fit max-w-4xl md:max-w-5xl rounded-2xl md:rounded-3xl bg-white p-4 font-sans md:p-10 dark:bg-neutral-900"
             >
               <button
                 className="sticky top-4 right-0 ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-black dark:bg-white"
@@ -221,17 +221,17 @@ export const Card = ({
               </button>
               <motion.p
                 layoutId={layout ? `category-${card.title}` : undefined}
-                className="text-base font-medium text-black dark:text-white"
+                className="text-sm md:text-base font-medium text-black dark:text-white"
               >
                 {card.category}
               </motion.p>
               <motion.p
                 layoutId={layout ? `title-${card.title}` : undefined}
-                className="mt-4 text-2xl font-semibold text-neutral-700 md:text-5xl dark:text-white"
+                className="mt-2 md:mt-4 text-xl md:text-2xl lg:text-5xl font-semibold text-neutral-700 dark:text-white"
               >
                 {card.title}
               </motion.p>
-              <div className="py-10">{card.content}</div>
+              <div className="py-6 md:py-10">{card.content}</div>
             </motion.div>
           </div>
         )}
@@ -239,19 +239,19 @@ export const Card = ({
       <motion.button
         layoutId={layout ? `card-${card.title}` : undefined}
         onClick={handleOpen}
-        className="relative z-10 flex h-80 w-56 flex-col items-start justify-start overflow-hidden rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900"
+        className="relative z-10 flex h-64 w-48 flex-col items-start justify-start overflow-hidden rounded-2xl md:rounded-3xl bg-gray-100 md:h-[40rem] md:w-96 dark:bg-neutral-900 shadow-lg hover:shadow-xl transition-shadow duration-300"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 z-30 h-full bg-gradient-to-b from-black/50 via-transparent to-transparent" />
-        <div className="relative z-40 p-8">
+        <div className="relative z-40 p-4 md:p-8">
           <motion.p
             layoutId={layout ? `category-${card.category}` : undefined}
-            className="text-left font-sans text-sm font-medium text-white md:text-base"
+            className="text-left font-sans text-xs md:text-sm lg:text-base font-medium text-white"
           >
             {card.category}
           </motion.p>
           <motion.p
             layoutId={layout ? `title-${card.title}` : undefined}
-            className="mt-2 max-w-xs text-left font-sans text-xl font-semibold [text-wrap:balance] text-white md:text-3xl"
+            className="mt-1 md:mt-2 max-w-xs text-left font-sans text-lg md:text-xl lg:text-3xl font-semibold [text-wrap:balance] text-white"
           >
             {card.title}
           </motion.p>
@@ -261,6 +261,7 @@ export const Card = ({
           alt={card.title}
           fill
           className="absolute inset-0 z-10 object-cover"
+          index={index}
         />
       </motion.button>
     </>
@@ -274,27 +275,28 @@ export const BlurImage = ({
   className,
   alt,
   fill,
+  index = 0,
   ...rest
-}: ImageProps) => {
+}: ImageProps & { index?: number }) => {
   const [isLoading, setLoading] = useState(true);
   
   // Filter out Next.js specific props that shouldn't be passed to img element
   const { blurDataURL, placeholder, ...imgProps } = rest;
   
   return (
-    <img
+    <Image
       className={cn(
-        "h-full w-full transition duration-300",
-        isLoading ? "blur-sm" : "blur-0",
+        "h-full w-full transition duration-300 object-cover",
         className,
       )}
       onLoad={() => setLoading(false)}
       src={src as string}
-      width={width}
-      height={height}
-      loading="lazy"
-      decoding="async"
-      alt={alt ? alt : "Background of a beautiful view"}
+      width={width || 400}
+      height={height || 600}
+      loading={index < 3 ? "eager" : "lazy"}
+      priority={index < 3}
+      alt={alt ? alt : "Team member photo"}
+      quality={90}
       {...imgProps}
     />
   );

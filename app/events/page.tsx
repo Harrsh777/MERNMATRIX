@@ -21,15 +21,24 @@ import {
   FaCode,
   FaRocket,
   FaRegStar,
-  FaStar
+  FaStar,
+  FaMusic,
+  FaUserFriends,
+  FaCamera,
+  FaGift,
+  FaBrain,
+  FaGlobe,
+  FaLaptop,
+  FaTshirt,
+  FaUtensils
 } from 'react-icons/fa';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const HackathonDetails: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>('overview');
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+const EventsPage: React.FC = () => {
+  const [activeEvent, setActiveEvent] = useState<string>('dawn-of-code');
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [hoveredEvent, setHoveredEvent] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,92 +46,95 @@ const HackathonDetails: React.FC = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index);
-  };
-
-  const sponsors = [
-    { name: "TechCorp", tier: "Platinum", logo: "/placeholder-sponsor1.png" },
-    { name: "DevCloud", tier: "Gold", logo: "/placeholder-sponsor2.png" },
-    { name: "CodeFund", tier: "Silver", logo: "/placeholder-sponsor3.png" },
-    { name: "DataWorks", tier: "Silver", logo: "/placeholder-sponsor4.png" },
-    { name: "AI Solutions", tier: "Bronze", logo: "/placeholder-sponsor5.png" },
-  ];
-
-  const faqs = [
+  const events = [
     {
-      question: "Who can participate in the hackathon?",
-      answer: "The hackathon is open to all developers, designers, and innovators aged 18 and above. Students, professionals, and hobbyists are all welcome to join. Teams can have up to 4 members."
+      id: 'dawn-of-code',
+      title: 'DAWN OF CODE',
+      subtitle: 'Inter-college Hackathon',
+      date: 'September 04-25, 2025',
+      time: 'Month-long Event',
+      venue: 'VIT Bhopal',
+      image: '/deployx.png',
+      color: 'from-green-500 to-emerald-500',
+      bgColor: 'from-green-500/20 to-emerald-500/20',
+      borderColor: 'border-green-500/30',
+      icon: FaCode,
+      description: 'Get ready to code, innovate, and hack your way to glory! Mern Stack Club at VIT Bhopal proudly presents Dawn of Code, an Inter-college electrifying hackathon designed to challenge your skills, spark creativity, and connect you with like-minded tech enthusiasts.',
+      highlights: ['₹40K+ Prize Pool', 'Government Internships', 'Teams of 2-5', 'Entry Fee: ₹120'],
+      link: '/hackathon-details'
     },
     {
-      question: "What should I bring to the event?",
-      answer: "Please bring your laptop, charger, any hardware you plan to use, and a valid ID. We'll provide food, drinks, WiFi, and a creative environment for you to build in."
+      id: 'elegance-disguise',
+      title: 'ELEGANCE IN DISGUISE',
+      subtitle: 'Prom Day Event',
+      date: '20th February',
+      time: '12:00 PM – 3:00 PM',
+      venue: 'AB416',
+      image: '/Dance.jpg',
+      color: 'from-purple-500 to-pink-500',
+      bgColor: 'from-purple-500/20 to-pink-500/20',
+      borderColor: 'border-purple-500/30',
+      icon: FaMusic,
+      description: 'Get ready for a night of style, music, and unforgettable memories at "Elegance in Disguise," hosted by MERN MATRIX CLUB! This Prom Day event is your chance to dress up, dance, and celebrate in style.',
+      highlights: ['Live DJ & Dance Floor', 'Dance-Off & Ramp Walk', 'Polaroid & Selfie Booths', 'Delicious Treats & Prizes'],
+      features: [
+        { icon: FaMusic, text: 'Live DJ & Open Dance Floor – Groove to electrifying beats!' },
+        { icon: FaUserFriends, text: 'Dance-Off & Ramp Walk – Show off your moves & walk the runway.' },
+        { icon: FaCamera, text: 'Polaroid & Selfie Booths – Capture your best moments.' },
+        { icon: FaUtensils, text: 'Delicious Treats & Drinks – Enjoy tasty refreshments.' },
+        { icon: FaGift, text: 'Exciting Prizes & Souvenirs – Win exclusive rewards!' }
+      ],
+      dressCode: {
+        gents: 'Formal/semi-formal with a classy touch',
+        ladies: 'Elegant & stylish attire'
+      }
     },
     {
-      question: "Do I need to have a team to participate?",
-      answer: "No, you can register as an individual and we'll help you form a team during the team formation session. However, teams can have a maximum of 4 members."
-    },
-    {
-      question: "What are the judging criteria?",
-      answer: "Projects will be judged based on creativity (25%), technical complexity (25%), design/UX (25%), and potential impact (25%). There will also be special category prizes."
-    },
-    {
-      question: "Will there be mentorship available?",
-      answer: "Yes, we'll have mentors from our sponsor companies and industry experts available throughout the event to help you with technical challenges, idea validation, and presentation skills."
+      id: 'mern-ai-hackathon',
+      title: 'MERNxAI HACKATHON',
+      subtitle: 'Web Development Challenge',
+      date: 'March 29-30',
+      time: 'Online + Offline',
+      venue: 'AB1 Auditorium',
+      image: '/plotify.png',
+      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'from-blue-500/20 to-cyan-500/20',
+      borderColor: 'border-blue-500/30',
+      icon: FaBrain,
+      description: 'Showcase your web development skills and compete for paid internship opportunities! Join the MERNxAI Hackathon and build something amazing.',
+      highlights: ['Paid Internship Opportunity', 'Webinar with Global Tech Leaders', 'Gift Coupons & Trophies', 'Free Lunch & Dinner'],
+      schedule: [
+        { day: 'March 29 (Online Round)', time: '9:00 AM – 8:00 PM', event: 'Ideation & Shortlisting' },
+        { day: 'March 30 (Offline Round)', time: '8:30 AM – 8:00 PM', event: 'Main Hackathon at AB1 Auditorium' },
+        { day: 'April 1st', time: 'TBD', event: 'Prize Distribution Ceremony' }
+      ],
+      details: {
+        teamSize: '2 to 5 members',
+        registrationFee: '₹100 per person'
+      }
     }
   ];
 
-  const schedule = [
-    { time: "9:00 AM", event: "Registration & Breakfast", day: "Day 1" },
-    { time: "10:00 AM", event: "Opening Ceremony & Keynote", day: "Day 1" },
-    { time: "11:00 AM", event: "Hacking Begins!", day: "Day 1" },
-    { time: "12:30 PM", event: "Lunch", day: "Day 1" },
-    { time: "2:00 PM", event: "Workshop: API Integration", day: "Day 1" },
-    { time: "7:00 PM", event: "Dinner", day: "Day 1" },
-    { time: "12:00 AM", event: "Midnight Snacks", day: "Day 1" },
-    { time: "9:00 AM", event: "Breakfast", day: "Day 2" },
-    { time: "12:00 PM", event: "Hacking Ends / Submission Deadline", day: "Day 2" },
-    { time: "1:00 PM", event: "Lunch & Project Demos", day: "Day 2" },
-    { time: "3:00 PM", event: "Closing Ceremony & Awards", day: "Day 2" },
-  ];
-
-  const prizes = [
-    { place: "1st", amount: "$10,000", description: "Grand Prize" },
-    { place: "2nd", amount: "$5,000", description: "Runner Up" },
-    { place: "3rd", amount: "$2,500", description: "Second Runner Up" },
-    { place: "Best Design", amount: "$1,500", description: "Most intuitive UI/UX" },
-    { place: "Most Innovative", amount: "$1,500", description: "Most creative solution" },
-  ];
+  const currentEvent = events.find(event => event.id === activeEvent);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-[#0A0118] to-[#1E0345] text-white overflow-hidden relative">
-      {/* Simple aesthetic background */}
+      {/* Animated Background */}
       <div className="fixed inset-0 z-0">
-        {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-[#0A0118]/30 to-[#1E0345]/40"></div>
         
-        {/* Elegant geometric shapes */}
-        <div className="absolute top-0 left-0 w-full h-full">
-          {/* Large subtle circle */}
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-[#4A049D]/10 to-transparent blur-3xl"></div>
-          
-          {/* Medium circle */}
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-gradient-to-tl from-[#2D1B69]/15 to-transparent blur-2xl"></div>
-          
-          {/* Small accent circle */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-gradient-to-r from-[#A855F7]/20 to-transparent blur-xl"></div>
-        </div>
+        {/* Floating geometric shapes */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-green-500/10 to-transparent blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-gradient-to-tl from-purple-500/15 to-transparent blur-2xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-gradient-to-r from-blue-400/20 to-transparent blur-xl animate-pulse delay-2000"></div>
         
-        {/* Subtle grid pattern */}
+        {/* Grid pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="w-full h-full" style={{
-            backgroundImage: `linear-gradient(rgba(168, 85, 247, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(168, 85, 247, 0.1) 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)`,
             backgroundSize: '50px 50px'
           }}></div>
         </div>
@@ -130,41 +142,12 @@ const HackathonDetails: React.FC = () => {
 
       {/* Header */}
       <motion.header 
-        className={`fixed top-0 w-full py-4 px-4 sm:px-6 lg:px-8 z-50 transition-all duration-300 ${isScrolled ? 'bg-[#0A0118]/90 backdrop-blur-md border-b border-[#4A049D]/30' : 'bg-transparent'}`}
+        className={`fixed top-0 w-full py-4 px-4 sm:px-6 lg:px-8 z-50 transition-all duration-500 ${isScrolled ? 'bg-[#0A0118]/90 backdrop-blur-md border-b border-green-500/30' : 'bg-transparent'}`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/">
-            <motion.button
-              whileHover={{ scale: 1.05, x: -5 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-4 py-2 bg-[#1E0345] rounded-lg border border-[#A020F0]/30 hover:border-[#A020F0] transition-all backdrop-blur-sm"
-            >
-              <FaArrowLeft className="text-sm" />
-              Back to Events
-            </motion.button>
-          </Link>
-          
-          <div className="flex items-center gap-4">
-            <motion.a 
-              whileHover={{ scale: 1.2, y: -3 }} 
-              href="#" 
-              className="p-3 rounded-full bg-[#1E0345] hover:bg-[#A020F0] transition-all backdrop-blur-sm border border-[#A020F0]/30"
-            >
-              <FaDiscord className="text-xl" />
-            </motion.a>
-            <motion.a 
-              whileHover={{ scale: 1.2, y: -3 }} 
-              href="#" 
-              className="p-3 rounded-full bg-[#1E0345] hover:bg-[#A020F0] transition-all backdrop-blur-sm border border-[#A020F0]/30"
-            >
-              <FaTwitter className="text-xl" />
-            </motion.a>
-          </div>
-        </div>
-      </motion.header>
+  
 
       {/* Hero Section */}
       <section className="relative py-24 md:py-32 px-4 sm:px-6 lg:px-8 z-10">
@@ -173,10 +156,10 @@ const HackathonDetails: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center px-4 py-2 bg-[#4A049D]/20 text-[#D8B4FE] rounded-full mb-6 border border-[#A020F0]/30 backdrop-blur-sm"
+            className="inline-flex items-center px-4 py-2 bg-green-500/20 text-green-300 rounded-full mb-6 border border-green-500/30 backdrop-blur-sm"
           >
             <FaCalendarAlt className="mr-2" />
-            January 20-21, 2024
+            Upcoming Events
           </motion.div>
           
           <motion.h1 
@@ -185,429 +168,322 @@ const HackathonDetails: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-5xl md:text-7xl font-bold mb-6"
           >
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C084FC] to-[#A855F7]">DAWN OF</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F472B6] to-[#FB7185]">HACKATHON</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-200">EXPLORE OUR</span>{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">EVENTS</span>
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl md:text-2xl text-[#E0E0E0] max-w-3xl mx-auto mb-10"
+            className="text-xl md:text-2xl text-[#E0E0E0] max-w-4xl mx-auto mb-8 leading-relaxed"
           >
-            24-Hour Coding Marathon to Build Solutions for Real-World Problems
+            From hackathons to cultural events, discover exciting opportunities to learn, compete, and connect with the MERN Matrix community.
           </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-wrap justify-center gap-4 mb-16"
-          >
-            <motion.div 
-              whileHover={{ scale: 1.05, y: -3 }}
-              className="flex items-center gap-2 bg-[#0A0118]/50 px-4 py-3 rounded-lg border border-[#4A049D] backdrop-blur-sm"
-            >
-              <FaUsers className="text-[#60A5FA]" />
-              <span>300+ Attendees</span>
-            </motion.div>
-            <motion.div 
-              whileHover={{ scale: 1.05, y: -3 }}
-              className="flex items-center gap-2 bg-[#0A0118]/50 px-4 py-3 rounded-lg border border-[#4A049D] backdrop-blur-sm"
-            >
-              <FaTrophy className="text-[#FBBF24]" />
-              <span>$20,000+ in Prizes</span>
-            </motion.div>
-            <motion.div 
-              whileHover={{ scale: 1.05, y: -3 }}
-              className="flex items-center gap-2 bg-[#0A0118]/50 px-4 py-3 rounded-lg border border-[#4A049D] backdrop-blur-sm"
-            >
-              <FaUserTie className="text-[#C084FC]" />
-              <span>Industry Mentors</span>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-4"
-          >
-            <motion.button 
-              whileHover={{ scale: 1.05, y: -3 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-[#C084FC] to-[#A855F7] text-white rounded-lg font-bold hover:shadow-lg hover:shadow-[#C084FC]/40 transition-all flex items-center gap-2"
-            >
-              <FaRocket className="text-lg" />
-              Register Now
-            </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.05, y: -3 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-[#1E0345] text-white rounded-lg font-bold border border-[#A020F0]/30 hover:border-[#A020F0] transition-all backdrop-blur-sm"
-            >
-              View Guidelines
-            </motion.button>
-          </motion.div>
         </div>
-
-        {/* Animated decorative elements */}
-        <motion.div 
-          className="absolute top-10 left-10 w-40 h-40 rounded-full bg-[#C084FC] opacity-20 blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        ></motion.div>
-        <motion.div 
-          className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-[#60A5FA] opacity-20 blur-3xl"
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.2, 0.4, 0.2],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
-          }}
-        ></motion.div>
-        
-        {/* Scroll indicator */}
-        <motion.div 
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className="w-6 h-10 border-2 border-purple-500 rounded-full flex justify-center">
-            <motion.div
-              className="w-1 h-3 bg-purple-500 rounded-full mt-2"
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </div>
-        </motion.div>
       </section>
 
-      {/* Content Tabs */}
-      <section className="relative py-16 px-4 sm:px-6 lg:px-8 z-10">
+      {/* Event Navigation */}
+      <section className="relative py-8 px-4 sm:px-6 lg:px-8 z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div 
-            className="flex flex-wrap gap-2 justify-center mb-12"
+            className="flex flex-wrap gap-4 justify-center mb-12"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
           >
-            {['overview', 'schedule', 'prizes', 'sponsors', 'faq'].map((tab) => (
+            {events.map((event) => (
               <motion.button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+                key={event.id}
+                onClick={() => setActiveEvent(event.id)}
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className={`px-6 py-3 rounded-lg font-medium capitalize transition-all ${activeTab === tab 
-                  ? 'bg-gradient-to-r from-[#C084FC] to-[#A855F7] text-white shadow-lg shadow-[#C084FC]/30' 
-                  : 'bg-[#1E0345] text-[#E0E0E0] hover:bg-[#A020F0]/20 backdrop-blur-sm border border-[#4A049D]/30'}`}
+                className={`px-6 py-3 rounded-xl font-medium transition-all ${
+                  activeEvent === event.id 
+                    ? `bg-gradient-to-r ${event.color} text-white shadow-lg shadow-${event.color.split('-')[1]}-500/30` 
+                    : 'bg-[#1E0345] text-[#E0E0E0] hover:bg-green-500/20 backdrop-blur-sm border border-green-500/30'
+                }`}
               >
-                {tab}
+                {event.title}
               </motion.button>
             ))}
           </motion.div>
-
-          {/* Tab Content */}
-          <div className="bg-[#0A0118]/50 backdrop-blur-md rounded-2xl border border-[#4A049D]/30 p-6 md:p-8 shadow-xl shadow-[#4A049D]/10">
-            <AnimatePresence mode="wait">
-              {/* Overview */}
-              {activeTab === 'overview' && (
-                <motion.div
-                  key="overview"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                  className="space-y-8"
-                >
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-bold mb-4">About the Hackathon</h2>
-                    <p className="text-[#E0E0E0] leading-relaxed">
-                      Dawn of Hackathon is our flagship 24-hour coding marathon that brings together developers, designers, and innovators to build solutions for real-world problems. This intense, round-the-clock event challenges participants to push their limits while receiving guidance from mentors at top tech companies.
-                    </p>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <motion.div 
-                      whileHover={{ y: -5 }}
-                      className="bg-[#0A0118] p-6 rounded-xl border border-[#4A049D]/30 hover:border-[#A855F7] transition-all"
-                    >
-                      <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                        <FaLightbulb className="text-[#FBBF24]" /> Theme
-                      </h3>
-                      <p className="text-[#E0E0E0]">
-                        "Sustainable Solutions for Tomorrow" - Projects should focus on environmental sustainability, social impact, or technological innovation that addresses real-world challenges.
-                      </p>
-                    </motion.div>
-
-                    <motion.div 
-                      whileHover={{ y: -5 }}
-                      className="bg-[#0A0118] p-6 rounded-xl border border-[#4A049D]/30 hover:border-[#A855F7] transition-all"
-                    >
-                      <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                        <FaBook className="text-[#60A5FA]" /> Tracks
-                      </h3>
-                      <ul className="text-[#E0E0E0] list-disc list-inside space-y-2">
-                        <li>Climate Tech & Sustainability</li>
-                        <li>Healthcare & Wellness</li>
-                        <li>Education & Accessibility</li>
-                        <li>Open Innovation</li>
-                      </ul>
-                    </motion.div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-xl font-bold mb-4">Eligibility & Rules</h3>
-                    <div className="bg-[#0A0118] p-6 rounded-xl border border-[#4A049D]/30">
-                      <ul className="text-[#E0E0E0] list-disc list-inside space-y-2">
-                        <li>Teams of 1-4 participants allowed</li>
-                        <li>All code must be written during the event</li>
-                        <li>Use of open source libraries and APIs is encouraged</li>
-                        <li>Projects must be submitted by the deadline</li>
-                        <li>All participants must adhere to the code of conduct</li>
-                      </ul>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Schedule */}
-              {activeTab === 'schedule' && (
-                <motion.div
-                  key="schedule"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <h2 className="text-2xl md:text-3xl font-bold mb-6">Event Schedule</h2>
-                  <div className="space-y-4">
-                    {schedule.map((item, index) => (
-                      <motion.div 
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        whileHover={{ x: 5 }}
-                        className="flex items-start gap-4 bg-[#0A0118] p-4 rounded-xl border border-[#4A049D]/30 hover:border-[#A855F7] transition-all"
-                      >
-                        <div className="flex-shrink-0 w-20 text-[#60A5FA] font-medium">{item.time}</div>
-                        <div className="flex-grow">
-                          <h3 className="font-medium text-white">{item.event}</h3>
-                          <p className="text-sm text-[#A0A0A0]">{item.day}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Prizes */}
-              {activeTab === 'prizes' && (
-                <motion.div
-                  key="prizes"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <h2 className="text-2xl md:text-3xl font-bold mb-6">Prizes & Awards</h2>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {prizes.map((prize, index) => (
-                      <motion.div 
-                        key={index}
-                        whileHover={{ y: -5, rotate: 1 }}
-                        className="bg-gradient-to-br from-[#0A0118] to-[#1E0345] p-6 rounded-xl border border-[#4A049D]/30 hover:border-[#A855F7] transition-all text-center relative overflow-hidden"
-                      >
-                        <div className="absolute -top-4 -right-4 text-6xl opacity-10">
-                          {index === 0 ? <FaTrophy /> : <FaRegStar />}
-                        </div>
-                        <div className="text-4xl font-bold text-[#FBBF24] mb-2">{prize.place}</div>
-                        <div className="text-2xl font-bold text-white mb-2">{prize.amount}</div>
-                        <p className="text-[#E0E0E0]">{prize.description}</p>
-                      </motion.div>
-                    ))}
-                  </div>
-                  
-                  <motion.div 
-                    className="mt-8 bg-[#0A0118] p-6 rounded-xl border border-[#4A049D]/30"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                      <FaMoneyBillWave className="text-[#34D399]" /> Additional Benefits
-                    </h3>
-                    <ul className="text-[#E0E0E0] list-disc list-inside space-y-2">
-                      <li>Interview opportunities with sponsor companies</li>
-                      <li>1-year subscriptions to developer tools</li>
-                      <li>Featured spot on our community platform</li>
-                      <li>Mentorship sessions with industry experts</li>
-                    </ul>
-                  </motion.div>
-                </motion.div>
-              )}
-
-              {/* Sponsors */}
-              {activeTab === 'sponsors' && (
-                <motion.div
-                  key="sponsors"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <h2 className="text-2xl md:text-3xl font-bold mb-6">Our Sponsors</h2>
-                  <div className="space-y-8">
-                    {['Platinum', 'Gold', 'Silver', 'Bronze'].map(tier => (
-                      <div key={tier}>
-                        <h3 className="text-xl font-bold mb-4 text-[#E0E0E0]">{tier} Sponsors</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                          {sponsors.filter(s => s.tier === tier).map((sponsor, index) => (
-                            <motion.div 
-                              key={index}
-                              whileHover={{ scale: 1.05, y: -5 }}
-                              className="bg-[#0A0118] p-4 rounded-xl border border-[#4A049D]/30 hover:border-[#A855F7] transition-all flex items-center justify-center h-32 relative overflow-hidden group"
-                            >
-                              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-[#4A049D]/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                              <div className="text-center z-10">
-                                <div className="w-16 h-16 bg-gradient-to-br from-[#4A049D] to-[#1E0345] rounded-full mx-auto mb-2 flex items-center justify-center border border-[#4A049D]/50">
-                                  {sponsor.name[0]}
-                                </div>
-                                <p className="font-medium text-white">{sponsor.name}</p>
-                                <p className="text-xs text-[#A0A0A0]">{sponsor.tier}</p>
-                              </div>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <motion.div 
-                    className="mt-8 bg-[#0A0118] p-6 rounded-xl border border-[#4A049D]/30"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5 }}
-                  >
-                    <h3 className="text-xl font-bold mb-4">Become a Sponsor</h3>
-                    <p className="text-[#E0E0E0] mb-4">
-                      Interested in supporting the next generation of developers and innovators? Join us as a sponsor and get exposure to top talent in the tech community.
-                    </p>
-                    <motion.button 
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-6 py-2 bg-gradient-to-r from-[#A855F7] to-[#60A5FA] text-white rounded-lg font-medium"
-                    >
-                      Download Sponsorship Kit
-                    </motion.button>
-                  </motion.div>
-                </motion.div>
-              )}
-
-              {/* FAQ */}
-              {activeTab === 'faq' && (
-                <motion.div
-                  key="faq"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <h2 className="text-2xl md:text-3xl font-bold mb-6">Frequently Asked Questions</h2>
-                  <div className="space-y-4">
-                    {faqs.map((faq, index) => (
-                      <motion.div 
-                        key={index}
-                        layout
-                        className="bg-[#0A0118] rounded-xl border border-[#4A049D]/30 overflow-hidden hover:border-[#A855F7] transition-all"
-                      >
-                        <motion.button
-                          onClick={() => toggleFaq(index)}
-                          className="flex justify-between items-center w-full p-6 text-left hover:bg-[#1E0345]/50 transition-colors"
-                          whileHover={{ x: 5 }}
-                        >
-                          <span className="font-medium text-white">{faq.question}</span>
-                          {openFaqIndex === index ? (
-                            <FaChevronUp className="text-[#60A5FA] flex-shrink-0" />
-                          ) : (
-                            <FaChevronDown className="text-[#60A5FA] flex-shrink-0" />
-                          )}
-                        </motion.button>
-                        <AnimatePresence>
-                          {openFaqIndex === index && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.3 }}
-                              className="px-6 pb-6"
-                            >
-                              <p className="text-[#E0E0E0] leading-relaxed">{faq.answer}</p>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
       </section>
 
-      {/* Call to Action */}
+      {/* Event Content */}
       <section className="relative py-16 px-4 sm:px-6 lg:px-8 z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="bg-gradient-to-br from-[#0A0118] to-[#1E0345] p-8 md:p-12 rounded-2xl border border-[#A855F7]/30 shadow-xl shadow-[#4A049D]/10"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Ready to Build Something Amazing?
-            </h2>
-            <p className="text-[#E0E0E0] text-lg mb-8 max-w-2xl mx-auto">
-              Join hundreds of developers, designers, and innovators in this 24-hour coding marathon. 
-              Push your limits, learn from experts, and create solutions that matter.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <motion.button 
-                whileHover={{ scale: 1.05, y: -3 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-gradient-to-r from-[#C084FC] to-[#A855F7] text-white rounded-lg font-bold hover:shadow-lg hover:shadow-[#C084FC]/40 transition-all"
+        <div className="max-w-7xl mx-auto">
+          <AnimatePresence mode="wait">
+            {currentEvent && (
+              <motion.div
+                key={currentEvent.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="bg-[#0A0118]/50 backdrop-blur-md rounded-3xl border border-green-500/30 p-8 md:p-12 shadow-xl shadow-green-500/10"
               >
-                Register Now - Free!
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.05, y: -3 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3 bg-[#1E0345] text-white rounded-lg font-bold border border-[#A855F7]/30 hover:border-[#A855F7] transition-all backdrop-blur-sm"
-              >
-                Download Event Guide
-              </motion.button>
-            </div>
-          </motion.div>
+                {/* Event Header */}
+                <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <motion.div
+                      className={`inline-flex items-center px-4 py-2 ${currentEvent.bgColor} rounded-full mb-6 border ${currentEvent.borderColor} backdrop-blur-sm`}
+                    >
+                      <currentEvent.icon className="mr-2" />
+                      {currentEvent.subtitle}
+                    </motion.div>
+                    
+                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                      {currentEvent.title}
+                    </h2>
+                    
+                    <p className="text-lg text-[#E0E0E0] leading-relaxed mb-6">
+                      {currentEvent.description}
+                    </p>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="flex items-center gap-2">
+                        <FaCalendarAlt className="text-green-400" />
+                        <span className="text-sm">{currentEvent.date}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaClock className="text-green-400" />
+                        <span className="text-sm">{currentEvent.time}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaMapMarkerAlt className="text-green-400" />
+                        <span className="text-sm">{currentEvent.venue}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaUsers className="text-green-400" />
+                        <span className="text-sm">Open to All</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  <motion.div
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="relative"
+                  >
+                    <div className="relative group">
+                      <motion.div
+                        whileHover={{ scale: 1.05, rotate: 2 }}
+                        className="relative overflow-hidden rounded-2xl"
+                      >
+                        <Image
+                          src={currentEvent.image}
+                          alt={currentEvent.title}
+                          width={500}
+                          height={400}
+                          className="w-full h-80 object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                      </motion.div>
+                      
+                      {/* Floating highlights */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 }}
+                        className="absolute -bottom-4 -right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full shadow-lg"
+                      >
+                        <FaRocket className="inline mr-2" />
+                        Register Now!
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Event Highlights */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="mb-12"
+                >
+                  <h3 className="text-2xl font-bold mb-6 text-center">✨ Event Highlights</h3>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {currentEvent.highlights.map((highlight, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.5 + index * 0.1 }}
+                        whileHover={{ y: -5, scale: 1.02 }}
+                        className="bg-[#0A0118] p-4 rounded-xl border border-green-500/30 hover:border-green-400 transition-all text-center"
+                      >
+                        <div className="text-2xl mb-2">🎯</div>
+                        <p className="text-sm text-green-200">{highlight}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+
+                {/* Event Specific Content */}
+                {currentEvent.id === 'elegance-disguise' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="space-y-8"
+                  >
+                    {/* Features */}
+                    <div>
+                      <h3 className="text-2xl font-bold mb-6 text-center">🎭 Event Features</h3>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {currentEvent.features?.map((feature, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.7 + index * 0.1 }}
+                            whileHover={{ x: 5 }}
+                            className="bg-[#0A0118] p-4 rounded-xl border border-purple-500/30 hover:border-purple-400 transition-all"
+                          >
+                            <div className="flex items-center gap-3">
+                              <feature.icon className="text-2xl text-purple-400" />
+                              <span className="text-[#E0E0E0]">{feature.text}</span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Dress Code */}
+                    <div>
+                      <h3 className="text-2xl font-bold mb-6 text-center">👔 Dress Code: Mysteriously Glamorous</h3>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <motion.div
+                          whileHover={{ y: -5 }}
+                          className="bg-[#0A0118] p-6 rounded-xl border border-purple-500/30 hover:border-purple-400 transition-all"
+                        >
+                          <h4 className="text-xl font-bold mb-3 text-purple-400 flex items-center gap-2">
+                            <FaUserTie className="text-2xl" />
+                            Gents
+                          </h4>
+                          <p className="text-[#E0E0E0]">{currentEvent.dressCode?.gents}</p>
+                        </motion.div>
+                        <motion.div
+                          whileHover={{ y: -5 }}
+                          className="bg-[#0A0118] p-6 rounded-xl border border-purple-500/30 hover:border-purple-400 transition-all"
+                        >
+                                                     <h4 className="text-xl font-bold mb-3 text-pink-400 flex items-center gap-2">
+                             <FaUserFriends className="text-2xl" />
+                             Ladies
+                           </h4>
+                          <p className="text-[#E0E0E0]">{currentEvent.dressCode?.ladies}</p>
+                        </motion.div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {currentEvent.id === 'mern-ai-hackathon' && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="space-y-8"
+                  >
+                    {/* Schedule */}
+                    <div>
+                      <h3 className="text-2xl font-bold mb-6 text-center">📅 Event Schedule</h3>
+                      <div className="space-y-4">
+                        {currentEvent.schedule?.map((item, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.7 + index * 0.1 }}
+                            whileHover={{ x: 5 }}
+                            className="bg-[#0A0118] p-6 rounded-xl border border-blue-500/30 hover:border-blue-400 transition-all"
+                          >
+                            <div className="flex items-start gap-4">
+                              <div className="flex-shrink-0 w-32 text-blue-400 font-medium text-sm">{item.day}</div>
+                              <div className="flex-grow">
+                                <h3 className="font-bold text-white text-lg">{item.event}</h3>
+                                <p className="text-sm text-blue-300 font-medium">{item.time}</p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Details */}
+                    <div>
+                      <h3 className="text-2xl font-bold mb-6 text-center">📋 Event Details</h3>
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <motion.div
+                          whileHover={{ y: -5 }}
+                          className="bg-[#0A0118] p-6 rounded-xl border border-blue-500/30 hover:border-blue-400 transition-all"
+                        >
+                          <h4 className="text-xl font-bold mb-3 text-blue-400 flex items-center gap-2">
+                            <FaUsers className="text-2xl" />
+                            Team Size
+                          </h4>
+                          <p className="text-[#E0E0E0] text-lg">{currentEvent.details?.teamSize}</p>
+                        </motion.div>
+                        <motion.div
+                          whileHover={{ y: -5 }}
+                          className="bg-[#0A0118] p-6 rounded-xl border border-blue-500/30 hover:border-blue-400 transition-all"
+                        >
+                          <h4 className="text-xl font-bold mb-3 text-blue-400 flex items-center gap-2">
+                            <FaMoneyBillWave className="text-2xl" />
+                            Registration Fee
+                          </h4>
+                          <p className="text-[#E0E0E0] text-lg">{currentEvent.details?.registrationFee}</p>
+                        </motion.div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Call to Action */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-center mt-12 pt-8 border-t border-green-500/30"
+                >
+                  {currentEvent.id === 'dawn-of-code' ? (
+                                         <Link href={currentEvent.link || '#'}>
+                      <motion.button
+                        whileHover={{ scale: 1.05, y: -3 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-green-500/40 transition-all flex items-center gap-2 mx-auto"
+                      >
+                        <FaRocket className="text-lg" />
+                        View Full Details
+                      </motion.button>
+                    </Link>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: 1.05, y: -3 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl font-bold hover:shadow-lg hover:shadow-green-500/40 transition-all flex items-center gap-2"
+                    >
+                      <FaRocket className="text-lg" />
+                      Register Now
+                    </motion.button>
+                  )}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative py-12 px-4 sm:px-6 lg:px-8 border-t border-[#4A049D]/30 z-10">
+      <footer className="relative py-12 px-4 sm:px-6 lg:px-8 border-t border-green-500/30 z-10">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div 
             className="flex justify-center gap-6 mb-6"
@@ -617,16 +493,16 @@ const HackathonDetails: React.FC = () => {
             viewport={{ once: true }}
           >
             {[
-              { icon: <FaDiscord className="text-xl" />, color: "#5865F2" },
-              { icon: <FaTwitter className="text-xl" />, color: "#1DA1F2" },
+              { icon: <FaInstagram className="text-xl" />, color: "#E1306C" },
               { icon: <FaLinkedin className="text-xl" />, color: "#0077B5" },
-              { icon: <FaInstagram className="text-xl" />, color: "#E1306C" }
+              { icon: <FaDiscord className="text-xl" />, color: "#5865F2" },
+              { icon: <FaTwitter className="text-xl" />, color: "#1DA1F2" }
             ].map((social, index) => (
               <motion.a 
                 key={index}
                 whileHover={{ scale: 1.2, y: -5, backgroundColor: social.color }}
                 href="#" 
-                className="p-3 rounded-full bg-[#1E0345] transition-all border border-[#4A049D]/30 backdrop-blur-sm"
+                className="p-3 rounded-full bg-[#1E0345] transition-all border border-green-500/30 backdrop-blur-sm"
               >
                 {social.icon}
               </motion.a>
@@ -639,9 +515,7 @@ const HackathonDetails: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            © 2024 MERN Matrix Club. All rights reserved. | 
-            <Link href="/privacy" className="hover:text-[#60A5FA] transition-colors ml-2">Privacy Policy</Link> | 
-            <Link href="/terms" className="hover:text-[#60A5FA] transition-colors ml-2">Terms of Service</Link>
+            © 2024 MERN Matrix Club. All rights reserved.
           </motion.p>
         </div>
       </footer>
@@ -649,4 +523,4 @@ const HackathonDetails: React.FC = () => {
   );
 };
 
-export default HackathonDetails;
+export default EventsPage;

@@ -17,13 +17,13 @@ const COLORS = {
   stepInactive: 'bg-[#1E0345] text-[#CBC3E3]/60',
 };
 
-// Temporary problem statements
+// Problem statements from Dawn of Code hackathon
 const PROBLEM_STATEMENTS = [
-  "How can we reduce food waste in urban areas?",
-  "Developing sustainable transportation solutions for crowded cities",
-  "Improving mental health awareness and accessibility in educational institutions",
-  "Creating affordable renewable energy solutions for rural communities",
-  "Developing technology to bridge the digital divide for elderly populations"
+  "AI-Powered Cyber Defense - Small organizations and startups often lack the resources to invest in advanced cybersecurity infrastructure, making them highly vulnerable to cyberattacks. The challenge is to design an affordable, AI-driven security framework that can detect, prevent, and respond to threats in real time — providing enterprise-level protection at a fraction of the cost.",
+  "SafeSearch – Child-Safe Internet Experience - Children are exposed to illicit online content, cyberbullying, and harmful interactions while accessing the internet for education or entertainment. Parents cannot always monitor every activity, nor should privacy be compromised. The problem is to create a safe and controlled digital environment where children can freely explore educational and creative resources while being automatically shielded from inappropriate content and harmful interactions.",
+  "Transparent Governance - Government welfare schemes and subsidies often suffer from inefficiencies, corruption, and diversion of funds by intermediaries. Citizens face difficulty in verifying whether benefits are reaching the intended recipients. The challenge is to leverage technology to enable transparent, accountable, and tamper-proof governance systems that ensure public funds are utilized effectively and reach the right beneficiaries without leakage.",
+  "Transparent NGO Donations - Donors often lack visibility into how their contributions are being used by NGOs, which creates distrust and reduces funding for genuine initiatives. The problem is to develop a real-time donation tracking platform that uses technologies such as blockchain and IoT to provide end-to-end transparency — ensuring that every rupee/dollar donated can be traced to its final impact in areas like food distribution, education, or healthcare.",
+  "Cloud Outage Resilience for Critical Services - Critical services such as banking, healthcare, and governance rely heavily on cloud infrastructure, but unexpected cloud outages can cause severe disruptions. Existing backup solutions are either too costly or insufficient. The challenge is to build a resilient, cost-effective system that ensures zero downtime for mission-critical applications by using multi-cloud failover, intelligent workload migration, and edge computing to maintain seamless continuity during outages."
 ];
 
 const TeamOnboarding = () => {
