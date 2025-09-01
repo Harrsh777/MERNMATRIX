@@ -309,29 +309,8 @@ const TeamOnboarding = () => {
   ];
 
   // Check if it's time to show registration (after 9:00 AM tomorrow)
-  useEffect(() => {
-    const checkTime = () => {
-      const now = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(9, 0, 0, 0);
-      
-      if (now >= tomorrow) {
-        setShowRegistration(true);
-      }
-    };
-    
-    checkTime();
-    const interval = setInterval(checkTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Show countdown if registration is not yet available
-  if (!showRegistration) {
-    return (
-      <CountdownClock onTimeUp={() => setShowRegistration(true)} />
-    );
-  }
+  
+   
 
   return (
     <>

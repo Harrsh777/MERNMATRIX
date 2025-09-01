@@ -182,7 +182,7 @@ const HomePage = () => {
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#0A0118]/90 backdrop-blur-md shadow-sm py-2' : 'bg-transparent py-4'}`}
+          className={`absolute top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-[#0A0118]/90 backdrop-blur-md shadow-sm py-2' : 'bg-transparent py-4'}`}
         >
           <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
             {/* Logo */}

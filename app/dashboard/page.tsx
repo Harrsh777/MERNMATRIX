@@ -40,6 +40,7 @@ interface Team {
   has_entered: boolean;
   archived: boolean;
   present: boolean;
+  rating?: number;
 }
 
 interface ProjectIdea {
@@ -48,6 +49,7 @@ interface ProjectIdea {
   team_name: string;
   team_leader_name: string;
   project_idea: string;
+  ppt_link?: string;
   word_count: number;
   rating?: number;
   created_at: string;
@@ -212,6 +214,24 @@ const AdminDashboard = () => {
     }
   };
 
+  const rateTeam = async (teamId: string, rating: number): Promise<void> => {
+    try {
+      const { error } = await supabase
+        .from('team_registrations')
+        .update({ rating })
+        .eq('id', teamId);
+
+      if (error) throw error;
+      
+      // Update local state
+      setTeams(teams.map(team => 
+        team.id === teamId ? { ...team, rating } : team
+      ));
+    } catch (error: any) {
+      console.error('Error rating team:', error.message);
+    }
+  };
+
   const rateProjectIdea = async (ideaId: string, rating: number): Promise<void> => {
     try {
       const { error } = await supabase
@@ -227,22 +247,6 @@ const AdminDashboard = () => {
       ));
     } catch (error: any) {
       console.error('Error rating project idea:', error.message);
-    }
-  };
-
-  const deleteProjectIdea = async (ideaId: string): Promise<void> => {
-    try {
-      const { error } = await supabase
-        .from('project_ideas')
-        .delete()
-        .eq('id', ideaId);
-
-      if (error) throw error;
-      
-      // Update local state
-      setProjectIdeas(projectIdeas.filter(idea => idea.id !== ideaId));
-    } catch (error: any) {
-      console.error('Error deleting project idea:', error.message);
     }
   };
 
@@ -394,12 +398,12 @@ const AdminDashboard = () => {
                 onUnmarkEntered={unmarkTeamEntered}
                 onMarkPresent={markTeamPresent}
                 onMarkAbsent={markTeamAbsent}
+                onRate={rateTeam}
               />
             ) : (
               <ProjectIdeas 
                 ideas={filteredProjectIdeas}
                 onRate={rateProjectIdea}
-                onDelete={deleteProjectIdea}
               />
             )}
           </motion.div>
@@ -418,6 +422,7 @@ interface TeamRegistrationsProps {
   onUnmarkEntered: (teamId: string) => void;
   onMarkPresent: (teamId: string) => void;
   onMarkAbsent: (teamId: string) => void;
+  onRate: (teamId: string, rating: number) => void;
 }
 
 const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({ 
@@ -427,15 +432,32 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
   onMarkEntered, 
   onUnmarkEntered,
   onMarkPresent,
-  onMarkAbsent
+  onMarkAbsent,
+  onRate
 }) => {
   const [expandedTeams, setExpandedTeams] = useState<Record<string, boolean>>({});
+  const [editingRating, setEditingRating] = useState<string | null>(null);
+  const [editRating, setEditRating] = useState<number>(0);
 
   const toggleExpand = (teamId: string) => {
     setExpandedTeams(prev => ({
       ...prev,
       [teamId]: !prev[teamId]
     }));
+  };
+
+  const startEditingRating = (teamId: string, currentRating: number = 0) => {
+    setEditingRating(teamId);
+    setEditRating(currentRating);
+  };
+
+  const saveRating = (teamId: string) => {
+    onRate(teamId, editRating);
+    setEditingRating(null);
+  };
+
+  const cancelEditingRating = () => {
+    setEditingRating(null);
   };
 
   return (
@@ -478,6 +500,47 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
+                  {/* Team Rating */}
+                  <div className="flex items-center mr-4">
+                    {editingRating === team.id ? (
+                      <div className="flex items-center">
+                        <input
+                          type="number"
+                          min="0"
+                          max="10"
+                          value={editRating}
+                          onChange={(e) => setEditRating(Number(e.target.value))}
+                          className="w-12 h-8 bg-gray-700 text-white text-center rounded mr-2"
+                        />
+                        <button
+                          onClick={() => saveRating(team.id)}
+                          className="p-1 text-green-400 hover:text-green-300"
+                          title="Save rating"
+                        >
+                          <FaCheck className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={cancelEditingRating}
+                          className="p-1 text-red-400 hover:text-red-300"
+                          title="Cancel editing"
+                        >
+                          <FaTimes className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
+                        <RatingStars rating={team.rating} />
+                        <button
+                          onClick={() => startEditingRating(team.id, team.rating)}
+                          className="ml-2 p-1 text-purple-400 hover:text-purple-300"
+                          title="Edit rating"
+                        >
+                          <FaEdit className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  
                   <button
                     onClick={() => toggleExpand(team.id)}
                     className="p-1.5 text-purple-400 hover:text-purple-300 transition-colors"
@@ -571,10 +634,9 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
 interface ProjectIdeasProps {
   ideas: ProjectIdea[];
   onRate: (ideaId: string, rating: number) => void;
-  onDelete: (ideaId: string) => void;
 }
 
-const ProjectIdeas: React.FC<ProjectIdeasProps> = ({ ideas, onRate, onDelete }) => {
+const ProjectIdeas: React.FC<ProjectIdeasProps> = ({ ideas, onRate }) => {
   const [expandedIdeas, setExpandedIdeas] = useState<Record<string, boolean>>({});
   const [editingIdea, setEditingIdea] = useState<string | null>(null);
   const [editRating, setEditRating] = useState<number>(0);
@@ -688,18 +750,25 @@ const ProjectIdeas: React.FC<ProjectIdeasProps> = ({ ideas, onRate, onDelete }) 
                   )}
                 </div>
               </div>
+
+              {/* PPT Link Display */}
+              {idea.ppt_link && (
+                <div className="mt-4">
+                  <h5 className="text-sm font-medium text-purple-400">Presentation Link</h5>
+                  <a 
+                    href={idea.ppt_link} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-400 hover:text-blue-300 underline break-all"
+                  >
+                    {idea.ppt_link}
+                  </a>
+                </div>
+              )}
               
               <div className="mt-4 flex justify-between items-center">
                 <div className="text-sm text-purple-300">
                   Submitted: {new Date(idea.created_at).toLocaleDateString()}
-                </div>
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => onDelete(idea.id)}
-                    className="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-red-600/80 hover:bg-red-500/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                  >
-                    <FaTrash className="mr-1.5 h-4 w-4" /> Delete
-                  </button>
                 </div>
               </div>
             </motion.li>

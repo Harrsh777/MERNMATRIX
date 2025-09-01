@@ -75,7 +75,7 @@ const EventSection: React.FC = () => {
       date: '20th February',
       time: '12:00 PM – 3:00 PM',
       venue: 'AB416',
-      image: '/dance.jpg',
+      image: '/Dance.jpg',
       color: 'from-purple-500 to-pink-500',
       bgColor: 'from-purple-500/20 to-pink-500/20',
       borderColor: 'border-purple-500/30',
