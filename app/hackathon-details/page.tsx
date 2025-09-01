@@ -95,34 +95,64 @@ const HackathonDetails: React.FC = () => {
 
   const problemStatements = [
     {
-      title: "AI-Powered Cyber Defense",
-      description: "Small organizations and startups often lack the resources to invest in advanced cybersecurity infrastructure, making them highly vulnerable to cyberattacks. The challenge is to design an affordable, AI-driven security framework that can detect, prevent, and respond to threats in real time — providing enterprise-level protection at a fraction of the cost.",
-      category: "Cybersecurity",
-      difficulty: "Advanced"
-    },
-    {
-      title: "SafeSearch – Child-Safe Internet Experience",
-      description: "Children are exposed to illicit online content, cyberbullying, and harmful interactions while accessing the internet for education or entertainment. Parents cannot always monitor every activity, nor should privacy be compromised. The problem is to create a safe and controlled digital environment where children can freely explore educational and creative resources while being automatically shielded from inappropriate content and harmful interactions.",
-      category: "Child Safety",
+      title: "Cyber Resilience & Digital Safety",
+      description: "Small businesses, children, and everyday users all face cyber threats but lack strong defenses. How can we design affordable, practical, and user-friendly solutions that protect individuals and organizations from online risks while giving them more control over their data and privacy?",
+      category: "Cybersecurity & Privacy",
       difficulty: "Intermediate"
     },
     {
-      title: "Transparent Governance",
-      description: "Government welfare schemes and subsidies often suffer from inefficiencies, corruption, and diversion of funds by intermediaries. Citizens face difficulty in verifying whether benefits are reaching the intended recipients. The challenge is to leverage technology to enable transparent, accountable, and tamper-proof governance systems that ensure public funds are utilized effectively and reach the right beneficiaries without leakage.",
-      category: "Governance",
+      title: "Truth & Trust in the Digital Age",
+      description: "From deepfakes to AI manipulation, it's becoming harder to know what's real online. How can we verify authenticity, fight misinformation, and secure AI systems against malicious manipulation to build a safer digital world?",
+      category: "Cybersecurity & Privacy",
       difficulty: "Advanced"
     },
     {
-      title: "Transparent NGO Donations",
-      description: "Donors often lack visibility into how their contributions are being used by NGOs, which creates distrust and reduces funding for genuine initiatives. The problem is to develop a real-time donation tracking platform that uses technologies such as blockchain and IoT to provide end-to-end transparency — ensuring that every rupee/dollar donated can be traced to its final impact in areas like food distribution, education, or healthcare.",
-      category: "Transparency",
+      title: "Privacy as a Right",
+      description: "People's data is constantly collected, often without their knowledge or consent. How can we give individuals control over their personal information, enable fair data usage, and generate privacy-preserving alternatives for developers and researchers?",
+      category: "Cybersecurity & Privacy",
       difficulty: "Intermediate"
     },
     {
-      title: "Cloud Outage Resilience for Critical Services",
-      description: "Critical services such as banking, healthcare, and governance rely heavily on cloud infrastructure, but unexpected cloud outages can cause severe disruptions. Existing backup solutions are either too costly or insufficient. The challenge is to build a resilient, cost-effective system that ensures zero downtime for mission-critical applications by using multi-cloud failover, intelligent workload migration, and edge computing to maintain seamless continuity during outages.",
-      category: "Cloud Computing",
+      title: "Transparent & Accountable Systems",
+      description: "Corruption and lack of clarity make it hard to trust public services, donations, and digital finance. How can we design transparent systems for welfare, NGOs, and finance that ensure funds reach the right people and help users make informed, safer financial decisions?",
+      category: "Governance & FinTech",
+      difficulty: "Advanced"
+    },
+    {
+      title: "Reliable & Resilient Digital Services",
+      description: "Downtime, outages, and hidden cloud costs disrupt critical applications. How can we create resilient systems that stay online during failures, simplify cloud management, detect unusual spending, and make infrastructure more accessible to developers?",
+      category: "Developer Tools & Cloud Infrastructure",
       difficulty: "Expert"
+    },
+    {
+      title: "Fair & Collaborative AI Development",
+      description: "AI is powerful but often a black box — hard to explain, sometimes biased, and tricky to work with in teams. How can we make AI more explainable and fair, while building better collaboration tools for developers working with models, prompts, and APIs?",
+      category: "Developer Tools & Cloud Infrastructure",
+      difficulty: "Advanced"
+    },
+    {
+      title: "Privacy-Friendly Healthcare Innovation",
+      description: "Medical research needs patient participation and data, but privacy is a big concern. How can we connect patients with research opportunities and enable hospitals to collaborate without exposing sensitive personal data?",
+      category: "Healthcare & MedTech",
+      difficulty: "Intermediate"
+    },
+    {
+      title: "Smarter Knowledge Sharing",
+      description: "Students, researchers, and teams juggle articles, notes, and references across tools. How can we create unified platforms where knowledge can be collected, shared, annotated, and built upon collaboratively?",
+      category: "Education & Collaboration",
+      difficulty: "Intermediate"
+    },
+    {
+      title: "Sustainable Technology & the Right to Repair",
+      description: "E-waste is rising as devices are thrown away instead of reused. How can we empower people to repair, recycle, and extend the life of electronics to reduce waste and promote sustainability?",
+      category: "Sustainability & Smart Living",
+      difficulty: "Intermediate"
+    },
+    {
+      title: "Smarter Farming & Cities",
+      description: "Farmers and cities face resource challenges — from irrigation inefficiencies to waste collection. How can we design simple, data-driven tools that help farmers increase yields and cities manage waste more effectively?",
+      category: "Sustainability & Smart Living",
+      difficulty: "Intermediate"
     }
   ];
 
@@ -450,11 +480,12 @@ const HackathonDetails: React.FC = () => {
                          <FaBook className="text-green-400" /> Tracks
                        </h3>
                        <ul className="text-[#E0E0E0] list-disc list-inside space-y-2">
-                         <li>AI-Powered Cyber Defense</li>
-                         <li>Child-Safe Internet Experience</li>
-                         <li>Transparent Governance</li>
-                         <li>NGO Donation Tracking</li>
-                         <li>Cloud Outage Resilience</li>
+                         <li>Cybersecurity & Privacy</li>
+                         <li>Governance & FinTech</li>
+                         <li>Developer Tools & Cloud Infrastructure</li>
+                         <li>Healthcare & MedTech</li>
+                         <li>Education & Collaboration</li>
+                         <li>Sustainability & Smart Living</li>
                        </ul>
                      </motion.div>
                   </div>
