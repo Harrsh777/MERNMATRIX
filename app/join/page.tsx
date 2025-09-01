@@ -128,11 +128,41 @@ const TeamOnboarding = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showRegistration, setShowRegistration] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
 
   interface TeamMember {
     name: string;
     registrationNumber: string;
   }
+
+  // Countdown timer effect
+  useEffect(() => {
+    const targetDate = new Date('2025-09-03T09:00:00').getTime();
+    
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+      
+      if (distance <= 0) {
+        setIsRegistrationOpen(false); // Close registration when timer reaches zero
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        setTimeLeft({ days, hours, minutes, seconds });
+        setIsRegistrationOpen(true); // Open registration while timer is running
+      }
+    };
+    
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
 
   // Animated background particles
   useEffect(() => {
@@ -342,6 +372,39 @@ const TeamOnboarding = () => {
           </motion.div>
         )}
 
+        {/* Countdown Timer */}
+        <motion.div
+          className="fixed top-6 right-6 z-30 px-4 py-2 rounded-lg font-bold shadow-lg border border-[#CBC3E3]/30 bg-[#0A0118]/90 text-[#CBC3E3] backdrop-blur-sm"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="text-center">
+            <div className="text-xs text-[#A020F0] mb-1">Registration Ends In</div>
+            <div className="flex gap-2 text-sm">
+              <div className="flex flex-col items-center">
+                <span className="font-bold text-[#F0F0F0]">{timeLeft.days}</span>
+                <span className="text-xs text-[#CBC3E3]/70">Days</span>
+              </div>
+              <span className="text-[#A020F0] font-bold">:</span>
+              <div className="flex flex-col items-center">
+                <span className="font-bold text-[#F0F0F0]">{timeLeft.hours.toString().padStart(2, '0')}</span>
+                <span className="text-xs text-[#CBC3E3]/70">Hours</span>
+              </div>
+              <span className="text-[#A020F0] font-bold">:</span>
+              <div className="flex flex-col items-center">
+                <span className="font-bold text-[#F0F0F0]">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+                <span className="text-xs text-[#CBC3E3]/70">Min</span>
+              </div>
+              <span className="text-[#A020F0] font-bold">:</span>
+              <div className="flex flex-col items-center">
+                <span className="font-bold text-[#F0F0F0]">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+                <span className="text-xs text-[#CBC3E3]/70">Sec</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
         {/* Floating Back to Home Button */}
         <Link href="/">
           <motion.button
@@ -431,9 +494,58 @@ const TeamOnboarding = () => {
                 </div>
               </div>
               
-              <div className="p-8">
-                <AnimatePresence mode="wait">
-                  {!isSubmitted && !showSummary ? (
+                             <div className="p-8">
+                 <AnimatePresence mode="wait">
+                   {!isRegistrationOpen ? (
+                     <motion.div
+                       className="text-center py-16"
+                       initial={{ opacity: 0, y: 20 }}
+                       animate={{ opacity: 1, y: 0 }}
+                       transition={{ duration: 0.5 }}
+                     >
+                       <motion.div
+                         className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-gradient-to-r from-red-500 to-orange-500 mb-6 shadow-2xl"
+                         initial={{ scale: 0.8 }}
+                         animate={{ scale: 1 }}
+                         transition={{ delay: 0.2 }}
+                       >
+                         <svg className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                         </svg>
+                       </motion.div>
+                       <h2 className="text-3xl font-bold text-[#F0F0F0] mb-4">Registration Not Yet Open</h2>
+                       <p className="text-xl text-[#CBC3E3] mb-8">
+                         Team registration will open on <span className="font-semibold text-[#A020F0]">September 3rd, 2025 at 9:00 AM</span>
+                       </p>
+                       <div className="bg-[#1E0345]/80 rounded-xl p-6 mb-8 border border-[#CBC3E3]/10 shadow-lg">
+                         <h4 className="text-lg font-semibold text-[#CBC3E3] mb-4">Countdown to Registration</h4>
+                         <div className="flex justify-center gap-4 text-2xl font-bold">
+                           <div className="flex flex-col items-center">
+                             <span className="text-[#A020F0]">{timeLeft.days}</span>
+                             <span className="text-sm text-[#CBC3E3]/70">Days</span>
+                           </div>
+                           <span className="text-[#A020F0]">:</span>
+                           <div className="flex flex-col items-center">
+                             <span className="text-[#A020F0]">{timeLeft.hours.toString().padStart(2, '0')}</span>
+                             <span className="text-sm text-[#CBC3E3]/70">Hours</span>
+                           </div>
+                           <span className="text-[#A020F0]">:</span>
+                           <div className="flex flex-col items-center">
+                             <span className="text-[#A020F0]">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+                             <span className="text-sm text-[#CBC3E3]/70">Minutes</span>
+                           </div>
+                           <span className="text-[#A020F0]">:</span>
+                           <div className="flex flex-col items-center">
+                             <span className="text-[#A020F0]">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+                             <span className="text-sm text-[#CBC3E3]/70">Seconds</span>
+                           </div>
+                         </div>
+                       </div>
+                       <p className="text-[#CBC3E3]/70">
+                         Get ready to register your team for the MERN Matrix Hackathon!
+                       </p>
+                     </motion.div>
+                   ) : !isSubmitted && !showSummary ? (
                     <motion.form
                       onSubmit={handleSubmit}
                       initial={{ opacity: 0 }}
@@ -724,14 +836,15 @@ const TeamOnboarding = () => {
                                       </div>
                                     </div>
                                     
-                                    {/* Problem Statements List */}
-                                    <div className="overflow-y-auto h-[calc(90vh-280px)] p-4">
-                                      {PROBLEM_STATEMENTS
-                                        .filter(problem => 
-                                          problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                          problem.domain.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                          problem.description.toLowerCase().includes(searchQuery.toLowerCase())
-                                        )
+                                                                         {/* Problem Statements List */}
+                                     <div className="overflow-y-auto h-[calc(90vh-280px)] p-4">
+                                       {PROBLEM_STATEMENTS
+                                         .filter(problem => 
+                                           (selectedDomain ? problem.domain === selectedDomain : true) &&
+                                           (problem.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                           problem.domain.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                           problem.description.toLowerCase().includes(searchQuery.toLowerCase()))
+                                         )
                                         .map((problem) => (
                                           <motion.div
                                             key={problem.id}
@@ -1064,7 +1177,7 @@ const TeamOnboarding = () => {
                         </motion.div>
                       )}
                     </motion.form>
-                  ) : showSummary && !isSubmitted ? (
+                                     ) : isRegistrationOpen && showSummary && !isSubmitted ? (
                     <motion.div
                       className="text-center py-12"
                       initial={{ scale: 0.9, opacity: 0 }}
@@ -1084,7 +1197,7 @@ const TeamOnboarding = () => {
                       <h2 className="text-3xl font-bold text-[#CBC3E3] mb-4 animate-pulse">Finalizing Registration...</h2>
                       <p className="text-lg text-[#F0F0F0]">Hang tight while we process your team details!</p>
                     </motion.div>
-                  ) : (
+                  ) : isRegistrationOpen && (
                     <motion.div
                       className="text-center py-12"
                       initial={{ scale: 0.9, opacity: 0 }}
