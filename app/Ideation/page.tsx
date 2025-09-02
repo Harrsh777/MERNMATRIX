@@ -180,14 +180,14 @@ export default function IdeationPage() {
       
       // Reset form and go back to step 1
       setTimeout(() => {
-        setFormData({
-          teamNumber: '',
-          teamName: '',
-          teamLeaderName: '',
+      setFormData({
+        teamNumber: '',
+        teamName: '',
+        teamLeaderName: '',
           projectIdea: '',
           pptLink: ''
-        });
-        setWordCount(0);
+      });
+      setWordCount(0);
         setCurrentStep(1);
         setMessage({ text: '', type: '' });
       }, 3000);
@@ -342,7 +342,7 @@ export default function IdeationPage() {
 
   // Render based on page state
   if (pageState === 'initial-countdown') {
-    return (
+  return (
       <CountdownDisplay 
         title="Registration Opens Tomorrow" 
         subtitle="Get ready to submit your innovative project idea at 9:00 AM tomorrow!"
@@ -362,8 +362,8 @@ export default function IdeationPage() {
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
-      </div>
-
+            </div>
+            
       <div className="relative z-10 w-full max-w-4xl mx-auto">
         {/* Registration Deadline Countdown Banner */}
         <motion.div
@@ -478,7 +478,7 @@ export default function IdeationPage() {
 
         {/* Message Display */}
         <AnimatePresence>
-          {message.text && (
+            {message.text && (
             <motion.div
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -492,10 +492,10 @@ export default function IdeationPage() {
             >
               <div className="flex items-center justify-center">
                 <span className={`mr-3 text-2xl ${message.type === 'error' ? 'text-red-400' : 'text-green-400'}`}>
-                  {message.type === 'error' ? '⚠️' : '✅'}
-                </span>
+                    {message.type === 'error' ? '⚠️' : '✅'}
+                  </span>
                 <span className="text-lg font-medium">{message.text}</span>
-              </div>
+                </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -525,59 +525,59 @@ export default function IdeationPage() {
                   <div className="text-center mb-8">
                     <h2 className="text-3xl font-bold text-white mb-2">Team Information</h2>
                     <p className="text-purple-200/70">Let's start with your team details</p>
-                  </div>
+              </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label htmlFor="teamNumber" className="block text-sm font-semibold text-purple-200">
-                        Team Number *
-                      </label>
-                      <input
-                        type="number"
-                        id="teamNumber"
-                        name="teamNumber"
-                        value={formData.teamNumber}
-                        onChange={handleInputChange}
+                    Team Number *
+                  </label>
+                  <input
+                    type="number"
+                    id="teamNumber"
+                    name="teamNumber"
+                    value={formData.teamNumber}
+                    onChange={handleInputChange}
                         className="w-full px-4 py-4 rounded-xl bg-gray-700/50 border border-purple-500/30 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 text-white placeholder-purple-300/50 transition-all duration-300"
-                        required
-                        min="1"
+                    required
+                    min="1"
                         placeholder="Enter team number"
-                      />
-                    </div>
-                    
+                  />
+                </div>
+                
                     <div className="space-y-2">
                       <label htmlFor="teamName" className="block text-sm font-semibold text-purple-200">
-                        Team Name *
-                      </label>
-                      <input
-                        type="text"
-                        id="teamName"
-                        name="teamName"
-                        value={formData.teamName}
-                        onChange={handleInputChange}
+                    Team Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="teamName"
+                    name="teamName"
+                    value={formData.teamName}
+                    onChange={handleInputChange}
                         className="w-full px-4 py-4 rounded-xl bg-gray-700/50 border border-purple-500/30 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 text-white placeholder-purple-300/50 transition-all duration-300"
-                        required
+                    required
                         placeholder="Enter team name"
-                      />
+                  />
                     </div>
-                  </div>
-
+                </div>
+                
                   <div className="space-y-2">
                     <label htmlFor="teamLeaderName" className="block text-sm font-semibold text-purple-200">
-                      Team Leader Name *
-                    </label>
-                    <input
-                      type="text"
-                      id="teamLeaderName"
-                      name="teamLeaderName"
-                      value={formData.teamLeaderName}
-                      onChange={handleInputChange}
+                    Team Leader Name *
+                  </label>
+                  <input
+                    type="text"
+                    id="teamLeaderName"
+                    name="teamLeaderName"
+                    value={formData.teamLeaderName}
+                    onChange={handleInputChange}
                       className="w-full px-4 py-4 rounded-xl bg-gray-700/50 border border-purple-500/30 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 text-white placeholder-purple-300/50 transition-all duration-300"
-                      required
-                      placeholder="Enter team leader's name"
-                    />
-                  </div>
-
+                    required
+                    placeholder="Enter team leader's name"
+                  />
+                </div>
+                
                   <div className="space-y-2">
                     <label htmlFor="pptLink" className="block text-sm font-semibold text-purple-200">
                       <FaFilePowerpoint className="inline mr-2 text-blue-400" />
@@ -625,25 +625,25 @@ export default function IdeationPage() {
                     <div className="flex justify-between items-center">
                       <label htmlFor="projectIdea" className="block text-lg font-semibold text-purple-200">
                         Project Description *
-                      </label>
+                    </label>
                       <div className={`px-4 py-2 rounded-full text-sm font-medium ${
                         wordCount > 300 ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
                         wordCount > 200 ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
                         wordCount > 100 ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
                         'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                       }`}>
-                        {wordCount}/300 words
+                      {wordCount}/300 words
                       </div>
-                    </div>
+                  </div>
                     
-                    <textarea
-                      id="projectIdea"
-                      name="projectIdea"
+                  <textarea
+                    id="projectIdea"
+                    name="projectIdea"
                       rows={8}
-                      value={formData.projectIdea}
-                      onChange={handleInputChange}
+                    value={formData.projectIdea}
+                    onChange={handleInputChange}
                       className="w-full px-6 py-6 rounded-xl bg-gray-700/50 border border-purple-500/30 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 text-white placeholder-purple-300/50 transition-all duration-300 resize-none text-lg leading-relaxed"
-                      required
+                    required
                       maxLength={2000}
                       placeholder="Describe your innovative project idea in detail... What problem does it solve? What makes it unique? What technologies will you use?"
                     />
@@ -661,9 +661,9 @@ export default function IdeationPage() {
                         animate={{ width: `${Math.min(100, (wordCount / 300) * 100)}%` }}
                         transition={{ duration: 0.7, ease: "easeOut" }}
                       />
-                    </div>
                   </div>
-
+                </div>
+                
                   <div className="flex gap-4">
                     <motion.button
                       onClick={prevStep}
@@ -676,19 +676,19 @@ export default function IdeationPage() {
                     
                     <motion.button
                       onClick={handleSubmit}
-                      disabled={wordCount > 300 || isSubmitting}
+                  disabled={wordCount > 300 || isSubmitting}
                       whileHover={{ scale: wordCount > 300 || isSubmitting ? 1 : 1.02, boxShadow: wordCount > 300 || isSubmitting ? 'none' : '0 10px 25px rgba(168, 85, 247, 0.3)' }}
                       whileTap={{ scale: wordCount > 300 || isSubmitting ? 1 : 0.98 }}
                       className={`flex-1 py-4 px-8 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 ${
-                        wordCount > 300 || isSubmitting
-                          ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                    wordCount > 300 || isSubmitting
+                      ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                           : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-lg'
-                      }`}
-                    >
-                      {isSubmitting ? (
+                  }`}
+                >
+                  {isSubmitting ? (
                         <>
                           <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                          Submitting...
+                      Submitting...
                         </>
                       ) : (
                         <>
@@ -696,11 +696,11 @@ export default function IdeationPage() {
                         </>
                       )}
                     </motion.button>
-                  </div>
+                </div>
                 </motion.div>
               )}
             </AnimatePresence>
-          </div>
+                  </div>
         </motion.div>
 
         {/* Footer */}
@@ -712,7 +712,7 @@ export default function IdeationPage() {
         >
           <p className="text-lg">Your innovative ideas shape the future of technology ✨</p>
         </motion.div>
-      </div>
+        </div>
     </div>
   );
 }

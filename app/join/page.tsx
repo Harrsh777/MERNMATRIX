@@ -494,8 +494,8 @@ const TeamOnboarding = () => {
                 </div>
               </div>
               
-                             <div className="p-8">
-                 <AnimatePresence mode="wait">
+              <div className="p-8">
+                <AnimatePresence mode="wait">
                    {!isRegistrationOpen ? (
                      <motion.div
                        className="text-center py-16"

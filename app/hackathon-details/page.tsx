@@ -160,28 +160,28 @@ const HackathonDetails: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-b from-black via-[#0A0118] to-[#1E0345] text-white overflow-hidden relative">
       {/* Simple aesthetic background */}
       <div className="fixed inset-0 z-0">
-                 {/* Subtle gradient overlay */}
-         <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-[#0A0118]/30 to-[#1E0345]/40"></div>
-         
-         {/* Elegant geometric shapes */}
-         <div className="absolute top-0 left-0 w-full h-full">
-           {/* Large subtle circle */}
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-[#0A0118]/30 to-[#1E0345]/40"></div>
+        
+        {/* Elegant geometric shapes */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          {/* Large subtle circle */}
            <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-gradient-to-br from-green-500/10 to-transparent blur-3xl"></div>
-           
-           {/* Medium circle */}
+          
+          {/* Medium circle */}
            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-gradient-to-tl from-emerald-500/15 to-transparent blur-2xl"></div>
-           
-           {/* Small accent circle */}
+          
+          {/* Small accent circle */}
            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-gradient-to-r from-green-400/20 to-transparent blur-xl"></div>
-         </div>
-         
-         {/* Subtle grid pattern */}
-         <div className="absolute inset-0 opacity-5">
-           <div className="w-full h-full" style={{
+        </div>
+        
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="w-full h-full" style={{
              backgroundImage: `linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)`,
-             backgroundSize: '50px 50px'
-           }}></div>
-         </div>
+            backgroundSize: '50px 50px'
+          }}></div>
+        </div>
       </div>
 
       {/* Header */}
@@ -204,20 +204,20 @@ const HackathonDetails: React.FC = () => {
           </Link>
           
           <div className="flex items-center gap-4">
-                         <motion.a 
-               whileHover={{ scale: 1.2, y: -3 }} 
-               href="#" 
+            <motion.a 
+              whileHover={{ scale: 1.2, y: -3 }} 
+              href="#" 
                className="p-3 rounded-full bg-[#1E0345] hover:bg-green-500 transition-all backdrop-blur-sm border border-green-500/30"
-             >
-               <FaDiscord className="text-xl" />
-             </motion.a>
-             <motion.a 
-               whileHover={{ scale: 1.2, y: -3 }} 
-               href="#" 
+            >
+              <FaDiscord className="text-xl" />
+            </motion.a>
+            <motion.a 
+              whileHover={{ scale: 1.2, y: -3 }} 
+              href="#" 
                className="p-3 rounded-full bg-[#1E0345] hover:bg-green-500 transition-all backdrop-blur-sm border border-green-500/30"
-             >
-               <FaTwitter className="text-xl" />
-             </motion.a>
+            >
+              <FaTwitter className="text-xl" />
+            </motion.a>
           </div>
         </div>
       </motion.header>
@@ -242,7 +242,7 @@ const HackathonDetails: React.FC = () => {
             className="text-5xl md:text-7xl font-bold mb-6"
           >
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-200">DAWN OF</span>{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">&lt;CODE</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">&lt;ODE</span>
           </motion.h1>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -347,21 +347,26 @@ const HackathonDetails: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="flex flex-wrap justify-center gap-4"
           >
-            <motion.a 
-              href="https://tinyurl.com/DOCVITB"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05, y: -3 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-bold hover:shadow-lg hover:shadow-green-500/40 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <FaRocket className="text-lg" />
-              Register Now
-            </motion.a>
+            <Link href="/join">
             <motion.button 
               whileHover={{ scale: 1.05, y: -3 }}
               whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-[#1E0345] text-white rounded-lg font-bold border border-green-500/30 hover:border-green-500 transition-all backdrop-blur-sm"
+                className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-bold hover:shadow-lg hover:shadow-green-500/40 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <FaRocket className="text-lg" />
+              Register Now
+            </motion.button>
+            </Link>
+            <motion.button 
+              whileHover={{ scale: 1.05, y: -3 }}
+              whileTap={{ scale: 0.95 }}
+               onClick={() => {
+                 window.scrollTo({
+                   top: window.scrollY + 200, // 5cm ≈ 200px
+                   behavior: 'smooth'
+                 });
+               }}
+               className="px-8 py-4 bg-[#1E0345] text-white rounded-lg font-bold border border-green-500/30 hover:border-green-500 transition-all backdrop-blur-sm"
             >
               View Guidelines
             </motion.button>
@@ -371,47 +376,47 @@ const HackathonDetails: React.FC = () => {
         
         </div>
 
-                 {/* Animated decorative elements */}
-         <motion.div 
+        {/* Animated decorative elements */}
+        <motion.div 
            className="absolute top-10 left-10 w-40 h-40 rounded-full bg-green-400 opacity-20 blur-3xl"
-           animate={{
-             scale: [1, 1.2, 1],
-             opacity: [0.2, 0.3, 0.2],
-           }}
-           transition={{
-             duration: 8,
-             repeat: Infinity,
-             ease: "easeInOut"
-           }}
-         ></motion.div>
-         <motion.div 
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.3, 0.2],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        ></motion.div>
+        <motion.div 
            className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-emerald-400 opacity-20 blur-3xl"
-           animate={{
-             scale: [1, 1.3, 1],
-             opacity: [0.2, 0.4, 0.2],
-           }}
-           transition={{
-             duration: 10,
-             repeat: Infinity,
-             ease: "easeInOut",
-             delay: 1
-           }}
-         ></motion.div>
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1
+          }}
+        ></motion.div>
         
-                 {/* Scroll indicator */}
-         <motion.div 
-           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-           animate={{ y: [0, 10, 0] }}
-           transition={{ duration: 2, repeat: Infinity }}
-         >
+        {/* Scroll indicator */}
+        <motion.div 
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
            <div className="w-6 h-10 border-2 border-green-500 rounded-full flex justify-center">
-             <motion.div
+            <motion.div
                className="w-1 h-3 bg-green-500 rounded-full mt-2"
-               animate={{ y: [0, 12, 0] }}
-               transition={{ duration: 2, repeat: Infinity }}
-             />
-           </div>
-         </motion.div>
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
+        </motion.div>
       </section>
 
       {/* Content Tabs */}
@@ -430,7 +435,7 @@ const HackathonDetails: React.FC = () => {
                 onClick={() => setActiveTab(tab)}
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                                 className={`px-6 py-3 rounded-lg font-medium capitalize transition-all ${activeTab === tab 
+                className={`px-6 py-3 rounded-lg font-medium capitalize transition-all ${activeTab === tab 
                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30' 
                    : 'bg-[#1E0345] text-[#E0E0E0] hover:bg-green-500/20 backdrop-blur-sm border border-green-500/30'}`}
               >
@@ -460,34 +465,34 @@ const HackathonDetails: React.FC = () => {
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6">
-                                         <motion.div 
-                       whileHover={{ y: -5 }}
+                    <motion.div 
+                      whileHover={{ y: -5 }}
                        className="bg-[#0A0118] p-6 rounded-xl border border-green-500/30 hover:border-green-400 transition-all"
-                     >
-                       <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                    >
+                      <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
                          <FaLightbulb className="text-green-400" /> Theme
-                       </h3>
-                       <p className="text-[#E0E0E0]">
+                      </h3>
+                      <p className="text-[#E0E0E0]">
                          "Innovation for Social Impact" - Projects should focus on solving real-world problems using technology, with emphasis on cybersecurity, child safety, governance transparency, and cloud resilience.
-                       </p>
-                     </motion.div>
+                      </p>
+                    </motion.div>
 
-                                         <motion.div 
-                       whileHover={{ y: -5 }}
+                    <motion.div 
+                      whileHover={{ y: -5 }}
                        className="bg-[#0A0118] p-6 rounded-xl border border-green-500/30 hover:border-green-400 transition-all"
-                     >
-                       <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                    >
+                      <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
                          <FaBook className="text-green-400" /> Tracks
-                       </h3>
-                       <ul className="text-[#E0E0E0] list-disc list-inside space-y-2">
+                      </h3>
+                      <ul className="text-[#E0E0E0] list-disc list-inside space-y-2">
                          <li>Cybersecurity & Privacy</li>
                          <li>Governance & FinTech</li>
                          <li>Developer Tools & Cloud Infrastructure</li>
                          <li>Healthcare & MedTech</li>
                          <li>Education & Collaboration</li>
                          <li>Sustainability & Smart Living</li>
-                       </ul>
-                     </motion.div>
+                      </ul>
+                    </motion.div>
                   </div>
 
                   <div>
@@ -582,7 +587,7 @@ const HackathonDetails: React.FC = () => {
                       >
                         <div className="flex items-start gap-4 mb-3">
                           <div className="flex-shrink-0 w-32 text-green-400 font-medium text-sm">{item.time}</div>
-                          <div className="flex-grow">
+                        <div className="flex-grow">
                             <h3 className="font-bold text-white text-lg">{item.event}</h3>
                             <p className="text-sm text-green-300 font-medium">{item.day}</p>
                           </div>
@@ -590,7 +595,7 @@ const HackathonDetails: React.FC = () => {
                         {item.highlight && (
                           <div className="mt-3 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
                             <p className="text-sm text-green-200 leading-relaxed">{item.highlight}</p>
-                          </div>
+                        </div>
                         )}
                       </motion.div>
                     ))}
@@ -659,20 +664,20 @@ const HackathonDetails: React.FC = () => {
                       <div key={index}>
                         <h3 className="text-xl font-bold mb-4 text-[#E0E0E0]">{sponsor.tier}</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                          <motion.div 
-                            key={index}
-                            whileHover={{ scale: 1.05, y: -5 }}
+                            <motion.div 
+                              key={index}
+                              whileHover={{ scale: 1.05, y: -5 }}
                             className="bg-[#0A0118] p-6 rounded-xl border border-green-500/30 hover:border-green-400 transition-all flex items-center justify-center h-40 relative overflow-hidden group"
-                          >
+                            >
                             <div className="absolute inset-0 bg-gradient-to-br from-transparent to-green-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="text-center z-10">
+                              <div className="text-center z-10">
                               <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full mx-auto mb-3 flex items-center justify-center border border-green-500/50">
                                 <span className="text-2xl font-bold text-white">{sponsor.name[0]}</span>
-                              </div>
+                                </div>
                               <p className="font-medium text-white text-lg mb-1">{sponsor.name}</p>
                               <p className="text-sm text-green-300 font-medium">{sponsor.tier}</p>
-                            </div>
-                          </motion.div>
+                              </div>
+                            </motion.div>
                         </div>
                       </div>
                     ))}
@@ -768,24 +773,23 @@ const HackathonDetails: React.FC = () => {
               Join hundreds of developers, designers, and innovators in this month-long hackathon. 
               Push your limits, learn from experts, and create solutions that matter.
             </p>
-                         <div className="flex flex-wrap justify-center gap-4">
-               <motion.a 
-                 href="https://tinyurl.com/DOCVITB"
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 whileHover={{ scale: 1.05, y: -3 }}
-                 whileTap={{ scale: 0.95 }}
-                 className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-bold hover:shadow-lg hover:shadow-green-500/40 transition-all cursor-pointer"
-               >
-                 Register Now
-               </motion.a>
-               <motion.button 
-                 whileHover={{ scale: 1.05, y: -3 }}
-                 whileTap={{ scale: 0.95 }}
+            <div className="flex flex-wrap justify-center gap-4">
+               <Link href="/hackathon-details">
+              <motion.button 
+                whileHover={{ scale: 1.05, y: -3 }}
+                whileTap={{ scale: 0.95 }}
+                   className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-bold hover:shadow-lg hover:shadow-green-500/40 transition-all cursor-pointer"
+              >
+                   Register Now
+              </motion.button>
+               </Link>
+              <motion.button 
+                whileHover={{ scale: 1.05, y: -3 }}
+                whileTap={{ scale: 0.95 }}
                  className="px-8 py-3 bg-[#1E0345] text-white rounded-lg font-bold border border-green-500/30 hover:border-green-500 transition-all backdrop-blur-sm"
-               >
-                 Download Event Guide
-               </motion.button>
+              >
+                Download Event Guide
+              </motion.button>
              </div>
           </motion.div>
         </div>
