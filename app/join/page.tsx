@@ -1,5 +1,8 @@
 "use client"
 import React, { useState, useEffect } from 'react';
+
+// Force dynamic rendering to prevent static generation issues
+export const dynamic = 'force-dynamic';
 import Head from 'next/head';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -138,6 +141,11 @@ const TeamOnboarding = () => {
 
   // Fetch session counts from database
   const fetchSessionCounts = async () => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('team_registrations')
@@ -291,6 +299,12 @@ const TeamOnboarding = () => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+
+    if (!supabase) {
+      setError("Database connection not available. Please try again later.");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       // Validate problem statement

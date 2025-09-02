@@ -1,6 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
+// Force dynamic rendering to prevent static generation issues
+export const dynamic = 'force-dynamic';
 import { createClient } from '@supabase/supabase-js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUpload, FaLink, FaUsers, FaLightbulb, FaCheckCircle, FaArrowRight, FaArrowLeft, FaFilePowerpoint, FaClock, FaExclamationTriangle } from 'react-icons/fa';
