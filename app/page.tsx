@@ -212,21 +212,15 @@ const HomePage = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => {
-                  const el = document.getElementById('timeline');
-                  if (el) {
-                    const headerHeight = 80; // Approximate header height
-                    const elementPosition = el.offsetTop - headerHeight;
-                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
-                  }
-                }}
-                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
-              >
-                Timeline
-              </motion.button>
+              <Link href="/leaderboard">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+                >
+                  Leaderboard
+                </motion.button>
+              </Link>
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -308,22 +302,12 @@ const HomePage = () => {
             >
               <div className="flex flex-col space-y-6 mt-8">
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
-                  <a
-                    href="#timeline"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const el = document.getElementById('timeline');
-                      if (el) {
-                        const headerHeight = 80;
-                        const elementPosition = el.offsetTop - headerHeight;
-                        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
-                      }
-                      setMobileMenuOpen(false);
-                    }}
+                  <Link
+                    href="/leaderboard"
                     className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
                   >
-                    Timeline
-                  </a>
+                    Leaderboard
+                  </Link>
                 </motion.div>
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
                   <a
