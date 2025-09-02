@@ -136,6 +136,31 @@ const TeamOnboarding = () => {
     registrationNumber: string;
   }
 
+  // Fetch session counts from database
+  const fetchSessionCounts = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('team_registrations')
+        .select('selected_session')
+        .not('selected_session', 'is', null);
+
+      if (error) {
+        console.error('Error fetching session counts:', error);
+        return;
+      }
+
+      const counts = { session1: 0, session2: 0 };
+      data?.forEach(team => {
+        if (team.selected_session === 1) counts.session1++;
+        if (team.selected_session === 2) counts.session2++;
+      });
+
+      setSessionCounts(counts);
+    } catch (err) {
+      console.error('Error fetching session counts:', err);
+    }
+  };
+
   // Countdown timer effect
   useEffect(() => {
     const targetDate = new Date('2025-09-03T09:00:00').getTime();
@@ -162,6 +187,11 @@ const TeamOnboarding = () => {
     const timer = setInterval(updateTimer, 1000);
     
     return () => clearInterval(timer);
+  }, []);
+
+  // Fetch session counts on component mount
+  useEffect(() => {
+    fetchSessionCounts();
   }, []);
 
   // Animated background particles
@@ -255,6 +285,7 @@ const TeamOnboarding = () => {
   const [isSessionDropdownOpen, setIsSessionDropdownOpen] = useState(false);
   const [participantType, setParticipantType] = useState<'VIT' | 'External'>('VIT');
   const [selectedSession, setSelectedSession] = useState<number | null>(null);
+  const [sessionCounts, setSessionCounts] = useState({ session1: 0, session2: 0 });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -275,6 +306,11 @@ const TeamOnboarding = () => {
       // Validate session
       if (!selectedSession) {
         throw new Error("Please select a session");
+      }
+
+      // Check if Session 1 is full
+      if (selectedSession === 1 && sessionCounts.session1 >= 70) {
+        throw new Error("Session 1 is full. Please select Session 2.");
       }
 
       // Validate team members
@@ -323,6 +359,9 @@ const TeamOnboarding = () => {
       // Show success
       setShowSummary(true);
       setTimeout(() => setIsSubmitted(true), 1200);
+      
+      // Refresh session counts after successful registration
+      fetchSessionCounts();
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -968,31 +1007,115 @@ const TeamOnboarding = () => {
                             <label className="block text-sm font-medium text-[#CBC3E3] mb-4">
                               Choose a Session in which you want to pitch <span className="text-[#A020F0]">*</span>
                             </label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {SESSIONS.map((session) => (
-                                <label
-                                  key={session.id}
-                                  className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                                    selectedSession === session.id
-                                      ? 'border-[#A020F0] bg-[#A020F0]/10'
-                                      : 'border-[#CBC3E3]/20 hover:border-[#A020F0]/40 hover:bg-[#A020F0]/5'
-                                  }`}
+                            
+                            {/* Session Capacity Info */}
+                            <div className="mb-6 p-4 bg-[#0A0118]/60 border border-[#CBC3E3]/20 rounded-xl">
+                              <div className="flex items-center justify-between mb-3">
+                                <h4 className="text-lg font-semibold text-[#CBC3E3]">Session Capacity Status</h4>
+                                <motion.button
+                                  onClick={fetchSessionCounts}
+                                  className="px-3 py-1 text-xs bg-[#A020F0]/20 text-[#A020F0] rounded-lg hover:bg-[#A020F0]/30 transition-colors border border-[#A020F0]/30"
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
                                 >
-                                  <input
-                                    type="radio"
-                                    name="selectedSession"
-                                    value={session.id}
-                                    checked={selectedSession === session.id}
-                                    onChange={() => setSelectedSession(session.id)}
-                                    className="mr-3 w-5 h-5 text-[#A020F0] focus:ring-[#A020F0]"
-                                  />
+                                  🔄 Refresh
+                                </motion.button>
+                              </div>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="flex items-center justify-between p-3 bg-[#1E0345]/60 rounded-lg">
                                   <div>
-                                    <div className="font-semibold text-[#F0F0F0]">{session.label}</div>
-                                    <div className="text-sm text-[#CBC3E3]/70">{session.time}</div>
+                                    <div className="font-medium text-[#F0F0F0]">Session 1</div>
+                                    <div className="text-sm text-[#CBC3E3]/70">2:00 PM – 3:30 PM</div>
                                   </div>
-                                </label>
-                              ))}
+                                  <div className="text-right">
+                                    <div className={`text-lg font-bold ${sessionCounts.session1 >= 70 ? 'text-red-400' : 'text-green-400'}`}>
+                                      {sessionCounts.session1}/70
+                                    </div>
+                                    <div className="text-xs text-[#CBC3E3]/60">
+                                      {sessionCounts.session1 >= 70 ? 'FULL' : 'Available'}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center justify-between p-3 bg-[#1E0345]/60 rounded-lg">
+                                  <div>
+                                    <div className="font-medium text-[#F0F0F0]">Session 2</div>
+                                    <div className="text-sm text-[#CBC3E3]/70">3:45 PM – 5:15 PM</div>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="text-lg font-bold text-blue-400">
+                                      {sessionCounts.session2}/∞
+                                    </div>
+                                    <div className="text-xs text-[#CBC3E3]/60">Available</div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {SESSIONS.map((session) => {
+                                const isSession1Full = session.id === 1 && sessionCounts.session1 >= 70;
+                                const isDisabled = isSession1Full;
+                                
+                                return (
+                                  <label
+                                    key={session.id}
+                                    className={`flex items-center p-4 border-2 rounded-xl transition-all ${
+                                      isDisabled 
+                                        ? 'border-red-500/30 bg-red-500/5 cursor-not-allowed opacity-60'
+                                        : selectedSession === session.id
+                                        ? 'border-[#A020F0] bg-[#A020F0]/10 cursor-pointer'
+                                        : 'border-[#CBC3E3]/20 hover:border-[#A020F0]/40 hover:bg-[#A020F0]/5 cursor-pointer'
+                                    }`}
+                                  >
+                                    <input
+                                      type="radio"
+                                      name="selectedSession"
+                                      value={session.id}
+                                      checked={selectedSession === session.id}
+                                      onChange={() => !isDisabled && setSelectedSession(session.id)}
+                                      disabled={isDisabled}
+                                      className="mr-3 w-5 h-5 text-[#A020F0] focus:ring-[#A020F0] disabled:cursor-not-allowed"
+                                    />
+                                    <div className="flex-1">
+                                      <div className="flex items-center justify-between">
+                                        <div>
+                                          <div className="font-semibold text-[#F0F0F0]">{session.label}</div>
+                                          <div className="text-sm text-[#CBC3E3]/70">{session.time}</div>
+                                        </div>
+                                        {isSession1Full && session.id === 1 && (
+                                          <div className="text-right">
+                                            <div className="text-xs font-bold text-red-400 bg-red-500/20 px-2 py-1 rounded">
+                                              FULL
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                      {session.id === 1 && (
+                                        <div className="mt-2 text-xs text-[#CBC3E3]/60">
+                                          Teams registered: {sessionCounts.session1}/70
+                                        </div>
+                                      )}
+                                      {session.id === 2 && (
+                                        <div className="mt-2 text-xs text-[#CBC3E3]/60">
+                                          Teams registered: {sessionCounts.session2}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                            
+                            {sessionCounts.session1 >= 70 && (
+                              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                                <div className="flex items-center">
+                                  <svg className="w-5 h-5 text-red-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                  </svg>
+                                  <span className="text-red-400 font-medium">Session 1 is now full! Please select Session 2.</span>
+                                </div>
+                              </div>
+                            )}
                           </div>
                           <div className="flex justify-between">
                             <motion.button
@@ -1013,6 +1136,10 @@ const TeamOnboarding = () => {
                               onClick={() => {
                                 if (!selectedSession) {
                                   setError("Please select a session");
+                                  return;
+                                }
+                                if (selectedSession === 1 && sessionCounts.session1 >= 70) {
+                                  setError("Session 1 is full. Please select Session 2.");
                                   return;
                                 }
                                 setActiveStep(4);
