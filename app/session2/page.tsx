@@ -64,21 +64,77 @@ const Session2Dashboard = () => {
   const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<'attendance' | 'admin' | null>(null);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(true);
+  const [connectionError, setConnectionError] = useState<string>('');
 
   // Initialize loading state
   useEffect(() => {
     setLoading(false);
   }, []);
 
+  // Focus password input when modal opens
+  useEffect(() => {
+    if (showAuthModal && !isAuthenticated) {
+      const timer = setTimeout(() => {
+        const passwordInput = document.getElementById('password');
+        if (passwordInput) {
+          passwordInput.focus();
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showAuthModal, isAuthenticated]);
+
   // Debug: Log authentication state changes
   useEffect(() => {
     console.log('Session 2 Auth state changed:', { isAuthenticated, showAuthModal, userRole, loading });
   }, [isAuthenticated, showAuthModal, userRole, loading]);
 
+  // Test Supabase connection
+  const testConnection = async (): Promise<boolean> => {
+    if (!supabase) {
+      console.warn('Supabase client not available - check environment variables');
+      setConnectionError('Supabase client not configured. Please check environment variables.');
+      return false;
+    }
+
+    try {
+      console.log('Testing Supabase connection...');
+      const { error } = await supabase
+        .from('team_registrations')
+        .select('id')
+        .limit(1);
+      
+      if (error) {
+        console.error('Connection test failed:', error);
+        setConnectionError(`Database connection failed: ${error.message}`);
+        return false;
+      }
+      
+      console.log('Supabase connection test successful');
+      setConnectionError(''); // Clear any previous errors
+      return true;
+    } catch (error: any) {
+      console.error('Connection test error:', error.message);
+      setConnectionError(`Connection error: ${error.message}`);
+      return false;
+    }
+  };
+
   // Fetch teams from Supabase
   useEffect(() => {
     if (isAuthenticated) {
-      fetchTeams();
+      const initializeData = async () => {
+        const isConnected = await testConnection();
+        if (isConnected) {
+          await fetchTeams();
+        } else {
+          console.error('Failed to connect to database');
+          setConnectionError('Failed to connect to database. Please check your connection and try again.');
+          setLoading(false);
+        }
+      };
+      
+      initializeData();
     }
   }, [isAuthenticated]);
 
@@ -121,63 +177,102 @@ const Session2Dashboard = () => {
     setPassword('');
     setPasswordError('');
     setShowAuthModal(true);
+    setConnectionError('');
+  };
+
+  const retryConnection = async () => {
+    setConnectionError('');
+    setLoading(true);
+    const isConnected = await testConnection();
+    if (isConnected) {
+      await fetchTeams();
+    } else {
+      setConnectionError('Failed to connect to database. Please check your connection and try again.');
+      setLoading(false);
+    }
   };
 
   const fetchTeams = async (): Promise<void> => {
     if (!supabase) {
       console.warn('Supabase client not available');
+      setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
+      console.log('Fetching teams from Supabase...');
+      
       const { data, error } = await supabase
         .from('team_registrations')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Teams fetched successfully:', data?.length || 0);
       setTeams(data || []);
     } catch (error: any) {
       console.error('Error fetching teams:', error.message);
+      // Set empty array on error to prevent infinite loading
+      setTeams([]);
     } finally {
       setLoading(false);
     }
   };
 
   const markTeamPresent = async (teamId: number): Promise<void> => {
-    if (!supabase) return;
+    if (!supabase) {
+      console.warn('Supabase client not available for marking present');
+      return;
+    }
 
     try {
+      console.log('Marking team as present:', teamId);
       const { error } = await supabase
         .from('team_registrations')
         .update({ present: true })
         .eq('id', teamId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error marking present:', error);
+        throw error;
+      }
 
       setTeams(teams.map(team => 
         team.id === teamId ? { ...team, present: true } : team
       ));
+      console.log('Team marked as present successfully');
     } catch (error: any) {
       console.error('Error marking team as present:', error.message);
     }
   };
 
   const markTeamAbsent = async (teamId: number): Promise<void> => {
-    if (!supabase) return;
+    if (!supabase) {
+      console.warn('Supabase client not available for marking absent');
+      return;
+    }
 
     try {
+      console.log('Marking team as absent:', teamId);
       const { error } = await supabase
         .from('team_registrations')
         .update({ present: false })
         .eq('id', teamId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error marking absent:', error);
+        throw error;
+      }
 
       setTeams(teams.map(team => 
         team.id === teamId ? { ...team, present: false } : team
       ));
+      console.log('Team marked as absent successfully');
     } catch (error: any) {
       console.error('Error marking team as absent:', error.message);
     }
@@ -263,7 +358,7 @@ const Session2Dashboard = () => {
       {/* Debug info - remove this later */}
       {process.env.NODE_ENV === 'development' && (
         <div className="fixed top-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
-          Auth: {isAuthenticated ? 'Yes' : 'No'} | Modal: {showAuthModal ? 'Yes' : 'No'} | Role: {userRole || 'None'} | Loading: {loading ? 'Yes' : 'No'}
+          Auth: {isAuthenticated ? 'Yes' : 'No'} | Modal: {showAuthModal ? 'Yes' : 'No'} | Role: {userRole || 'None'} | Loading: {loading ? 'Yes' : 'No'} | Supabase: {supabase ? 'Connected' : 'Not Available'}
         </div>
       )}
       
@@ -344,7 +439,6 @@ const Session2Dashboard = () => {
                     placeholder="Enter password"
                     required
                     disabled={isCheckingAuth}
-                    autoFocus
                   />
                   {passwordError && (
                     <motion.p
@@ -385,6 +479,27 @@ const Session2Dashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isAuthenticated && (
           <>
+            {/* Connection Error Display */}
+            {connectionError && (
+              <div className="mb-6 bg-red-900/20 border border-red-700/30 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <FaTimes className="h-5 w-5 text-red-400 mr-3" />
+                    <div>
+                      <h3 className="text-sm font-medium text-red-300">Database Connection Error</h3>
+                      <p className="text-sm text-red-400/70 mt-1">{connectionError}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={retryConnection}
+                    className="flex items-center px-3 py-1.5 bg-red-600/20 text-red-400 border border-red-600/30 rounded-md hover:bg-red-600/30 hover:text-red-300 transition-all duration-300 text-sm"
+                  >
+                    <FaCheck className="mr-1.5 h-3 w-3" />
+                    Retry
+                  </button>
+                </div>
+              </div>
+            )}
             {/* Search and Filters */}
             <div className="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div className="flex flex-col sm:flex-row gap-4 flex-1">
@@ -433,23 +548,8 @@ const Session2Dashboard = () => {
                   {showPresent ? 'Hide Present' : 'Show Present'}
                 </button>
                 
-                <button 
-                  className="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300 transform hover:scale-105"
-                  onClick={markAllPresent}
-                  title="Mark all teams as present"
-                >
-                  <FaCheck className="mr-2" />
-                  Mark All Present
-                </button>
-                
-                <button 
-                  className="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300 transform hover:scale-105"
-                  onClick={markAllAbsent}
-                  title="Mark all teams as absent"
-                >
-                  <FaTimes className="mr-2" />
-                  Mark All Absent
-                </button>
+              
+               
                 
                 {(domainFilter || searchTerm) && (
                   <button 
