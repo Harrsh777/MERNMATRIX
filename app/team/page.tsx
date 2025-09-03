@@ -105,7 +105,7 @@ const teamMembers = [
               {teamMembers.map((member) => (
                 <div 
                   key={member.id}
-                  className="w-[280px] md:w-[320px] h-[480px] bg-gradient-to-b from-black/30 to-black/50 rounded-2xl backdrop-blur-md p-6 flex flex-col items-center justify-between border border-white/10 hover:border-[#FFD700]/50 transition-all duration-300 group"
+                  className="w-[285px] md:w-[320px] h-[480px] bg-gradient-to-b from-black/30 to-black/50 rounded-2xl backdrop-blur-md p-6 flex flex-col items-center justify-between border border-white/10 hover:border-[#FFD700]/50 transition-all duration-300 group"
                 >
                   <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-[#FFD700] group-hover:scale-105 transition-transform duration-300">
                     <Image 
