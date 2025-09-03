@@ -104,6 +104,12 @@ const AdminDashboard = () => {
   }, []);
 
   const fetchTeams = async (): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('team_registrations')
@@ -120,6 +126,11 @@ const AdminDashboard = () => {
   };
 
   const fetchProjectIdeas = async (): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('project_ideas')
@@ -134,6 +145,11 @@ const AdminDashboard = () => {
   };
 
   const fetchLeaderboardData = async (): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('leaderboard')
@@ -148,6 +164,11 @@ const AdminDashboard = () => {
   };
 
   const updateLeaderboardScore = async (teamId: number, field: string, value: number): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('leaderboard')
@@ -163,6 +184,11 @@ const AdminDashboard = () => {
   };
 
   const addLeaderboardTeam = async (teamData: Partial<LeaderboardEntry>): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('leaderboard')
@@ -177,6 +203,11 @@ const AdminDashboard = () => {
   };
 
   const deleteLeaderboardTeam = async (teamId: number): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('leaderboard')
@@ -192,6 +223,11 @@ const AdminDashboard = () => {
   };
 
   const markTeamPresent = async (teamId: string): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('team_registrations')
@@ -217,6 +253,11 @@ const AdminDashboard = () => {
   };
 
   const markTeamAbsent = async (teamId: string): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('team_registrations')
@@ -242,6 +283,11 @@ const AdminDashboard = () => {
   };
 
   const markTeamEntered = async (teamId: string): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('team_registrations')
@@ -259,6 +305,11 @@ const AdminDashboard = () => {
   };
 
   const unmarkTeamEntered = async (teamId: string): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('team_registrations')
@@ -276,6 +327,11 @@ const AdminDashboard = () => {
   };
 
   const rateTeam = async (teamId: string, rating: number): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('team_registrations')
@@ -301,6 +357,11 @@ const AdminDashboard = () => {
   };
 
   const rateProjectIdea = async (ideaId: string, rating: number): Promise<void> => {
+    if (!supabase) {
+      console.warn('Supabase client not available');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('project_ideas')
