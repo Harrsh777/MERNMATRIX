@@ -95,13 +95,84 @@ const AdminDashboard = () => {
   const [showPresent, setShowPresent] = useState<boolean>(true);
   const [domainFilter, setDomainFilter] = useState<string>('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'created_at', direction: 'desc' });
+  
+  // Authentication states
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>('');
+  const [passwordError, setPasswordError] = useState<string>('');
+  const [isCheckingAuth, setIsCheckingAuth] = useState<boolean>(false);
+  const [userRole, setUserRole] = useState<'attendance' | 'admin' | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(true);
+
+  // Initialize loading state
+  useEffect(() => {
+    // Set loading to false initially since we don't need to fetch data until authenticated
+    setLoading(false);
+  }, []);
+
+  // Debug: Log authentication state changes
+  useEffect(() => {
+    console.log('Auth state changed:', { isAuthenticated, showAuthModal, userRole, loading });
+  }, [isAuthenticated, showAuthModal, userRole, loading]);
 
   // Fetch teams from Supabase
   useEffect(() => {
-    fetchTeams();
-    fetchProjectIdeas();
-    fetchLeaderboardData();
-  }, []);
+    if (isAuthenticated) {
+      fetchTeams();
+      fetchProjectIdeas();
+      fetchLeaderboardData();
+    }
+  }, [isAuthenticated]);
+
+  // Password validation function
+  const validatePassword = (inputPassword: string): 'attendance' | 'admin' | null => {
+    if (inputPassword === 'matrix') {
+      return 'attendance';
+    } else if (inputPassword === 'security') {
+      return 'admin';
+    }
+    return null;
+  };
+
+  // Handle password submission
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsCheckingAuth(true);
+    setPasswordError('');
+
+    // Simulate a brief loading state for better UX
+    setTimeout(() => {
+      const role = validatePassword(password);
+      if (role) {
+        setIsAuthenticated(true);
+        setUserRole(role);
+        setPassword('');
+        setPasswordError('');
+        setShowAuthModal(false);
+        
+        // Set appropriate tab based on role
+        if (role === 'attendance') {
+          setActiveTab('registrations');
+        } else {
+          setActiveTab('project-ideas');
+        }
+      } else {
+        setPasswordError('Invalid password. Please try again.');
+        setPassword('');
+      }
+      setIsCheckingAuth(false);
+    }, 500);
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserRole(null);
+    setPassword('');
+    setPasswordError('');
+    setShowAuthModal(true);
+    setActiveTab('registrations');
+  };
 
   const fetchTeams = async (): Promise<void> => {
     if (!supabase) {
@@ -458,7 +529,8 @@ const AdminDashboard = () => {
     idea.project_idea?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
+  // Only show loading if we're authenticated and actually loading data
+  if (loading && isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-purple-950">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
@@ -468,150 +540,272 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-purple-950 text-white">
+      {/* Debug info - remove this later */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="fixed top-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
+          Auth: {isAuthenticated ? 'Yes' : 'No'} | Modal: {showAuthModal ? 'Yes' : 'No'} | Role: {userRole || 'None'} | Loading: {loading ? 'Yes' : 'No'}
+        </div>
+      )}
       {/* Header */}
       <header className="bg-gray-800/70 backdrop-blur-md shadow-sm border-b border-purple-700/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
-            Admin Dashboard
-          </h1>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
+                {userRole === 'attendance' ? 'Attendance Dashboard' : 'Admin Dashboard'}
+              </h1>
+              {isAuthenticated && (
+                <p className="text-sm text-purple-300/70 mt-1">
+                  {userRole === 'attendance' ? 'Team Registration Management' : 'Full Admin Access'}
+                </p>
+              )}
+            </div>
+            {isAuthenticated && (
+              <div className="flex items-center space-x-2">
+                <a
+                  href="/session2"
+                  className="flex items-center px-3 py-1.5 bg-green-600/20 text-green-400 border border-green-600/30 rounded-md hover:bg-green-600/30 hover:text-green-300 transition-all duration-300 text-sm"
+                  title="Go to Session 2"
+                >
+                  <FaUsers className="mr-1.5 h-3 w-3" />
+                  Session 2
+                </a>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center px-3 py-1.5 bg-red-600/20 text-red-400 border border-red-600/30 rounded-md hover:bg-red-600/30 hover:text-red-300 transition-all duration-300 text-sm"
+                  title="Logout"
+                >
+                  <FaSignInAlt className="mr-1.5 h-3 w-3 rotate-180" />
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
+      {/* Authentication Modal */}
+      <AnimatePresence>
+        {(showAuthModal || !isAuthenticated) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-gray-800/90 backdrop-blur-xl rounded-2xl border border-purple-700/30 p-8 w-full max-w-md shadow-2xl"
+            >
+              <div className="text-center mb-8">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 mb-4">
+                  <FaSignInAlt className="h-8 w-8 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">Dashboard Access</h2>
+                <p className="text-purple-200/70">
+                  Enter your password to access the dashboard
+                </p>
+              </div>
+
+              <form onSubmit={handlePasswordSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-purple-300 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-gray-700/50 border border-purple-700/30 rounded-lg text-white placeholder-purple-300/50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                    placeholder="Enter password"
+                    required
+                    disabled={isCheckingAuth}
+                    autoFocus
+                  />
+                  {passwordError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-2 text-sm text-red-400 flex items-center"
+                    >
+                      <FaTimes className="mr-1" />
+                      {passwordError}
+                    </motion.p>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isCheckingAuth || !password.trim()}
+                  className="w-full flex items-center justify-center px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
+                >
+                  {isCheckingAuth ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <FaSignInAlt className="mr-2" />
+                      Access Dashboard
+                    </>
+                  )}
+                </button>
+              </form>
+
+
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tab Navigation */}
-        <div className="flex border-b border-purple-700/30 mb-6">
-          <button
-            className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'registrations' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
-            onClick={() => setActiveTab('registrations')}
-          >
-            <FaUsers className="mr-2" /> Team Registrations ({teams.length})
-          </button>
-          <button
-            className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'project-ideas' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
-            onClick={() => setActiveTab('project-ideas')}
-          >
-            <FaLightbulb className="mr-2" /> Project Ideas ({projectIdeas.length})
-          </button>
-          <button
-            className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'leaderboard' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
-            onClick={() => setActiveTab('leaderboard')}
-          >
-            <FaTrophy className="mr-2" /> Leaderboard Management
-          </button>
-        </div>
+        {isAuthenticated && (
+          <>
+            {/* Tab Navigation - Role-based */}
+            <div className="flex border-b border-purple-700/30 mb-6">
+              <button
+                className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'registrations' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
+                onClick={() => setActiveTab('registrations')}
+              >
+                <FaUsers className="mr-2" /> Team Registrations ({teams.length})
+              </button>
+              {userRole === 'admin' && (
+                <>
+                  <button
+                    className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'project-ideas' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
+                    onClick={() => setActiveTab('project-ideas')}
+                  >
+                    <FaLightbulb className="mr-2" /> Project Ideas ({projectIdeas.length})
+                  </button>
+                  <button
+                    className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'leaderboard' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
+                    onClick={() => setActiveTab('leaderboard')}
+                  >
+                    <FaTrophy className="mr-2" /> Leaderboard Management
+                  </button>
+                </>
+              )}
+            </div>
 
-                 {/* Search and Filters */}
-         <div className="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-           <div className="flex flex-col sm:flex-row gap-4 flex-1">
-             <div className="relative flex-1 max-w-md">
-               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <FaSearch className="h-5 w-5 text-purple-400" />
-               </div>
-               <input
-                 type="text"
-                 placeholder="Search teams or ideas..."
-                 className="block w-full pl-10 pr-3 py-2 border border-purple-700/30 rounded-lg leading-5 bg-gray-800/50 backdrop-blur-sm placeholder-purple-300/50 focus:outline-none focus:placeholder-purple-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-white"
-                 value={searchTerm}
-                 onChange={(e) => setSearchTerm(e.target.value)}
-               />
-             </div>
-             
-             {/* Domain Filter */}
-             {activeTab === 'registrations' && (
-               <div className="relative flex-1 max-w-md">
-                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                   <FaFilter className="h-5 w-5 text-purple-400" />
-                 </div>
-                 <select
-                   value={domainFilter}
-                   onChange={(e) => setDomainFilter(e.target.value)}
-                   className="block w-full pl-10 pr-3 py-2 border border-purple-700/30 rounded-lg leading-5 bg-gray-800/50 backdrop-blur-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-white appearance-none"
-                 >
-                   <option value="">All Domains</option>
-                   {uniqueDomains.length > 0 ? (
-                     uniqueDomains.map((domain) => (
-                       <option key={domain} value={domain} className="bg-gray-800">
-                         {domain}
-                       </option>
-                     ))
-                   ) : (
-                     availableDomains.map((domain) => (
-                       <option key={domain} value={domain} className="bg-gray-800">
-                         {domain}
-                       </option>
-                     ))
-                   )}
-                 </select>
-                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                   <FaChevronDown className="h-4 w-4 text-purple-400" />
-                 </div>
-               </div>
-             )}
-           </div>
-           
-           <div className="flex items-center space-x-2">
-             {activeTab === 'registrations' && (
-               <>
-                 <button 
-                   className="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105"
-                   onClick={() => setShowPresent(!showPresent)}
-                 >
-                   {showPresent ? <FaEyeSlash className="mr-2" /> : <FaEye className="mr-2" />}
-                   {showPresent ? 'Hide Present' : 'Show Present'}
-                 </button>
-                 
-                 {(domainFilter || searchTerm) && (
-                   <button 
-                     className="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300 transform hover:scale-105"
-                     onClick={() => {
-                       setDomainFilter('');
-                       setSearchTerm('');
-                     }}
-                   >
-                     <FaTimes className="mr-2" />
-                     Clear Filters
-                   </button>
-                 )}
-               </>
-             )}
-           </div>
-         </div>
+            {/* Search and Filters */}
+            <div className="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 flex-1">
+                <div className="relative flex-1 max-w-md">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FaSearch className="h-5 w-5 text-purple-400" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder={activeTab === 'registrations' ? "Search teams..." : "Search ideas..."}
+                    className="block w-full pl-10 pr-3 py-2 border border-purple-700/30 rounded-lg leading-5 bg-gray-800/50 backdrop-blur-sm placeholder-purple-300/50 focus:outline-none focus:placeholder-purple-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-white"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                
+                {/* Domain Filter - Only for registrations */}
+                {activeTab === 'registrations' && (
+                  <div className="relative flex-1 max-w-md">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FaFilter className="h-5 w-5 text-purple-400" />
+                    </div>
+                    <select
+                      value={domainFilter}
+                      onChange={(e) => setDomainFilter(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-2 border border-purple-700/30 rounded-lg leading-5 bg-gray-800/50 backdrop-blur-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-white appearance-none"
+                    >
+                      <option value="">All Domains</option>
+                      {uniqueDomains.length > 0 ? (
+                        uniqueDomains.map((domain) => (
+                          <option key={domain} value={domain} className="bg-gray-800">
+                            {domain}
+                          </option>
+                        ))
+                      ) : (
+                        availableDomains.map((domain) => (
+                          <option key={domain} value={domain} className="bg-gray-800">
+                            {domain}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <FaChevronDown className="h-4 w-4 text-purple-400" />
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                {activeTab === 'registrations' && (
+                  <>
+                    <button 
+                      className="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105"
+                      onClick={() => setShowPresent(!showPresent)}
+                    >
+                      {showPresent ? <FaEyeSlash className="mr-2" /> : <FaEye className="mr-2" />}
+                      {showPresent ? 'Hide Present' : 'Show Present'}
+                    </button>
+                    
+                    {(domainFilter || searchTerm) && (
+                      <button 
+                        className="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300 transform hover:scale-105"
+                        onClick={() => {
+                          setDomainFilter('');
+                          setSearchTerm('');
+                        }}
+                      >
+                        <FaTimes className="mr-2" />
+                        Clear Filters
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
 
-        {/* Content based on active tab */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-          >
-                         {activeTab === 'registrations' ? (
-               <TeamRegistrations 
-                 teams={filteredTeams} 
-                 uniqueDomains={uniqueDomains}
-                 onMarkEntered={markTeamEntered}
-                 onUnmarkEntered={unmarkTeamEntered}
-                 onMarkPresent={markTeamPresent}
-                 onMarkAbsent={markTeamAbsent}
-                 onRate={rateTeam}
-               />
-             ) : activeTab === 'project-ideas' ? (
-              <ProjectIdeas 
-                ideas={filteredProjectIdeas}
-                onRate={rateProjectIdea}
-              />
-            ) : (
-              <LeaderboardManagement 
-                leaderboardData={leaderboardData}
-                onUpdateScore={updateLeaderboardScore}
-                onAddTeam={addLeaderboardTeam}
-                onDeleteTeam={deleteLeaderboardTeam}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
+            {/* Content based on active tab and role */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {activeTab === 'registrations' ? (
+                  <TeamRegistrations 
+                    teams={filteredTeams} 
+                    uniqueDomains={uniqueDomains}
+                    onMarkEntered={markTeamEntered}
+                    onUnmarkEntered={unmarkTeamEntered}
+                    onMarkPresent={markTeamPresent}
+                    onMarkAbsent={markTeamAbsent}
+                    onRate={rateTeam}
+                    userRole={userRole}
+                  />
+                ) : activeTab === 'project-ideas' ? (
+                  <ProjectIdeas 
+                    ideas={filteredProjectIdeas}
+                    onRate={rateProjectIdea}
+                  />
+                ) : (
+                  <LeaderboardManagement 
+                    leaderboardData={leaderboardData}
+                    onUpdateScore={updateLeaderboardScore}
+                    onAddTeam={addLeaderboardTeam}
+                    onDeleteTeam={deleteLeaderboardTeam}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </>
+        )}
       </main>
     </div>
   );
@@ -626,6 +820,7 @@ interface TeamRegistrationsProps {
   onMarkPresent: (teamId: string) => void;
   onMarkAbsent: (teamId: string) => void;
   onRate: (teamId: string, rating: number) => void;
+  userRole: 'attendance' | 'admin' | null;
 }
 
 // Extended Team interface for numbering
@@ -640,7 +835,8 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
   onUnmarkEntered,
   onMarkPresent,
   onMarkAbsent,
-  onRate
+  onRate,
+  userRole
 }) => {
   const [expandedTeams, setExpandedTeams] = useState<Record<string, boolean>>({});
 
@@ -756,13 +952,15 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
                    </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  {/* Team Rating */}
-                  <div className="flex items-center mr-4">
-                    <InteractiveRatingStars 
-                      rating={team.rating || 0} 
-                      onRatingChange={(rating) => onRate(team.id, rating)}
-                    />
-                  </div>
+                  {/* Team Rating - Only for admin users */}
+                  {userRole === 'admin' && (
+                    <div className="flex items-center mr-4">
+                      <InteractiveRatingStars 
+                        rating={team.rating || 0} 
+                        onRatingChange={(rating) => onRate(team.id, rating)}
+                      />
+                    </div>
+                  )}
                   
                   <button
                     onClick={() => toggleExpand(team.id)}
@@ -808,13 +1006,15 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
                               {team.has_entered ? 'Entered' : 'Not Entered'}
                             </span>
                           </dd>
-                          <button
-                            onClick={() => team.has_entered ? onUnmarkEntered(team.id) : onMarkEntered(team.id)}
-                            className="ml-2 p-1 text-sm bg-gray-700 rounded hover:bg-gray-600 transition-colors"
-                            title={team.has_entered ? 'Mark as not entered' : 'Mark as entered'}
-                          >
-                            {team.has_entered ? <FaTimes className="h-3 w-3 text-red-400" /> : <FaCheck className="h-3 w-3 text-green-400" />}
-                          </button>
+                          {userRole === 'admin' && (
+                            <button
+                              onClick={() => team.has_entered ? onUnmarkEntered(team.id) : onMarkEntered(team.id)}
+                              className="ml-2 p-1 text-sm bg-gray-700 rounded hover:bg-gray-600 transition-colors"
+                              title={team.has_entered ? 'Mark as not entered' : 'Mark as entered'}
+                            >
+                              {team.has_entered ? <FaTimes className="h-3 w-3 text-red-400" /> : <FaCheck className="h-3 w-3 text-green-400" />}
+                            </button>
+                          )}
                         </div>
                       </dl>
                     </div>

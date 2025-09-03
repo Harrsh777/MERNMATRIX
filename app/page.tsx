@@ -221,21 +221,16 @@ const HomePage = () => {
                   Leaderboard
                 </motion.button>
               </Link>
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => {
-                  const el = document.getElementById('projects');
-                  if (el) {
-                    const headerHeight = 80; // Approximate header height
-                    const elementPosition = el.offsetTop - headerHeight;
-                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
-                  }
-                }}
-                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
-              >
-                Projects
-              </motion.button>
+              <nav className="hidden md:flex items-center gap-6">
+              <Link href="/Ideation">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+                >
+                  Idea Submission
+                </motion.button>
+              </Link>
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -276,6 +271,7 @@ const HomePage = () => {
                   Sign Up
                 </motion.button>
               </Link>
+              </nav>
             </nav>
 
             {/* Mobile Menu Button */}
