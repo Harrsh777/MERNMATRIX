@@ -169,15 +169,26 @@ const TeamOnboarding = () => {
     }
   };
 
-  // Countdown timer effect
+  // Countdown timer effect - closes at 4:00 PM today
   useEffect(() => {
-    const targetDate = new Date('2025-09-03T09:00:00').getTime();
+    const today = new Date();
+    const targetDate = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0, 0).getTime();
+    
+    // Debug logging
+    console.log('Current time:', new Date().toLocaleString());
+    console.log('Target time (4:00 PM today):', new Date(targetDate).toLocaleString());
     
     const updateTimer = () => {
       const now = new Date().getTime();
       const distance = targetDate - now;
       
+      // Debug logging every 30 seconds
+      if (Math.floor(now / 1000) % 30 === 0) {
+        console.log('Time remaining:', Math.floor(distance / 1000), 'seconds');
+      }
+      
       if (distance <= 0) {
+        console.log('Registration closed at:', new Date().toLocaleString());
         setIsRegistrationOpen(false); // Close registration when timer reaches zero
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       } else {
@@ -218,14 +229,18 @@ const TeamOnboarding = () => {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
     
-    const particles: any[] = Array.from({ length: 30 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 2 + 1,
-      dx: (Math.random() - 0.5) * 0.5,
-      dy: (Math.random() - 0.5) * 0.5,
-      color: `rgba(${200 + Math.random() * 55},${195 + Math.random() * 60},${227 + Math.random() * 28},0.15)`
-    }));
+    // Use deterministic particle generation to avoid hydration issues
+    const particles: any[] = Array.from({ length: 30 }, (_, i) => {
+      const seed = i * 0.1; // Use index as seed for deterministic values
+      return {
+        x: (Math.sin(seed) * 0.5 + 0.5) * canvas.width,
+        y: (Math.cos(seed) * 0.5 + 0.5) * canvas.height,
+        r: (Math.sin(seed * 2) * 0.5 + 0.5) * 2 + 1,
+        dx: (Math.sin(seed * 3) * 0.5) * 0.5,
+        dy: (Math.cos(seed * 3) * 0.5) * 0.5,
+        color: `rgba(${200 + Math.sin(seed * 4) * 27},${195 + Math.cos(seed * 4) * 30},${227 + Math.sin(seed * 5) * 14},0.15)`
+      };
+    });
     
     const draw = () => {
       if (!ctx) return;
@@ -426,37 +441,34 @@ const TeamOnboarding = () => {
         )}
 
         {/* Countdown Timer */}
-        <motion.div
-          className="fixed top-6 right-6 z-30 px-4 py-2 rounded-lg font-bold shadow-lg border border-[#CBC3E3]/30 bg-[#0A0118]/90 text-[#CBC3E3] backdrop-blur-sm"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="text-center">
-            <div className="text-xs text-[#A020F0] mb-1">Registration Ends In</div>
-            <div className="flex gap-2 text-sm">
-              <div className="flex flex-col items-center">
-                <span className="font-bold text-[#F0F0F0]">{timeLeft.days}</span>
-                <span className="text-xs text-[#CBC3E3]/70">Days</span>
-              </div>
-              <span className="text-[#A020F0] font-bold">:</span>
-              <div className="flex flex-col items-center">
-                <span className="font-bold text-[#F0F0F0]">{timeLeft.hours.toString().padStart(2, '0')}</span>
-                <span className="text-xs text-[#CBC3E3]/70">Hours</span>
-              </div>
-              <span className="text-[#A020F0] font-bold">:</span>
-              <div className="flex flex-col items-center">
-                <span className="font-bold text-[#F0F0F0]">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-                <span className="text-xs text-[#CBC3E3]/70">Min</span>
-              </div>
-              <span className="text-[#A020F0] font-bold">:</span>
-              <div className="flex flex-col items-center">
-                <span className="font-bold text-[#F0F0F0]">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-                <span className="text-xs text-[#CBC3E3]/70">Sec</span>
+        {isRegistrationOpen && (
+          <motion.div
+            className="fixed top-4 right-4 z-30 px-3 py-2 rounded-lg font-bold shadow-lg border border-[#CBC3E3]/30 bg-[#0A0118]/90 text-[#CBC3E3] backdrop-blur-sm sm:px-4 sm:top-6 sm:right-6"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <div className="text-center">
+              <div className="text-xs text-[#A020F0] mb-1">Registration Closes In</div>
+              <div className="flex gap-1 sm:gap-2 text-xs sm:text-sm">
+                <div className="flex flex-col items-center">
+                  <span className="font-bold text-[#F0F0F0]">{timeLeft.hours.toString().padStart(2, '0')}</span>
+                  <span className="text-xs text-[#CBC3E3]/70">H</span>
+                </div>
+                <span className="text-[#A020F0] font-bold">:</span>
+                <div className="flex flex-col items-center">
+                  <span className="font-bold text-[#F0F0F0]">{timeLeft.minutes.toString().padStart(2, '0')}</span>
+                  <span className="text-xs text-[#CBC3E3]/70">M</span>
+                </div>
+                <span className="text-[#A020F0] font-bold">:</span>
+                <div className="flex flex-col items-center">
+                  <span className="font-bold text-[#F0F0F0]">{timeLeft.seconds.toString().padStart(2, '0')}</span>
+                  <span className="text-xs text-[#CBC3E3]/70">S</span>
+                </div>
               </div>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
 
         {/* Floating Back to Home Button */}
         <Link href="/">
@@ -467,10 +479,12 @@ const TeamOnboarding = () => {
             ← Home
           </motion.button>
         </Link>
+
+
         
-        <div className="relative z-10 flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 flex items-center justify-center min-h-screen py-4 sm:py-8 lg:py-12 px-2 sm:px-4 lg:px-6 xl:px-8">
           <motion.div
-            className="w-full max-w-4xl"
+            className="w-full max-w-4xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -506,8 +520,9 @@ const TeamOnboarding = () => {
               </div>
               
               {/* Stepper */}
-              <div className="px-8 pt-6 pb-2">
-                <div className="flex items-center justify-between relative">
+              <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-2">
+                <div className="relative">
+                  {/* Progress Line */}
                   <div className="absolute top-1/2 left-0 right-0 h-1 bg-[#CBC3E3]/10 -translate-y-1/2 -z-10 rounded-full">
                     <motion.div
                       className="h-full bg-gradient-to-r from-[#A020F0] to-[#CBC3E3] rounded-full shadow-lg"
@@ -516,87 +531,207 @@ const TeamOnboarding = () => {
                       transition={{ duration: 0.5 }}
                     />
                   </div>
-                  {steps.map((step, index) => (
-                    <div key={step.id} className="flex flex-col items-center relative">
-                      <motion.button
-                        type="button"
-                        className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold border-2 transition-all shadow-md ${activeStep >= index ? COLORS.stepActive : COLORS.stepInactive}`}
-                        onClick={() => setActiveStep(index)}
-                        whileHover={{ scale: 1.13, boxShadow: '0 0 16px #A020F0' }}
-                        whileTap={{ scale: 0.97 }}
-                        onHoverStart={() => setHoveredIndex(index)}
-                        onHoverEnd={() => setHoveredIndex(null)}
-                        style={{ borderColor: activeStep >= index ? '#A020F0' : '#CBC3E3' }}
-                      >
-                        <span className="drop-shadow-glow">{step.icon}</span>
-                      </motion.button>
-                      <AnimatePresence>
-                        {hoveredIndex === index && (
-                          <motion.span
-                            className="absolute top-full mt-2 text-xs font-medium text-[#CBC3E3] bg-[#0A0118]/80 px-2 py-1 rounded shadow-lg border border-[#CBC3E3]/20"
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -5 }}
-                          >
-                            {step.name}
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ))}
+                  
+                  {/* Steps Container */}
+                  <div className="flex items-center justify-between relative">
+                    {steps.map((step, index) => (
+                      <div key={step.id} className="flex flex-col items-center relative flex-1">
+                        <motion.button
+                          type="button"
+                          className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center text-sm sm:text-lg lg:text-xl font-bold border-2 transition-all shadow-md ${activeStep >= index ? COLORS.stepActive : COLORS.stepInactive}`}
+                          onClick={() => setActiveStep(index)}
+                          whileHover={{ scale: 1.13, boxShadow: '0 0 16px #A020F0' }}
+                          whileTap={{ scale: 0.97 }}
+                          onHoverStart={() => setHoveredIndex(index)}
+                          onHoverEnd={() => setHoveredIndex(null)}
+                          style={{ borderColor: activeStep >= index ? '#A020F0' : '#CBC3E3' }}
+                        >
+                          <span className="drop-shadow-glow">{step.icon}</span>
+                        </motion.button>
+                        <AnimatePresence>
+                          {hoveredIndex === index && (
+                            <motion.span
+                              className="absolute top-full mt-2 text-xs font-medium text-[#CBC3E3] bg-[#0A0118]/80 px-2 py-1 rounded shadow-lg border border-[#CBC3E3]/20 whitespace-nowrap z-10"
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              exit={{ opacity: 0, y: -5 }}
+                            >
+                              {step.name}
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
               
-              <div className="p-8">
+              <div className="p-4 sm:p-6 lg:p-8">
                 <AnimatePresence mode="wait">
                    {!isRegistrationOpen ? (
                      <motion.div
-                       className="text-center py-16"
+                       className="text-center py-8 sm:py-16 px-4"
                        initial={{ opacity: 0, y: 20 }}
                        animate={{ opacity: 1, y: 0 }}
                        transition={{ duration: 0.5 }}
                      >
-                       <motion.div
-                         className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-gradient-to-r from-red-500 to-orange-500 mb-6 shadow-2xl"
-                         initial={{ scale: 0.8 }}
-                         animate={{ scale: 1 }}
-                         transition={{ delay: 0.2 }}
-                       >
-                         <svg className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                         </svg>
-                       </motion.div>
-                       <h2 className="text-3xl font-bold text-[#F0F0F0] mb-4">Registration Not Yet Open</h2>
-                       <p className="text-xl text-[#CBC3E3] mb-8">
-                         Team registration will open on <span className="font-semibold text-[#A020F0]">September 3rd, 2025 at 9:00 AM</span>
-                       </p>
-                       <div className="bg-[#1E0345]/80 rounded-xl p-6 mb-8 border border-[#CBC3E3]/10 shadow-lg">
-                         <h4 className="text-lg font-semibold text-[#CBC3E3] mb-4">Countdown to Registration</h4>
-                         <div className="flex justify-center gap-4 text-2xl font-bold">
-                           <div className="flex flex-col items-center">
-                             <span className="text-[#A020F0]">{timeLeft.days}</span>
-                             <span className="text-sm text-[#CBC3E3]/70">Days</span>
-                           </div>
-                           <span className="text-[#A020F0]">:</span>
-                           <div className="flex flex-col items-center">
-                             <span className="text-[#A020F0]">{timeLeft.hours.toString().padStart(2, '0')}</span>
-                             <span className="text-sm text-[#CBC3E3]/70">Hours</span>
-                           </div>
-                           <span className="text-[#A020F0]">:</span>
-                           <div className="flex flex-col items-center">
-                             <span className="text-[#A020F0]">{timeLeft.minutes.toString().padStart(2, '0')}</span>
-                             <span className="text-sm text-[#CBC3E3]/70">Minutes</span>
-                           </div>
-                           <span className="text-[#A020F0]">:</span>
-                           <div className="flex flex-col items-center">
-                             <span className="text-[#A020F0]">{timeLeft.seconds.toString().padStart(2, '0')}</span>
-                             <span className="text-sm text-[#CBC3E3]/70">Seconds</span>
-                           </div>
-                         </div>
+                       {/* Animated Background Elements */}
+                       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                         {[...Array(20)].map((_, i) => {
+                           // Use deterministic positions based on index to avoid hydration mismatch
+                           const positions = [
+                             { left: 10, top: 20 }, { left: 25, top: 40 }, { left: 40, top: 15 }, { left: 60, top: 35 },
+                             { left: 80, top: 25 }, { left: 15, top: 60 }, { left: 35, top: 80 }, { left: 55, top: 70 },
+                             { left: 75, top: 85 }, { left: 90, top: 50 }, { left: 5, top: 80 }, { left: 30, top: 10 },
+                             { left: 50, top: 45 }, { left: 70, top: 60 }, { left: 85, top: 15 }, { left: 20, top: 75 },
+                             { left: 45, top: 25 }, { left: 65, top: 40 }, { left: 95, top: 70 }, { left: 12, top: 50 }
+                           ];
+                           const pos = positions[i] || { left: 50, top: 50 };
+                           
+                           return (
+                             <motion.div
+                               key={i}
+                               className="absolute w-2 h-2 bg-[#A020F0]/20 rounded-full"
+                               style={{
+                                 left: `${pos.left}%`,
+                                 top: `${pos.top}%`,
+                               }}
+                               animate={{
+                                 y: [0, -20, 0],
+                                 opacity: [0.2, 0.8, 0.2],
+                               }}
+                               transition={{
+                                 duration: 3 + (i % 3),
+                                 repeat: Infinity,
+                                 delay: (i % 2) * 0.5,
+                               }}
+                             />
+                           );
+                         })}
                        </div>
-                       <p className="text-[#CBC3E3]/70">
-                         Get ready to register your team for the MERN Matrix Hackathon!
-                       </p>
+
+                       {/* Main Content */}
+                       <div className="relative z-10">
+                         <motion.div
+                           className="mx-auto flex items-center justify-center h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 mb-6 shadow-2xl"
+                           initial={{ scale: 0.8, rotate: -180 }}
+                           animate={{ scale: 1, rotate: 0 }}
+                           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                         >
+                           <motion.svg 
+                             className="h-10 w-10 sm:h-12 sm:w-12 text-white" 
+                             fill="none" 
+                             viewBox="0 0 24 24" 
+                             stroke="currentColor"
+                             animate={{ rotate: [0, 10, -10, 0] }}
+                             transition={{ duration: 2, repeat: Infinity }}
+                           >
+                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                           </motion.svg>
+                         </motion.div>
+
+                         <motion.h2 
+                           className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#F0F0F0] mb-4"
+                           initial={{ opacity: 0, y: 20 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           transition={{ delay: 0.4 }}
+                         >
+                           <span className="bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent animate-pulse">
+                             Better Luck Next Time!
+                           </span>
+                         </motion.h2>
+
+                         <motion.p 
+                           className="text-lg sm:text-xl text-[#CBC3E3] mb-8 max-w-2xl mx-auto"
+                           initial={{ opacity: 0, y: 20 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           transition={{ delay: 0.6 }}
+                         >
+                           The registrations are now <span className="font-semibold text-red-400">CLOSED</span>
+                         </motion.p>
+
+                         {/* Interactive Stats Card */}
+                         <motion.div 
+                           className="bg-[#1E0345]/80 rounded-2xl p-6 sm:p-8 mb-8 border border-[#CBC3E3]/10 shadow-lg max-w-4xl mx-auto"
+                           initial={{ opacity: 0, scale: 0.9 }}
+                           animate={{ opacity: 1, scale: 1 }}
+                           transition={{ delay: 0.8 }}
+                         >
+                           <h4 className="text-lg sm:text-xl font-semibold text-[#CBC3E3] mb-6">Registration Status</h4>
+                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                             <motion.div 
+                               className="text-center p-4 bg-red-500/10 border border-red-500/30 rounded-xl"
+                               whileHover={{ scale: 1.05 }}
+                               transition={{ type: "spring", stiffness: 300 }}
+                             >
+                               <div className="text-2xl sm:text-3xl font-bold text-red-400 mb-2">CLOSED</div>
+                               <div className="text-sm text-[#CBC3E3]/70">Registration Status</div>
+                             </motion.div>
+                             <motion.div 
+                               className="text-center p-4 bg-[#A020F0]/10 border border-[#A020F0]/30 rounded-xl"
+                               whileHover={{ scale: 1.05 }}
+                               transition={{ type: "spring", stiffness: 300 }}
+                             >
+                               <div className="text-2xl sm:text-3xl font-bold text-[#A020F0] mb-2">4:00 PM</div>
+                               <div className="text-sm text-[#CBC3E3]/70">Closed At</div>
+                             </motion.div>
+                             <motion.div 
+                               className="text-center p-4 bg-green-500/10 border border-green-500/30 rounded-xl"
+                               whileHover={{ scale: 1.05 }}
+                               transition={{ type: "spring", stiffness: 300 }}
+                             >
+                               <div className="text-2xl sm:text-3xl font-bold text-green-400 mb-2">∞</div>
+                               <div className="text-sm text-[#CBC3E3]/70">Next Event</div>
+                             </motion.div>
+                           </div>
+                         </motion.div>
+
+                         {/* Motivational Message */}
+                         <motion.div 
+                           className="bg-gradient-to-r from-[#A020F0]/20 to-[#CBC3E3]/20 rounded-xl p-6 mb-8 border border-[#A020F0]/30 max-w-3xl mx-auto"
+                           initial={{ opacity: 0, y: 20 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           transition={{ delay: 1.0 }}
+                         >
+                           <div className="text-center">
+                             <div className="text-4xl sm:text-5xl mb-4">🚀</div>
+                             <h3 className="text-xl sm:text-2xl font-bold text-[#F0F0F0] mb-3">
+                               Don't Miss Out Next Time!
+                             </h3>
+                             <p className="text-[#CBC3E3] text-sm sm:text-base leading-relaxed">
+                               Follow us on social media and stay updated for future hackathons, workshops, and exciting tech events. 
+                               The next MERN Matrix event is just around the corner!
+                             </p>
+                           </div>
+                         </motion.div>
+
+                         {/* Action Buttons */}
+                         <motion.div 
+                           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                           initial={{ opacity: 0, y: 20 }}
+                           animate={{ opacity: 1, y: 0 }}
+                           transition={{ delay: 1.2 }}
+                         >
+                           <Link href="/">
+                             <motion.button
+                               whileHover={{ scale: 1.05, boxShadow: "0 0 20px #A020F0" }}
+                               whileTap={{ scale: 0.95 }}
+                               className="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-[#A020F0] to-[#CBC3E3] text-[#0A0118] font-bold rounded-xl shadow-lg border border-[#CBC3E3]/20 transition-all"
+                             >
+                               🏠 Back to Home
+                             </motion.button>
+                           </Link>
+                           <Link href="/events">
+                             <motion.button
+                               whileHover={{ scale: 1.05, boxShadow: "0 0 20px #CBC3E3" }}
+                               whileTap={{ scale: 0.95 }}
+                               className="px-6 sm:px-8 py-3 sm:py-4 bg-[#1E0345] text-[#CBC3E3] font-bold rounded-xl shadow-lg border border-[#CBC3E3]/20 hover:bg-[#A020F0]/20 hover:text-[#F0F0F0] transition-all"
+                             >
+                               📅 View Events
+                             </motion.button>
+                           </Link>
+                         </motion.div>
+                       </div>
                      </motion.div>
                    ) : !isSubmitted && !showSummary ? (
                     <motion.form
@@ -617,33 +752,33 @@ const TeamOnboarding = () => {
                             <label className="block text-sm font-medium text-[#CBC3E3] mb-4">
                               Select whether you are a VIT Participant or an External Participant
                             </label>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              <label className="flex items-center p-4 border-2 border-[#CBC3E3]/20 rounded-xl cursor-pointer transition-all hover:border-[#A020F0]/40 hover:bg-[#A020F0]/10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                              <label className="flex items-center p-3 sm:p-4 border-2 border-[#CBC3E3]/20 rounded-xl cursor-pointer transition-all hover:border-[#A020F0]/40 hover:bg-[#A020F0]/10">
                                 <input
                                   type="radio"
                                   name="participantType"
                                   value="VIT"
                                   checked={participantType === 'VIT'}
                                   onChange={() => setParticipantType('VIT')}
-                                  className="mr-3 w-5 h-5 text-[#A020F0] focus:ring-[#A020F0]"
+                                  className="mr-3 w-4 h-4 sm:w-5 sm:h-5 text-[#A020F0] focus:ring-[#A020F0]"
                                 />
                                 <div>
-                                  <div className="font-semibold text-[#F0F0F0]">VIT Student</div>
-                                  <div className="text-sm text-[#CBC3E3]/70">Currently enrolled at VIT</div>
+                                  <div className="font-semibold text-[#F0F0F0] text-sm sm:text-base">VIT Student</div>
+                                  <div className="text-xs sm:text-sm text-[#CBC3E3]/70">Currently enrolled at VIT</div>
                                 </div>
                               </label>
-                              <label className="flex items-center p-4 border-2 border-[#CBC3E3]/20 rounded-xl cursor-pointer transition-all hover:border-[#A020F0]/40 hover:bg-[#A020F0]/10">
+                              <label className="flex items-center p-3 sm:p-4 border-2 border-[#CBC3E3]/20 rounded-xl cursor-pointer transition-all hover:border-[#A020F0]/40 hover:bg-[#A020F0]/10">
                                 <input
                                   type="radio"
                                   name="participantType"
                                   value="External"
                                   checked={participantType === 'External'}
                                   onChange={() => setParticipantType('External')}
-                                  className="mr-3 w-5 h-5 text-[#A020F0] focus:ring-[#A020F0]"
+                                  className="mr-3 w-4 h-4 sm:w-5 sm:h-5 text-[#A020F0] focus:ring-[#A020F0]"
                                 />
                                 <div>
-                                  <div className="font-semibold text-[#F0F0F0]">External Participant</div>
-                                  <div className="text-sm text-[#CBC3E3]/70">From other institutions</div>
+                                  <div className="font-semibold text-[#F0F0F0] text-sm sm:text-base">External Participant</div>
+                                  <div className="text-xs sm:text-sm text-[#CBC3E3]/70">From other institutions</div>
                                 </div>
                               </label>
                             </div>
@@ -651,13 +786,14 @@ const TeamOnboarding = () => {
                           <div className="flex justify-end">
                             <motion.button
                               type="button"
-                              className={`flex items-center justify-center px-6 py-3 ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
+                              className={`flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base ${COLORS.button} rounded-xl font-medium hover:shadow-lg hover:bg-[#CBC3E3] hover:text-[#0A0118] transition-all`}
                               onClick={() => setActiveStep(1)}
                               whileHover={{ scale: 1.04 }}
                               whileTap={{ scale: 0.98 }}
                             >
-                              Next: Team Info
-                              <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <span className="hidden sm:inline">Next: Team Info</span>
+                              <span className="sm:hidden">Next</span>
+                              <svg className="ml-2 h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                               </svg>
                             </motion.button>
