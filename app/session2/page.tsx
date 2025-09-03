@@ -239,6 +239,11 @@ const Session2Dashboard = () => {
     const aValue = a[sortConfig.key];
     const bValue = b[sortConfig.key];
 
+    // Handle undefined values
+    if (aValue === undefined && bValue === undefined) return 0;
+    if (aValue === undefined) return sortConfig.direction === 'asc' ? 1 : -1;
+    if (bValue === undefined) return sortConfig.direction === 'asc' ? -1 : 1;
+
     if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
     if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
     return 0;
