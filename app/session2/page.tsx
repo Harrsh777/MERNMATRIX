@@ -355,12 +355,7 @@ const Session2Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-purple-950 text-white">
-      {/* Debug info - remove this later */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed top-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
-          Auth: {isAuthenticated ? 'Yes' : 'No'} | Modal: {showAuthModal ? 'Yes' : 'No'} | Role: {userRole || 'None'} | Loading: {loading ? 'Yes' : 'No'} | Supabase: {supabase ? 'Connected' : 'Not Available'}
-        </div>
-      )}
+
       
       {/* Header */}
       <header className="bg-gray-800/70 backdrop-blur-md shadow-sm border-b border-purple-700/30">
