@@ -47,7 +47,7 @@ export default function IdeationPage() {
     
     // September 4th, 2025 times
     const registrationStart = new Date('2025-09-04T14:30:00'); // 2:30 PM
-    const registrationEnd = new Date('2025-09-04T17:00:00');   // 5:00 PM
+    const registrationEnd = new Date('2025-09-04T23:59:00');   // 11:59 PM
     
     if (now < registrationStart) {
       return 'initial-countdown' as const;
@@ -169,7 +169,7 @@ export default function IdeationPage() {
       }
       
       setMessage({ 
-        text: 'Project idea submitted successfully! 🎉', 
+        text: 'Success! Your form has been submitted 🎉', 
         type: 'success' 
       });
       
@@ -305,7 +305,7 @@ export default function IdeationPage() {
           <div className="text-center space-y-6">
             <div className="text-6xl mb-4">🏁</div>
             <p className="text-red-200 text-lg">
-              The idea submission deadline was <span className="font-bold text-white">5:00 PM on September 4th</span>.
+              The idea submission deadline was <span className="font-bold text-white">11:59 PM on September 4th</span>.
             </p>
             <p className="text-gray-300">
               Better luck next time! Keep those innovative ideas coming for future opportunities.
@@ -355,10 +355,10 @@ export default function IdeationPage() {
         >
           <div className="text-center">
             <h2 className="text-2xl font-bold text-orange-300 mb-4">
-              ⏰ Registration Closes at 5:00 PM on September 4th
+              ⏰ Registration Closes at 11:59 PM on September 4th
             </h2>
             <div className="flex justify-center items-center">
-              <CountdownTimer targetDate={new Date('2025-09-04T17:00:00')} size="small" />
+              <CountdownTimer targetDate={new Date('2025-09-04T23:59:00')} size="small" />
             </div>
           </div>
         </motion.div>
