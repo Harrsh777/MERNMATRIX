@@ -30,7 +30,7 @@ import { supabase } from '@/lib/supabase';
 
 // Define TypeScript interfaces
 interface Team {
-  id: string;
+  id: number;
   team_name: string;
   team_leader_name: string;
   member_name_1: string;
@@ -47,6 +47,19 @@ interface Team {
   has_entered: boolean;
   present: boolean;
   rating?: number;
+  // Attendance fields for 4 sessions
+  session1_first_present?: boolean;
+  session1_first_attendance_time?: string;
+  session1_first_notes?: string;
+  session1_second_present?: boolean;
+  session1_second_attendance_time?: string;
+  session1_second_notes?: string;
+  session2_first_present?: boolean;
+  session2_first_attendance_time?: string;
+  session2_first_notes?: string;
+  session2_second_present?: boolean;
+  session2_second_attendance_time?: string;
+  session2_second_notes?: string;
 }
 
 interface ProjectIdea {
@@ -85,8 +98,9 @@ interface SortConfig {
   direction: 'asc' | 'desc';
 }
 
+
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState<'registrations' | 'project-ideas' | 'leaderboard'>('registrations');
+  const [activeTab, setActiveTab] = useState<'session1-first' | 'session1-second' | 'session2-first' | 'session2-second'>('session1-first');
   const [teams, setTeams] = useState<Team[]>([]);
   const [projectIdeas, setProjectIdeas] = useState<ProjectIdea[]>([]);
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
@@ -152,9 +166,9 @@ const AdminDashboard = () => {
         
         // Set appropriate tab based on role
         if (role === 'attendance') {
-          setActiveTab('registrations');
+          setActiveTab('session1-first');
         } else {
-          setActiveTab('project-ideas');
+          setActiveTab('session1-first');
         }
       } else {
         setPasswordError('Invalid password. Please try again.');
@@ -171,7 +185,7 @@ const AdminDashboard = () => {
     setPassword('');
     setPasswordError('');
     setShowAuthModal(true);
-    setActiveTab('registrations');
+    setActiveTab('session1-first');
   };
 
   const fetchTeams = async (): Promise<void> => {
@@ -195,6 +209,8 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+
+
 
   const fetchProjectIdeas = async (): Promise<void> => {
     if (!supabase) {
@@ -233,6 +249,7 @@ const AdminDashboard = () => {
       console.error('Error fetching leaderboard data:', error.message);
     }
   };
+
 
   const updateLeaderboardScore = async (teamId: number, field: string, value: number): Promise<void> => {
     if (!supabase) {
@@ -293,67 +310,43 @@ const AdminDashboard = () => {
     }
   };
 
-  const markTeamPresent = async (teamId: string): Promise<void> => {
+  const updateTeamAttendance = async (teamId: number, sessionType: string, isPresent: boolean): Promise<void> => {
     if (!supabase) {
       console.warn('Supabase client not available');
       return;
     }
 
     try {
+      const updateData: any = {};
+      const attendanceTimeField = `${sessionType}_attendance_time`;
+      updateData[`${sessionType}_present`] = isPresent;
+      updateData[attendanceTimeField] = isPresent ? new Date().toISOString() : null;
+
       const { error } = await supabase
         .from('team_registrations')
-        .update({ present: true })
+        .update(updateData)
         .eq('id', teamId);
 
       if (error) {
         console.error('Database error:', error);
-        if (error.message.includes('present')) {
-          alert('Please run the database schema update first. Check the database_schema.sql file.');
+        if (error.message.includes('column') || error.message.includes('does not exist')) {
+          alert('Attendance fields not found in database. Please run the schema update first:\n\n1. Go to your Supabase database\n2. Run the SQL from update_team_registrations_schema.sql\n3. Refresh this page');
           return;
         }
         throw error;
       }
-      
+
+      // Update local state
       setTeams(teams.map(team => 
-        team.id === teamId ? { ...team, present: true } : team
+        team.id === teamId ? { ...team, [`${sessionType}_present`]: isPresent } : team
       ));
     } catch (error: any) {
-      console.error('Error marking team as present:', error.message);
-      alert('Error marking team as present. Please check the console for details.');
+      console.error('Error updating team attendance:', error.message);
+      alert('Error updating attendance. Please check the console for details.');
     }
   };
 
-  const markTeamAbsent = async (teamId: string): Promise<void> => {
-    if (!supabase) {
-      console.warn('Supabase client not available');
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('team_registrations')
-        .update({ present: false })
-        .eq('id', teamId);
-
-      if (error) {
-        console.error('Database error:', error);
-        if (error.message.includes('present')) {
-          alert('Please run the database schema update first. Check the database_schema.sql file.');
-          return;
-        }
-        throw error;
-      }
-      
-      setTeams(teams.map(team => 
-        team.id === teamId ? { ...team, present: false } : team
-      ));
-    } catch (error: any) {
-      console.error('Error marking team as absent:', error.message);
-      alert('Error marking team as absent. Please check the console for details.');
-    }
-  };
-
-  const markTeamEntered = async (teamId: string): Promise<void> => {
+  const markTeamEntered = async (teamId: number): Promise<void> => {
     if (!supabase) {
       console.warn('Supabase client not available');
       return;
@@ -375,7 +368,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const unmarkTeamEntered = async (teamId: string): Promise<void> => {
+  const unmarkTeamEntered = async (teamId: number): Promise<void> => {
     if (!supabase) {
       console.warn('Supabase client not available');
       return;
@@ -397,7 +390,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const rateTeam = async (teamId: string, rating: number): Promise<void> => {
+  const rateTeam = async (teamId: number, rating: number): Promise<void> => {
     if (!supabase) {
       console.warn('Supabase client not available');
       return;
@@ -426,6 +419,7 @@ const AdminDashboard = () => {
       alert('Error rating team. Please check the console for details.');
     }
   };
+
 
   const rateProjectIdea = async (ideaId: string, rating: number): Promise<void> => {
     if (!supabase) {
@@ -456,6 +450,7 @@ const AdminDashboard = () => {
       alert('Error rating project idea. Please check the console for details.');
     }
   };
+
 
   const handleSort = (key: string): void => {
     let direction: 'asc' | 'desc' = 'asc';
@@ -512,7 +507,34 @@ const AdminDashboard = () => {
     'Sustainability & Smart Living'
   ];
 
-  const filteredTeams = sortedTeams.filter(team => 
+  // Get current session type based on active tab
+  const getCurrentSessionType = () => {
+    switch (activeTab) {
+      case 'session1-first': return 'session1_first';
+      case 'session1-second': return 'session1_second';
+      case 'session2-first': return 'session2_first';
+      case 'session2-second': return 'session2_second';
+      default: return 'session1_first';
+    }
+  };
+
+  const currentSessionType = getCurrentSessionType();
+
+  // Create teams with attendance data for current session
+  const teamsWithAttendance = teams.map(team => ({
+    ...team,
+    present: team[`${currentSessionType}_present`] || false
+  }));
+
+  // Sort teams with present teams at the bottom
+  const currentSortedTeams = safeSort(teamsWithAttendance, sortConfig.key, sortConfig.direction)
+    .sort((a, b) => {
+      if (a.present && !b.present) return 1;
+      if (!a.present && b.present) return -1;
+      return 0;
+    });
+
+  const filteredTeams = currentSortedTeams.filter(team => 
     (showPresent || !team.present) && (
       team.team_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       team.team_leader_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -540,12 +562,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-purple-950 text-white">
-      {/* Debug info - remove this later */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed top-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
-          Auth: {isAuthenticated ? 'Yes' : 'No'} | Modal: {showAuthModal ? 'Yes' : 'No'} | Role: {userRole || 'None'} | Loading: {loading ? 'Yes' : 'No'}
-        </div>
-      )}
       {/* Header */}
       <header className="bg-gray-800/70 backdrop-blur-md shadow-sm border-b border-purple-700/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -562,14 +578,6 @@ const AdminDashboard = () => {
             </div>
             {isAuthenticated && (
               <div className="flex items-center space-x-2">
-                <a
-                  href="/session2"
-                  className="flex items-center px-3 py-1.5 bg-green-600/20 text-green-400 border border-green-600/30 rounded-md hover:bg-green-600/30 hover:text-green-300 transition-all duration-300 text-sm"
-                  title="Go to Session 2"
-                >
-                  <FaUsers className="mr-1.5 h-3 w-3" />
-                  Session 2
-                </a>
                 <button
                   onClick={handleLogout}
                   className="flex items-center px-3 py-1.5 bg-red-600/20 text-red-400 border border-red-600/30 rounded-md hover:bg-red-600/30 hover:text-red-300 transition-all duration-300 text-sm"
@@ -666,30 +674,32 @@ const AdminDashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {isAuthenticated && (
           <>
-            {/* Tab Navigation - Role-based */}
-            <div className="flex border-b border-purple-700/30 mb-6">
+            {/* Tab Navigation */}
+            <div className="flex border-b border-purple-700/30 mb-6 overflow-x-auto">
               <button
-                className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'registrations' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
-                onClick={() => setActiveTab('registrations')}
+                className={`py-4 px-6 font-medium text-sm flex items-center whitespace-nowrap ${activeTab === 'session1-first' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
+                onClick={() => setActiveTab('session1-first')}
               >
-                <FaUsers className="mr-2" /> Team Registrations ({teams.length})
+                <FaUsers className="mr-2" /> Session 1 First ({teams.length})
               </button>
-              {userRole === 'admin' && (
-                <>
-                  <button
-                    className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'project-ideas' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
-                    onClick={() => setActiveTab('project-ideas')}
-                  >
-                    <FaLightbulb className="mr-2" /> Project Ideas ({projectIdeas.length})
-                  </button>
-                  <button
-                    className={`py-4 px-6 font-medium text-sm flex items-center ${activeTab === 'leaderboard' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
-                    onClick={() => setActiveTab('leaderboard')}
-                  >
-                    <FaTrophy className="mr-2" /> Leaderboard Management
-                  </button>
-                </>
-              )}
+              <button
+                className={`py-4 px-6 font-medium text-sm flex items-center whitespace-nowrap ${activeTab === 'session1-second' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
+                onClick={() => setActiveTab('session1-second')}
+              >
+                <FaUsers className="mr-2" /> Session 1 Second ({teams.length})
+              </button>
+              <button
+                className={`py-4 px-6 font-medium text-sm flex items-center whitespace-nowrap ${activeTab === 'session2-first' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
+                onClick={() => setActiveTab('session2-first')}
+              >
+                <FaUsers className="mr-2" /> Session 2 First ({teams.length})
+              </button>
+              <button
+                className={`py-4 px-6 font-medium text-sm flex items-center whitespace-nowrap ${activeTab === 'session2-second' ? 'text-purple-400 border-b-2 border-purple-400' : 'text-purple-200/70 hover:text-purple-300'}`}
+                onClick={() => setActiveTab('session2-second')}
+              >
+                <FaUsers className="mr-2" /> Session 2 Second ({teams.length})
+              </button>
             </div>
 
             {/* Search and Filters */}
@@ -701,15 +711,15 @@ const AdminDashboard = () => {
                   </div>
                   <input
                     type="text"
-                    placeholder={activeTab === 'registrations' ? "Search teams..." : "Search ideas..."}
+                    placeholder="Search teams..."
                     className="block w-full pl-10 pr-3 py-2 border border-purple-700/30 rounded-lg leading-5 bg-gray-800/50 backdrop-blur-sm placeholder-purple-300/50 focus:outline-none focus:placeholder-purple-400 focus:ring-1 focus:ring-purple-500 focus:border-purple-500 text-white"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
                 
-                {/* Domain Filter - Only for registrations */}
-                {activeTab === 'registrations' && (
+                {/* Domain Filter - For all tabs */}
+                {(activeTab === 'session1-first' || activeTab === 'session1-second' || activeTab === 'session2-first' || activeTab === 'session2-second') && (
                   <div className="relative flex-1 max-w-md">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <FaFilter className="h-5 w-5 text-purple-400" />
@@ -742,7 +752,7 @@ const AdminDashboard = () => {
               </div>
               
               <div className="flex items-center space-x-2">
-                {activeTab === 'registrations' && (
+                {(activeTab === 'session1-first' || activeTab === 'session1-second' || activeTab === 'session2-first' || activeTab === 'session2-second') && (
                   <>
                     <button 
                       className="flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-105"
@@ -778,30 +788,16 @@ const AdminDashboard = () => {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {activeTab === 'registrations' ? (
-                  <TeamRegistrations 
-                    teams={filteredTeams} 
-                    uniqueDomains={uniqueDomains}
-                    onMarkEntered={markTeamEntered}
-                    onUnmarkEntered={unmarkTeamEntered}
-                    onMarkPresent={markTeamPresent}
-                    onMarkAbsent={markTeamAbsent}
-                    onRate={rateTeam}
-                    userRole={userRole}
-                  />
-                ) : activeTab === 'project-ideas' ? (
-                  <ProjectIdeas 
-                    ideas={filteredProjectIdeas}
-                    onRate={rateProjectIdea}
-                  />
-                ) : (
-                  <LeaderboardManagement 
-                    leaderboardData={leaderboardData}
-                    onUpdateScore={updateLeaderboardScore}
-                    onAddTeam={addLeaderboardTeam}
-                    onDeleteTeam={deleteLeaderboardTeam}
-                  />
-                )}
+                <TeamRegistrations 
+                  teams={filteredTeams} 
+                  uniqueDomains={uniqueDomains}
+                  onMarkEntered={markTeamEntered}
+                  onUnmarkEntered={unmarkTeamEntered}
+                  onMarkPresent={(teamId) => updateTeamAttendance(teamId, currentSessionType, true)}
+                  onMarkAbsent={(teamId) => updateTeamAttendance(teamId, currentSessionType, false)}
+                  onRate={rateTeam}
+                  userRole={userRole}
+                />
               </motion.div>
             </AnimatePresence>
           </>
@@ -815,11 +811,11 @@ const AdminDashboard = () => {
 interface TeamRegistrationsProps {
   teams: Team[];
   uniqueDomains: string[];
-  onMarkEntered: (teamId: string) => void;
-  onUnmarkEntered: (teamId: string) => void;
-  onMarkPresent: (teamId: string) => void;
-  onMarkAbsent: (teamId: string) => void;
-  onRate: (teamId: string, rating: number) => void;
+  onMarkEntered: (teamId: number) => void;
+  onUnmarkEntered: (teamId: number) => void;
+  onMarkPresent: (teamId: number) => void;
+  onMarkAbsent: (teamId: number) => void;
+  onRate: (teamId: number, rating: number) => void;
   userRole: 'attendance' | 'admin' | null;
 }
 
@@ -845,7 +841,7 @@ const TeamRegistrations: React.FC<TeamRegistrationsProps> = ({
     .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
     .map((team, index) => ({ ...team, registrationNumber: index + 1 }));
 
-  const toggleExpand = (teamId: string) => {
+  const toggleExpand = (teamId: number) => {
     setExpandedTeams(prev => ({
       ...prev,
       [teamId]: !prev[teamId]
@@ -1595,5 +1591,6 @@ const LeaderboardManagement: React.FC<LeaderboardManagementProps> = ({
     </div>
   );
 };
+
 
 export default AdminDashboard;

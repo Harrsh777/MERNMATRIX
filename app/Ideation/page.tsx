@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 // Force dynamic rendering to prevent static generation issues
 export const dynamic = 'force-dynamic';
 import { createClient } from '@supabase/supabase-js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaUpload, FaLink, FaUsers, FaLightbulb, FaCheckCircle, FaArrowRight, FaArrowLeft, FaFilePowerpoint, FaClock, FaExclamationTriangle } from 'react-icons/fa';
+import { Clock, CountdownTimer } from '@/components/ui/clock';
 
 // Create Supabase client lazily to avoid build-time env access
 const getSupabaseClient = () => {
@@ -39,53 +40,44 @@ export default function IdeationPage() {
   const [message, setMessage] = useState({ text: '', type: '' });
   const [isMounted, setIsMounted] = useState(false);
   const [pageState, setPageState] = useState<'initial-countdown' | 'form' | 'registration-closed'>('initial-countdown');
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  // State logic for September 4th with automatic form closure
+  const getCurrentState = useCallback(() => {
+    const now = new Date();
+    
+    // September 4th, 2025 times
+    const registrationStart = new Date('2025-09-04T14:30:00'); // 2:30 PM
+    const registrationEnd = new Date('2025-09-04T17:00:00');   // 5:00 PM
+    
+    if (now < registrationStart) {
+      return 'initial-countdown' as const;
+    } else if (now < registrationEnd) {
+      return 'form' as const;
+    } else {
+      return 'registration-closed' as const;
+    }
+  }, []);
 
   useEffect(() => {
     setIsMounted(true);
-    startCountdown();
-  }, []);
-
-  const startCountdown = () => {
+    
+    // Initial state check
+    setPageState(getCurrentState());
+    
+    // Set up interval for state updates - checks every second
     const interval = setInterval(() => {
-      const now = new Date();
+      const newState = getCurrentState();
+      setPageState(newState);
       
-      // First countdown: until tomorrow 9:00 AM
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(9, 0, 0, 0);
-      
-      // Second countdown: until September 3rd 4:00 PM
-      const registrationDeadline = new Date('2025-09-03T16:00:00');
-      
-      if (now < tomorrow) {
-        // Still in initial countdown
-        const timeDiff = tomorrow.getTime() - now.getTime();
-        updateTimeLeft(timeDiff);
-        setPageState('initial-countdown');
-      } else if (now < registrationDeadline) {
-        // Show form with registration deadline countdown
-        const timeDiff = registrationDeadline.getTime() - now.getTime();
-        updateTimeLeft(timeDiff);
-        setPageState('form');
-      } else {
-        // Registration closed
-        setPageState('registration-closed');
+      // If form is closed, clear the interval to stop checking
+      if (newState === 'registration-closed') {
         clearInterval(interval);
       }
     }, 1000);
-
-    return () => clearInterval(interval);
-  };
-
-  const updateTimeLeft = (timeDiff: number) => {
-    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
     
-    setTimeLeft({ days, hours, minutes, seconds });
-  };
+    return () => clearInterval(interval);
+  }, [getCurrentState]);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -210,40 +202,39 @@ export default function IdeationPage() {
     { id: 2, title: 'Project Idea', icon: FaLightbulb, description: 'Describe your innovative idea' }
   ];
 
-  // Countdown Component
+  // Simple Clock Display Component
   const CountdownDisplay = ({ title, subtitle }: { title: string; subtitle: string }) => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-      {/* Animated Background */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      {/* Simplified Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '4s' }}></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      <div className="relative z-10 text-center">
+      <div className="relative z-10 text-center max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-8"
+          className="mb-12"
         >
           <motion.div
             animate={{
-              boxShadow: ['0 0 0px rgba(168,85,247,0)', '0 0 20px rgba(168,85,247,0.3)', '0 0 0px rgba(168,85,247,0)']
+              boxShadow: ['0 0 0px rgba(168,85,247,0)', '0 0 30px rgba(168,85,247,0.4)', '0 0 0px rgba(168,85,247,0)']
             }}
             transition={{
-              duration: 3,
+              duration: 2,
               repeat: Infinity,
               repeatType: 'reverse'
             }}
-            className="inline-block p-4 rounded-full bg-purple-600/20 border border-purple-500/30 mb-6"
+            className="inline-block p-6 rounded-full bg-purple-600/20 border border-purple-500/40 mb-8"
           >
-            <FaClock className="text-4xl text-purple-400" />
+            <FaClock className="text-5xl text-purple-400" />
           </motion.div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 mb-6">
             {title}
           </h1>
-          <p className="text-xl text-purple-200/80 max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-purple-200/80 max-w-2xl mx-auto leading-relaxed">
             {subtitle}
           </p>
         </motion.div>
@@ -253,35 +244,11 @@ export default function IdeationPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-4xl mx-auto"
+          className="bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-purple-500/20 shadow-2xl"
         >
-          {[
-            { label: 'Days', value: timeLeft.days },
-            { label: 'Hours', value: timeLeft.hours },
-            { label: 'Minutes', value: timeLeft.minutes },
-            { label: 'Seconds', value: timeLeft.seconds }
-          ].map((item, index) => (
-            <motion.div
-              key={item.label}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-              className="text-center"
-            >
-              <motion.div
-                className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-6 border border-purple-500/20 shadow-2xl"
-                whileHover={{ scale: 1.05, y: -5 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="text-4xl md:text-6xl font-bold text-white mb-2">
-                  {item.value.toString().padStart(2, '0')}
-                </div>
-                <div className="text-purple-300 text-sm md:text-base font-medium">
-                  {item.label}
-                </div>
-              </motion.div>
-            </motion.div>
-          ))}
+          <div className="flex justify-center items-center">
+            <CountdownTimer targetDate={new Date('2025-09-04T14:30:00')} size="large" />
+          </div>
         </motion.div>
       </div>
     </div>
@@ -289,54 +256,65 @@ export default function IdeationPage() {
 
   // Registration Closed Component
   const RegistrationClosed = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900 to-slate-900 py-8 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-      {/* Animated Background */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-900 to-slate-900 flex items-center justify-center p-4">
+      {/* Simplified Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-red-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
-      <div className="relative z-10 text-center">
+      <div className="relative z-10 text-center max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-8"
+          className="mb-12"
         >
+          {/* Crying Jordan Meme */}
           <motion.div
-            animate={{
-              boxShadow: ['0 0 0px rgba(239,68,68,0)', '0 0 20px rgba(239,68,68,0.3)', '0 0 0px rgba(239,68,68,0)']
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              repeatType: 'reverse'
-            }}
-            className="inline-block p-4 rounded-full bg-red-600/20 border border-red-500/30 mb-6"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mb-8"
           >
-            <FaExclamationTriangle className="text-4xl text-red-400" />
+            <img 
+              src="https://www.newyorker.com/sports/sporting-scene/how-air-jordan-became-crying-jordan" 
+              alt="Crying Jordan Meme"
+              className="w-32 h-32 md:w-48 md:h-48 mx-auto rounded-full border-4 border-red-500/30 shadow-2xl"
+              onError={(e) => {
+                // Fallback if image fails to load
+                e.currentTarget.style.display = 'none';
+              }}
+            />
           </motion.div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-orange-400 to-red-600 mb-4">
-            Oops! You Missed It
+          
+          <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-orange-400 to-red-600 mb-6">
+            You've reached the finish line!
           </h1>
-          <p className="text-xl text-red-200/80 max-w-2xl mx-auto">
-            The deadline to select your problem statement has passed. Registrations are now closed.
+          <p className="text-lg md:text-xl text-red-200/80 max-w-2xl mx-auto leading-relaxed">
+            Unfortunately, the race ended while you were tying your shoes.
           </p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="bg-gray-800/40 backdrop-blur-xl rounded-2xl p-8 border border-red-500/20 shadow-2xl max-w-2xl mx-auto"
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="bg-gray-800/30 backdrop-blur-xl rounded-3xl p-8 border border-red-500/20 shadow-2xl"
         >
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-6">
+            <div className="text-6xl mb-4">🏁</div>
             <p className="text-red-200 text-lg">
-              The deadline to select your problem statement was <span className="font-bold text-white">September 3rd, 4:00 PM</span>.
+              The idea submission deadline was <span className="font-bold text-white">5:00 PM on September 4th</span>.
             </p>
             <p className="text-gray-300">
-              Thank you for your interest! Stay tuned for future opportunities.
+              Better luck next time! Keep those innovative ideas coming for future opportunities.
             </p>
+            <div className="pt-4">
+              <p className="text-sm text-gray-400">
+                "The race is not always to the swift, but to those who keep running." 🏃‍♂️
+              </p>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -347,8 +325,8 @@ export default function IdeationPage() {
   if (pageState === 'initial-countdown') {
   return (
       <CountdownDisplay 
-        title="Registration Opens Tomorrow" 
-        subtitle="Get ready to submit your innovative project idea at 9:00 AM tomorrow!"
+        title="Registration Opens Soon" 
+        subtitle="Get ready to submit your innovative project idea at 2:30 PM"
       />
     );
   }
@@ -368,7 +346,7 @@ export default function IdeationPage() {
             </div>
             
       <div className="relative z-10 w-full max-w-4xl mx-auto">
-        {/* Registration Deadline Countdown Banner */}
+        {/* Countdown Timer Banner */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -377,33 +355,10 @@ export default function IdeationPage() {
         >
           <div className="text-center">
             <h2 className="text-2xl font-bold text-orange-300 mb-4">
-              ⏰ Registration Deadline Countdown
+              ⏰ Registration Closes at 5:00 PM on September 4th
             </h2>
-            <p className="text-orange-200 mb-4">
-              The deadline to select your problem statement is <span className="font-bold text-white">3rd September, 4:00 PM</span>.
-            </p>
-            <div className="flex justify-center gap-4 text-center">
-              {[
-                { label: 'Days', value: timeLeft.days },
-                { label: 'Hours', value: timeLeft.hours },
-                { label: 'Minutes', value: timeLeft.minutes },
-                { label: 'Seconds', value: timeLeft.seconds }
-              ].map((item, index) => (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                  className="bg-gray-800/60 rounded-xl p-3 min-w-[60px]"
-                >
-                  <div className="text-xl font-bold text-white">
-                    {item.value.toString().padStart(2, '0')}
-                  </div>
-                  <div className="text-xs text-orange-300 font-medium">
-                    {item.label}
-                  </div>
-                </motion.div>
-              ))}
+            <div className="flex justify-center items-center">
+              <CountdownTimer targetDate={new Date('2025-09-04T17:00:00')} size="small" />
             </div>
           </div>
         </motion.div>

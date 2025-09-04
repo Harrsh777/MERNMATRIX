@@ -468,7 +468,7 @@ const HomePage = () => {
                   whileTap={{ scale: 0.97 }}
                   className="bg-[#A020F0] text-[#0A0118] px-8 py-3 rounded-lg font-medium transition-all shadow-md hover:shadow-lg border border-[#CBC3E3]/20 flex items-center gap-2 mx-auto"
                 >
-                  Register For Hackathon <FaArrowRight className="text-sm" />
+                  Submit your Idea For Hackathon <FaArrowRight className="text-sm" />
                 </motion.button>
               </Link>
               <Link href="/hackathon-details">
