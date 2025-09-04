@@ -44,11 +44,11 @@ const teamData: TeamMember[] = [
   { id: 32, teamName: "Code2gether", memberName: "Mohd Fazil" },
   { id: 33, teamName: "BUG - SLAYER", memberName: "Akshay varma" },
   { id: 34, teamName: "404 Coder Not Found", memberName: "Abhishek singh" },
-  { id: 35, teamName: "Raghav Sharma", memberName: "Raghav Sharma" },
   { id: 36, teamName: "Beyond Boundaries", memberName: "Payal Rani" },
   { id: 37, teamName: "CodeCatalyst", memberName: "Suraj patel" },
   { id: 38, teamName: "Trailblazers", memberName: "Anshuman khare" },
-  { id: 39, teamName: "Skyship", memberName: "Vishal" }
+  { id: 39, teamName: "Skyship", memberName: "Vishal" },
+  { id: 40, teamName: "Anjani", memberName: "Khushi Thakur" }
 ];
 
 export default function OnlinePitchPage() {
