@@ -222,13 +222,13 @@ const HomePage = () => {
                 </motion.button>
               </Link>
               <nav className="hidden md:flex items-center gap-6">
-              <Link href="/Ideation">
+              <Link href="/OnlinePitch">
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
                 >
-                  Idea Submission
+                  External Teams
                 </motion.button>
               </Link>
               <motion.button
