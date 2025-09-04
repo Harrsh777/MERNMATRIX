@@ -140,7 +140,7 @@ const AdminDashboard = () => {
 
   // Password validation function
   const validatePassword = (inputPassword: string): 'attendance' | 'admin' | null => {
-    if (inputPassword === 'matrix') {
+    if (inputPassword === 'mernmat') {
       return 'attendance';
     } else if (inputPassword === 'security') {
       return 'admin';
