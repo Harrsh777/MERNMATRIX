@@ -458,7 +458,7 @@ const HomePage = () => {
               variants={itemVariants as any}
               className="flex flex-wrap justify-center gap-4 mb-8"
             >
-              <Link href="/join">
+              <Link href="/Ideation">
                 <motion.button
                   whileHover={{
                     scale: 1.03,
