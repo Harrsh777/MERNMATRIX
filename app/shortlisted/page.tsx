@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Trophy, Star, Users, Award, ChevronDown, Filter, Sparkles, Database, AlertTriangle, CheckCircle } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { Search, Trophy, Star, Users, Award, ChevronDown, Filter, Sparkles } from 'lucide-react';
 
 // Cleaned team data with duplicates removed
 const teamData = [
@@ -118,10 +117,6 @@ export default function ShortlistedPage() {
   const [sortBy, setSortBy] = useState('score');
   const [isRevealed, setIsRevealed] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [supabaseData, setSupabaseData] = useState<any[]>([]);
-  const [dataComparison, setDataComparison] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showDataVerification, setShowDataVerification] = useState(false);
 
   const filteredTeams = useMemo(() => {
     let filtered = teamData.filter(team => 
@@ -145,64 +140,6 @@ export default function ShortlistedPage() {
     const timer = setTimeout(() => setIsRevealed(true), 1000);
     return () => clearTimeout(timer);
   }, []);
-
-  // Function to fetch data from Supabase
-  const fetchSupabaseData = async () => {
-    if (!supabase) {
-      console.error('Supabase not initialized');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('project_ideas')
-        .select('team_name, team_leader_name, rating, project_idea')
-        .order('rating', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching data:', error);
-        return;
-      }
-
-      setSupabaseData(data || []);
-      compareData(data || []);
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Function to compare current data with Supabase data
-  const compareData = (supabaseData: any[]) => {
-    const comparison = teamData.map(currentTeam => {
-      const supabaseTeam = supabaseData.find(
-        sTeam => sTeam.team_name.toLowerCase() === currentTeam.teamName.toLowerCase()
-      );
-
-      if (supabaseTeam) {
-        const isLeaderMatch = supabaseTeam.team_leader_name.toLowerCase() === currentTeam.leader.toLowerCase();
-        return {
-          ...currentTeam,
-          supabaseLeader: supabaseTeam.team_leader_name,
-          isLeaderMatch,
-          supabaseRating: supabaseTeam.rating,
-          projectIdea: supabaseTeam.project_idea
-        };
-      }
-
-      return {
-        ...currentTeam,
-        supabaseLeader: 'NOT_FOUND',
-        isLeaderMatch: false,
-        supabaseRating: null,
-        projectIdea: null
-      };
-    });
-
-    setDataComparison(comparison);
-  };
 
   return (
     <>
@@ -427,66 +364,9 @@ export default function ShortlistedPage() {
                 <option value="name">[SORT_BY_TEAM]</option>
                 <option value="leader">[SORT_BY_LEADER]</option>
               </select>
-
-              {/* Data Verification Button */}
-              <button
-                onClick={() => {
-                  fetchSupabaseData();
-                  setShowDataVerification(!showDataVerification);
-                }}
-                disabled={isLoading}
-                className="px-4 py-3 bg-black/50 border border-green-400/50 rounded-lg text-green-300 hover:bg-green-400/10 hover:border-green-400 transition-all disabled:opacity-50 flex items-center gap-2"
-              >
-                <Database className="w-4 h-4" />
-                {isLoading ? '[LOADING...]' : '[VERIFY_DATA]'}
-              </button>
             </div>
           </div>
         </motion.div>
-
-        {/* Data Verification Panel */}
-        {showDataVerification && dataComparison.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-8 bg-black/50 backdrop-blur-lg rounded-lg p-6 border border-green-400/30"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-green-400">[DATA_VERIFICATION]</h3>
-              <button
-                onClick={() => setShowDataVerification(false)}
-                className="text-green-400 hover:text-green-300"
-              >
-                [CLOSE]
-              </button>
-            </div>
-            
-            <div className="space-y-4 max-h-96 overflow-y-auto scrollbar-hide">
-              {dataComparison.map((team, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded border border-green-400/20">
-                  <div className="flex-1">
-                    <div className="text-green-300 font-mono text-sm">
-                      {team.teamName}
-                    </div>
-                    <div className="text-xs text-gray-400 mt-1">
-                      Current: {team.leader} | Supabase: {team.supabaseLeader}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {team.isLeaderMatch ? (
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                    ) : (
-                      <AlertTriangle className="w-5 h-5 text-red-400" />
-                    )}
-                    <span className={`text-xs ${team.isLeaderMatch ? 'text-green-400' : 'text-red-400'}`}>
-                      {team.isLeaderMatch ? '[MATCH]' : '[MISMATCH]'}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
         {/* Results List */}
         <motion.div
