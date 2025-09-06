@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Trophy, Star, Users, Award, ChevronDown, Filter, Sparkles } from 'lucide-react';
+import { Search, Trophy, Star, Users, Award, ChevronDown, Filter, Sparkles, Database, AlertTriangle, CheckCircle } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 // Cleaned team data with duplicates removed
 const teamData = [
@@ -102,10 +103,10 @@ const teamData = [
   { rank: 94, teamName: "Prism (Skill Issue)", leader: "Rohit Deka", score: 6, category: "Developer Tools" },
   { rank: 95, teamName: "FundFlow (Code4Cause)", leader: "ARJUN AGNIHOTRI", score: 6, category: "Transparency" },
   { rank: 96, teamName: "#07 club", leader: "Aditya kulkarni", score: 6, category: "AI Security" },
-  { rank: 97, teamName: "Synapse", leader: "Alex Chen", score: 6, category: "AI Tools" },
-  { rank: 98, teamName: "Doubler", leader: "Sarah Johnson", score: 6, category: "Developer Tools" },
-  { rank: 99, teamName: "Flanker", leader: "Mike Rodriguez", score: 6, category: "Cybersecurity" },
-  { rank: 100, teamName: "Dynamic Duo", leader: "Emma Wilson", score: 6, category: "Collaboration" }
+  { rank: 97, teamName: "Synapse", leader: "Aryan Kaminwar", score: 6, category: "AI Tools" },
+  { rank: 98, teamName: "DoubleR", leader: "Shreshth Awasthi", score: 6, category: "Developer Tools" },
+  { rank: 99, teamName: "Flanker", leader: "Pradeep nain", score: 6, category: "Cybersecurity" },
+  { rank: 100, teamName: "DynamicDuos", leader: "Vaibhav Gupta", score: 6, category: "Collaboration" }
 ];
 
 const categories = [...new Set(teamData.map(team => team.category))];
@@ -117,6 +118,10 @@ export default function ShortlistedPage() {
   const [sortBy, setSortBy] = useState('score');
   const [isRevealed, setIsRevealed] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [supabaseData, setSupabaseData] = useState<any[]>([]);
+  const [dataComparison, setDataComparison] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showDataVerification, setShowDataVerification] = useState(false);
 
   const filteredTeams = useMemo(() => {
     let filtered = teamData.filter(team => 
@@ -141,6 +146,64 @@ export default function ShortlistedPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Function to fetch data from Supabase
+  const fetchSupabaseData = async () => {
+    if (!supabase) {
+      console.error('Supabase not initialized');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('project_ideas')
+        .select('team_name, team_leader_name, rating, project_idea')
+        .order('rating', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching data:', error);
+        return;
+      }
+
+      setSupabaseData(data || []);
+      compareData(data || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to compare current data with Supabase data
+  const compareData = (supabaseData: any[]) => {
+    const comparison = teamData.map(currentTeam => {
+      const supabaseTeam = supabaseData.find(
+        sTeam => sTeam.team_name.toLowerCase() === currentTeam.teamName.toLowerCase()
+      );
+
+      if (supabaseTeam) {
+        const isLeaderMatch = supabaseTeam.team_leader_name.toLowerCase() === currentTeam.leader.toLowerCase();
+        return {
+          ...currentTeam,
+          supabaseLeader: supabaseTeam.team_leader_name,
+          isLeaderMatch,
+          supabaseRating: supabaseTeam.rating,
+          projectIdea: supabaseTeam.project_idea
+        };
+      }
+
+      return {
+        ...currentTeam,
+        supabaseLeader: 'NOT_FOUND',
+        isLeaderMatch: false,
+        supabaseRating: null,
+        projectIdea: null
+      };
+    });
+
+    setDataComparison(comparison);
+  };
+
   return (
     <>
       <style jsx global>{`
@@ -151,29 +214,41 @@ export default function ShortlistedPage() {
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+        .hacker-font {
+          font-family: 'JetBrains Mono', monospace;
+        }
       `}</style>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
-      {/* Animated Background */}
+      <div className="min-h-screen bg-black relative overflow-hidden hacker-font">
+      {/* Hacker Background */}
       <div className="absolute inset-0">
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-30">
           <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(156, 146, 172, 0.1) 0%, transparent 50%), 
-                             radial-gradient(circle at 75% 75%, rgba(156, 146, 172, 0.1) 0%, transparent 50%)`,
-            backgroundSize: '60px 60px'
+            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(0, 255, 0, 0.05) 0%, transparent 50%), 
+                             radial-gradient(circle at 75% 75%, rgba(0, 255, 0, 0.05) 0%, transparent 50%)`,
+            backgroundSize: '100px 100px'
           }}></div>
         </div>
         <motion.div
           className="absolute top-0 left-0 w-full h-full"
           animate={{
             background: [
-              'radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)',
-              'radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%)',
-              'radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%)',
-              'radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%)',
+              'radial-gradient(circle at 20% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%)',
+              'radial-gradient(circle at 80% 20%, rgba(0, 255, 0, 0.15) 0%, transparent 50%)',
+              'radial-gradient(circle at 40% 80%, rgba(0, 255, 0, 0.1) 0%, transparent 50%)',
+              'radial-gradient(circle at 20% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%)',
             ]
           }}
-          transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
         />
+        {/* Matrix-style grid overlay */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `
+            linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }}></div>
       </div>
 
       <div className="relative z-10 container mx-auto px-4 py-8">
@@ -184,15 +259,55 @@ export default function ShortlistedPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
+          <div className="mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="text-center mb-4"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-green-400 tracking-wider mb-2">
+                DAWN OF &lt;ODE
+              </h2>
+              <p className="text-lg text-green-300 tracking-wide">
+                CODE BY DAY HACK BY NIGHT
+              </p>
+            </motion.div>
+          </div>
+          
           <div className="flex items-center justify-center mb-6">
-            <Trophy className="w-12 h-12 text-yellow-400 mr-4" />
-            <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent">
+            <motion.div
+              animate={{
+                textShadow: ['0 0 5px #00ff00', '0 0 20px #00ff00', '0 0 5px #00ff00']
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: 'reverse'
+              }}
+              className="text-2xl text-green-400 mr-4"
+            >
+              {'>'}
+            </motion.div>
+            <h1 className="text-6xl md:text-8xl font-bold text-green-400 tracking-wider">
               RESULTS
             </h1>
-            <Sparkles className="w-12 h-12 text-yellow-400 ml-4" />
+            <motion.div
+              animate={{
+                textShadow: ['0 0 5px #00ff00', '0 0 20px #00ff00', '0 0 5px #00ff00']
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                repeatType: 'reverse'
+              }}
+              className="text-2xl text-green-400 ml-4"
+            >
+              {'<'}
+            </motion.div>
           </div>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8">
-            Top 100 Teams - Hackathon Winners
+          <p className="text-xl md:text-2xl text-green-300 mb-8 tracking-wide">
+            TOP 100 SHORTLISTED TEAMS
           </p>
           
           {/* Stats */}
@@ -201,31 +316,31 @@ export default function ShortlistedPage() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20"
+              className="bg-black/50 backdrop-blur-lg rounded-lg p-6 border border-green-400/30 hover:border-green-400/60 transition-all"
             >
-              <Users className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-white">100</div>
-              <div className="text-gray-300">Teams</div>
+              <div className="text-green-400 text-center mb-2">[TEAMS]</div>
+              <div className="text-3xl font-bold text-green-400 text-center">100</div>
+              <div className="text-green-300 text-center text-sm">ACTIVE</div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4, duration: 0.6 }}
-              className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20"
+              className="bg-black/50 backdrop-blur-lg rounded-lg p-6 border border-green-400/30 hover:border-green-400/60 transition-all"
             >
-              <Award className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-white">15</div>
-              <div className="text-gray-300">Categories</div>
+              <div className="text-green-400 text-center mb-2">[CATEGORIES]</div>
+              <div className="text-3xl font-bold text-green-400 text-center">15</div>
+              <div className="text-green-300 text-center text-sm">DOMAINS</div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20"
+              className="bg-black/50 backdrop-blur-lg rounded-lg p-6 border border-green-400/30 hover:border-green-400/60 transition-all"
             >
-              <Star className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-              <div className="text-3xl font-bold text-white">10.0</div>
-              <div className="text-gray-300">Max Score</div>
+              <div className="text-green-400 text-center mb-2">[MAX_SCORE]</div>
+              <div className="text-3xl font-bold text-green-400 text-center">10.0</div>
+              <div className="text-green-300 text-center text-sm">RATING</div>
             </motion.div>
           </div>
         </motion.div>
@@ -237,17 +352,17 @@ export default function ShortlistedPage() {
           transition={{ delay: 0.8, duration: 0.6 }}
           className="mb-8"
         >
-          <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+          <div className="bg-black/50 backdrop-blur-lg rounded-lg p-6 border border-green-400/30">
             <div className="flex flex-col lg:flex-row gap-4">
               {/* Search */}
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-green-400 w-5 h-5">{'>'}</div>
                 <input
                   type="text"
-                  placeholder="Search teams or leaders..."
+                  placeholder="SEARCH_TEAMS_OR_LEADERS..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+                  className="w-full pl-12 pr-4 py-3 bg-black/50 border border-green-400/50 rounded-lg text-green-300 placeholder-green-500 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition-all"
                 />
               </div>
 
@@ -255,11 +370,11 @@ export default function ShortlistedPage() {
               <div className="relative">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center gap-2 px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white hover:bg-white/30 transition-colors"
+                  className="flex items-center gap-2 px-4 py-3 bg-black/50 border border-green-400/50 rounded-lg text-green-300 hover:bg-green-400/10 hover:border-green-400 transition-all"
                 >
-                  <Filter className="w-5 h-5" />
+                  <div className="text-green-400">[FILTER]</div>
                   {selectedCategory}
-                  <ChevronDown className="w-4 h-4" />
+                  <ChevronDown className="w-4 h-4 text-green-400" />
                 </button>
                 
                 <AnimatePresence>
@@ -268,7 +383,7 @@ export default function ShortlistedPage() {
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-full left-0 mt-2 w-64 bg-white/20 backdrop-blur-lg border border-white/30 rounded-xl overflow-hidden z-20"
+                      className="absolute top-full left-0 mt-2 w-64 bg-black/90 backdrop-blur-lg border border-green-400/50 rounded-lg overflow-hidden z-20"
                     >
                       <div className="max-h-60 overflow-y-auto">
                         <button
@@ -276,11 +391,11 @@ export default function ShortlistedPage() {
                             setSelectedCategory('All');
                             setShowFilters(false);
                           }}
-                          className={`w-full text-left px-4 py-3 hover:bg-white/20 transition-colors ${
-                            selectedCategory === 'All' ? 'bg-white/20' : ''
+                          className={`w-full text-left px-4 py-3 hover:bg-green-400/10 transition-colors text-green-300 ${
+                            selectedCategory === 'All' ? 'bg-green-400/20' : ''
                           }`}
                         >
-                          All Categories
+                          [ALL_CATEGORIES]
                         </button>
                         {categories.map((category) => (
                           <button
@@ -289,8 +404,8 @@ export default function ShortlistedPage() {
                               setSelectedCategory(category);
                               setShowFilters(false);
                             }}
-                            className={`w-full text-left px-4 py-3 hover:bg-white/20 transition-colors ${
-                              selectedCategory === category ? 'bg-white/20' : ''
+                            className={`w-full text-left px-4 py-3 hover:bg-green-400/10 transition-colors text-green-300 ${
+                              selectedCategory === category ? 'bg-green-400/20' : ''
                             }`}
                           >
                             {category}
@@ -306,15 +421,72 @@ export default function ShortlistedPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="px-4 py-3 bg-black/50 border border-green-400/50 rounded-lg text-green-300 focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400"
               >
-                <option value="score">Sort by Score</option>
-                <option value="name">Sort by Team Name</option>
-                <option value="leader">Sort by Leader</option>
+                <option value="score">[SORT_BY_SCORE]</option>
+                <option value="name">[SORT_BY_TEAM]</option>
+                <option value="leader">[SORT_BY_LEADER]</option>
               </select>
+
+              {/* Data Verification Button */}
+              <button
+                onClick={() => {
+                  fetchSupabaseData();
+                  setShowDataVerification(!showDataVerification);
+                }}
+                disabled={isLoading}
+                className="px-4 py-3 bg-black/50 border border-green-400/50 rounded-lg text-green-300 hover:bg-green-400/10 hover:border-green-400 transition-all disabled:opacity-50 flex items-center gap-2"
+              >
+                <Database className="w-4 h-4" />
+                {isLoading ? '[LOADING...]' : '[VERIFY_DATA]'}
+              </button>
             </div>
           </div>
         </motion.div>
+
+        {/* Data Verification Panel */}
+        {showDataVerification && dataComparison.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 bg-black/50 backdrop-blur-lg rounded-lg p-6 border border-green-400/30"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-green-400">[DATA_VERIFICATION]</h3>
+              <button
+                onClick={() => setShowDataVerification(false)}
+                className="text-green-400 hover:text-green-300"
+              >
+                [CLOSE]
+              </button>
+            </div>
+            
+            <div className="space-y-4 max-h-96 overflow-y-auto scrollbar-hide">
+              {dataComparison.map((team, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-black/30 rounded border border-green-400/20">
+                  <div className="flex-1">
+                    <div className="text-green-300 font-mono text-sm">
+                      {team.teamName}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      Current: {team.leader} | Supabase: {team.supabaseLeader}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {team.isLeaderMatch ? (
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                    ) : (
+                      <AlertTriangle className="w-5 h-5 text-red-400" />
+                    )}
+                    <span className={`text-xs ${team.isLeaderMatch ? 'text-green-400' : 'text-red-400'}`}>
+                      {team.isLeaderMatch ? '[MATCH]' : '[MISMATCH]'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Results List */}
         <motion.div

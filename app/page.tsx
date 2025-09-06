@@ -475,7 +475,7 @@ const HomePage = () => {
               variants={itemVariants as any}
               className="flex flex-wrap justify-center gap-4 mb-8"
             >
-              <Link href="/Ideation">
+              <Link href="/shortlisted">
                 <motion.button
                   whileHover={{
                     scale: 1.03,
@@ -485,7 +485,7 @@ const HomePage = () => {
                   whileTap={{ scale: 0.97 }}
                   className="bg-[#A020F0] text-[#0A0118] px-8 py-3 rounded-lg font-medium transition-all shadow-md hover:shadow-lg border border-[#CBC3E3]/20 flex items-center gap-2 mx-auto"
                 >
-                  Submit your Idea For Hackathon <FaArrowRight className="text-sm" />
+                  Round 1 Results <FaArrowRight className="text-sm" />
                 </motion.button>
               </Link>
               <Link href="/hackathon-details">
