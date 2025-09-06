@@ -231,6 +231,15 @@ const HomePage = () => {
                   External Teams
                 </motion.button>
               </Link>
+              <Link href="/team-emails">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+                >
+                  Team Emails
+                </motion.button>
+              </Link>
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -303,6 +312,14 @@ const HomePage = () => {
                     className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
                   >
                     Leaderboard
+                  </Link>
+                </motion.div>
+                <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    href="/team-emails"
+                    className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
+                  >
+                    Team Emails
                   </Link>
                 </motion.div>
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>

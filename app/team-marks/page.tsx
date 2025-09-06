@@ -16,7 +16,10 @@ import {
   FaUser,
   FaUsers,
   FaTrophy,
-  FaChartLine
+  FaChartLine,
+  FaDownload,
+  FaCopy,
+  FaCheck
 } from 'react-icons/fa';
 
 interface TeamMarks {
@@ -39,6 +42,7 @@ const TeamMarksPage = () => {
   const [expandedTeams, setExpandedTeams] = useState<Record<number, boolean>>({});
   const [sortBy, setSortBy] = useState<'team_number' | 'team_name' | 'marks' | 'created_at'>('team_number');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [copied, setCopied] = useState<boolean>(false);
 
   // Fetch teams from Supabase
   useEffect(() => {
