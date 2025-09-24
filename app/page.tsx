@@ -230,49 +230,6 @@ const HomePage = () => {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              <Link href="/leaderboard">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
-                >
-                  Leaderboard
-                </motion.button>
-              </Link>
-              <nav className="hidden md:flex items-center gap-6">
-              <Link href="/OnlinePitch">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
-                >
-                  External Teams
-                </motion.button>
-              </Link>
-              <Link href="/team-emails">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
-                >
-                  Team Emails
-                </motion.button>
-              </Link>
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => {
-                  const el = document.getElementById('community');
-                  if (el) {
-                    const headerHeight = 80; // Approximate header height
-                    const elementPosition = el.offsetTop - headerHeight;
-                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
-                  }
-                }}
-                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
-              >
-                Community
-              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -288,6 +245,51 @@ const HomePage = () => {
               >
                 Events
               </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  const el = document.getElementById('timeline');
+                  if (el) {
+                    const headerHeight = 80; // Approximate header height
+                    const elementPosition = el.offsetTop - headerHeight;
+                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                  }
+                }}
+                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+              >
+                Timeline
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  const el = document.getElementById('projects');
+                  if (el) {
+                    const headerHeight = 80; // Approximate header height
+                    const elementPosition = el.offsetTop - headerHeight;
+                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                  }
+                }}
+                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+              >
+                Projects
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  const el = document.getElementById('community');
+                  if (el) {
+                    const headerHeight = 80; // Approximate header height
+                    const elementPosition = el.offsetTop - headerHeight;
+                    window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                  }
+                }}
+                className="text-left text-sm font-medium text-[#E0E0E0] hover:text-[#CBC3E3] transition-colors"
+              >
+                Community
+              </motion.button>
 
               <Link href="/signup">
                 <motion.button
@@ -298,7 +300,6 @@ const HomePage = () => {
                   Sign Up
                 </motion.button>
               </Link>
-              </nav>
             </nav>
 
             {/* Mobile Menu Button */}
@@ -325,20 +326,40 @@ const HomePage = () => {
             >
               <div className="flex flex-col space-y-6 mt-8">
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
-                  <Link
-                    href="/leaderboard"
+                  <a
+                    href="#events"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById('events');
+                      if (el) {
+                        const headerHeight = 80;
+                        const elementPosition = el.offsetTop - headerHeight;
+                        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                      }
+                      setMobileMenuOpen(false);
+                    }}
                     className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
                   >
-                    Leaderboard
-                  </Link>
+                    Events
+                  </a>
                 </motion.div>
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
-                  <Link
-                    href="/team-emails"
+                  <a
+                    href="#timeline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById('timeline');
+                      if (el) {
+                        const headerHeight = 80;
+                        const elementPosition = el.offsetTop - headerHeight;
+                        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+                      }
+                      setMobileMenuOpen(false);
+                    }}
                     className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
                   >
-                    Team Emails
-                  </Link>
+                    Timeline
+                  </a>
                 </motion.div>
                 <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
                   <a
@@ -374,24 +395,6 @@ const HomePage = () => {
                     className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
                   >
                     Community
-                  </a>
-                </motion.div>
-                <motion.div whileHover={{ x: 5 }} onClick={() => setMobileMenuOpen(false)}>
-                  <a
-                    href="#events"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const el = document.getElementById('events');
-                      if (el) {
-                        const headerHeight = 80;
-                        const elementPosition = el.offsetTop - headerHeight;
-                        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
-                      }
-                      setMobileMenuOpen(false);
-                    }}
-                    className="text-2xl font-medium text-[#E0E0E0] py-3 border-b border-[#1E0345] block"
-                  >
-                    Events
                   </a>
                 </motion.div>
                 <Link href="/signup">

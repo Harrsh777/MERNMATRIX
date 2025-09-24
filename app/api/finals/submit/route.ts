@@ -1,91 +1,117 @@
-import { NextResponse } from "next/server"
-import { createClient } from "@supabase/supabase-js"
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
-type Body = {
-  teamName?: string
-  teamLeaderName?: string
-  projectUrl?: string
-  githubUrl?: string
-  gist?: string
-}
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-function isValidUrl(value: string): boolean {
+export async function POST(request: NextRequest) {
   try {
-    const u = new URL(value)
-    return !!u.protocol && !!u.host
-  } catch {
-    return false
-  }
-}
+    const body = await request.json();
+    const { teamName, teamLeaderName, projectUrl, githubUrl, gist } = body;
 
-function getSubmissionWindow() {
-  const now = new Date()
-  // September 24th, 8:00 PM to September 25th, 12:00 AM
-  const start = new Date(now.getFullYear(), 8, 24, 20, 0, 0, 0) // September 24th, 8:00 PM
-  const end = new Date(now.getFullYear(), 8, 25, 0, 0, 0, 0) // September 25th, 12:00 AM
-  return { now, start, end }
-}
-
-function getServerSupabase() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  const key = serviceRoleKey || anon
-  if (!url || !key) {
-    throw new Error("Supabase environment variables are missing")
-  }
-  return createClient(url, key, { auth: { persistSession: false } })
-}
-
-export async function POST(req: Request) {
-  try {
-    const { now, start, end } = getSubmissionWindow()
-    if (now < start || now >= end) {
-      return NextResponse.json({ error: "Submissions are currently closed. Opens September 24th at 8:00 PM" }, { status: 403 })
-    }
-
-    const body = (await req.json()) as Body
-    const teamName = (body.teamName || "").trim()
-    const teamLeaderName = (body.teamLeaderName || "").trim()
-    const projectUrl = (body.projectUrl || "").trim()
-    const githubUrl = (body.githubUrl || "").trim()
-    const gist = (body.gist || "").trim()
-
+    // Validate required fields
     if (!teamName || !teamLeaderName || !projectUrl || !githubUrl || !gist) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 })
+      return NextResponse.json(
+        { error: 'All fields are required' },
+        { status: 400 }
+      );
     }
-    if (!isValidUrl(projectUrl) || !isValidUrl(githubUrl)) {
-      return NextResponse.json({ error: "Provide valid URLs" }, { status: 400 })
+
+    // Validate field lengths
+    if (teamName.length < 2 || teamName.length > 120) {
+      return NextResponse.json(
+        { error: 'Team name must be between 2 and 120 characters' },
+        { status: 400 }
+      );
     }
+
+    if (teamLeaderName.length < 2 || teamLeaderName.length > 120) {
+      return NextResponse.json(
+        { error: 'Team leader name must be between 2 and 120 characters' },
+        { status: 400 }
+      );
+    }
+
     if (gist.length < 20 || gist.length > 900) {
-      return NextResponse.json({ error: "Gist must be between 20 and 900 characters" }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Project description must be between 20 and 900 characters' },
+        { status: 400 }
+      );
     }
 
-    const supabase = getServerSupabase()
+    // Validate URLs
+    try {
+      new URL(projectUrl);
+    } catch {
+      return NextResponse.json(
+        { error: 'Project URL must be a valid URL' },
+        { status: 400 }
+      );
+    }
 
-    // Capture minimal request metadata
-    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || ""
-    const userAgent = req.headers.get("user-agent") || ""
+    if (!githubUrl.match(/^https?:\/\/(www\.)?github\.com\/.+/i)) {
+      return NextResponse.json(
+        { error: 'GitHub URL must be a valid GitHub repository URL' },
+        { status: 400 }
+      );
+    }
 
-    const { error } = await supabase.from("finals_submissions").insert({
-      team_name: teamName,
-      team_leader_name: teamLeaderName,
-      project_url: projectUrl,
-      github_url: githubUrl,
-      gist,
-      ip,
-      user_agent: userAgent,
-      submitted_at: new Date().toISOString(),
-    })
+    // Get client information
+    const ip = request.headers.get('x-forwarded-for') || 
+               request.headers.get('x-real-ip') || 
+               'unknown';
+    const userAgent = request.headers.get('user-agent') || 'unknown';
+
+    // Insert data into Supabase
+    const { data, error } = await supabase
+      .from('finals_submissions')
+      .insert([
+        {
+          team_name: teamName.trim(),
+          team_leader_name: teamLeaderName.trim(),
+          project_url: projectUrl.trim(),
+          github_url: githubUrl.trim(),
+          gist: gist.trim(),
+          ip: ip,
+          user_agent: userAgent,
+        }
+      ])
+      .select();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('Database error:', error);
+      
+      // Handle specific constraint violations
+      if (error.code === '23505') {
+        return NextResponse.json(
+          { error: 'A team with this name has already submitted their project' },
+          { status: 409 }
+        );
+      }
+      
+      return NextResponse.json(
+        { error: 'Failed to submit project. Please try again.' },
+        { status: 500 }
+      );
     }
 
-    return NextResponse.json({ ok: true })
-  } catch (err: any) {
-    return NextResponse.json({ error: err?.message || "Unexpected error" }, { status: 500 })
+    console.log('Successfully inserted submission:', data);
+
+    return NextResponse.json(
+      { 
+        message: 'Project submitted successfully!',
+        submissionId: data[0]?.id 
+      },
+      { status: 200 }
+    );
+
+  } catch (error) {
+    console.error('API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
-
-
