@@ -402,21 +402,6 @@ export default function FinalsPage() {
     }
   }
 
-  async function testAPI() {
-    try {
-      const res = await fetch("/api/test-simple", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ test: "data" }),
-      });
-      const data = await res.json();
-      console.log('Test API response:', data);
-      alert('Test API working: ' + data.message);
-    } catch (err) {
-      console.error('Test API error:', err);
-      alert('Test API failed: ' + err);
-    }
-  }
 
   if (!mounted) {
     return (
@@ -844,18 +829,8 @@ export default function FinalsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.3 }}
-                    className="flex justify-center gap-4 pt-6"
+                    className="flex justify-center pt-6"
                   >
-                    <motion.button
-                      type="button"
-                      onClick={testAPI}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-all duration-300"
-                    >
-                      Test API
-                    </motion.button>
-                    
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
