@@ -4,20 +4,31 @@ import { createClient } from '@supabase/supabase-js';
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+console.log('Supabase URL:', supabaseUrl ? 'Present' : 'Missing');
+console.log('Supabase Key:', supabaseKey ? 'Present' : 'Missing');
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('=== API Request Started ===');
+    
     const body = await request.json();
+    console.log('Request body:', body);
+    
     const { teamName, teamLeaderName, projectUrl, githubUrl, gist } = body;
 
     // Validate required fields
     if (!teamName || !teamLeaderName || !projectUrl || !githubUrl || !gist) {
+      console.log('Validation failed: Missing required fields');
       return NextResponse.json(
         { error: 'All fields are required' },
         { status: 400 }
       );
     }
+
+    console.log('Basic validation passed');
 
     // Validate field lengths
     if (teamName.length < 2 || teamName.length > 120) {
@@ -51,9 +62,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!githubUrl.match(/^https?:\/\/(www\.)?github\.com\/.+/i)) {
+    // GitHub URL validation removed - accepting any valid URL format
+    try {
+      new URL(githubUrl);
+    } catch {
       return NextResponse.json(
-        { error: 'GitHub URL must be a valid GitHub repository URL' },
+        { error: 'GitHub URL must be a valid URL' },
         { status: 400 }
       );
     }
@@ -65,6 +79,17 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     // Insert data into Supabase
+    console.log('Attempting to insert data into Supabase...');
+    console.log('Data to insert:', {
+      team_name: teamName.trim(),
+      team_leader_name: teamLeaderName.trim(),
+      project_url: projectUrl.trim(),
+      github_url: githubUrl.trim(),
+      gist: gist.trim(),
+      ip: ip,
+      user_agent: userAgent,
+    });
+
     const { data, error } = await supabase
       .from('finals_submissions')
       .insert([
@@ -81,7 +106,12 @@ export async function POST(request: NextRequest) {
       .select();
 
     if (error) {
-      console.error('Database error:', error);
+      console.error('Database error details:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       
       // Handle specific constraint violations
       if (error.code === '23505') {
@@ -92,7 +122,7 @@ export async function POST(request: NextRequest) {
       }
       
       return NextResponse.json(
-        { error: 'Failed to submit project. Please try again.' },
+        { error: `Database error: ${error.message}` },
         { status: 500 }
       );
     }

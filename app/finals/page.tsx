@@ -343,15 +343,20 @@ export default function FinalsPage() {
   const { isExpired: isAfterMidnight } = useCountdown(midnight);
 
   // Real-time countdown for the top timer
-  const { timeLeft: realTimeLeft, mounted } = useRealTimeCountdown(midnight);
+  const { timeLeft: realTimeLeft, mounted: countdownMounted } = useRealTimeCountdown(midnight);
   
-  // Override the time checks
-  const showForm = isAfterEight;
-  const showClosed = isAfterMidnight;
+  // Override the time checks - FOR TESTING, ALWAYS SHOW FORM
+  const showForm = true; // isAfterEight;
+  const showClosed = false; // isAfterMidnight;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [form, setForm] = useState({
     teamName: "",
@@ -372,24 +377,53 @@ export default function FinalsPage() {
     setIsSubmitting(true);
     
     try {
-      const res = await fetch("/api/finals/submit", {
+      console.log('Submitting form data:', form);
+      
+      const res = await fetch("/api/finals/submit-alt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
       
+      console.log('Response status:', res.status);
       const data = await res.json();
+      console.log('Response data:', data);
       
       if (!res.ok) {
-        throw new Error(data?.error || data?.message || "Submission failed");
+        throw new Error(data?.error || data?.message || `HTTP ${res.status}: Submission failed`);
       }
       
       setSubmitted(true);
     } catch (err: any) {
+      console.error('Submission error:', err);
       setError(err.message || "Something went wrong");
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  async function testAPI() {
+    try {
+      const res = await fetch("/api/test-simple", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ test: "data" }),
+      });
+      const data = await res.json();
+      console.log('Test API response:', data);
+      alert('Test API working: ' + data.message);
+    } catch (err) {
+      console.error('Test API error:', err);
+      alert('Test API failed: ' + err);
+    }
+  }
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -458,7 +492,7 @@ export default function FinalsPage() {
               Time left to submit
             </motion.p>
             <div className="grid grid-cols-4 gap-2">
-              {!mounted ? (
+              {!countdownMounted ? (
                 // Loading state
                 ["Days", "Hours", "Minutes", "Seconds"].map((item, index) => (
                   <motion.div 
@@ -731,12 +765,12 @@ export default function FinalsPage() {
                             value={form.githubUrl} 
                             onChange={handleChange} 
                             required 
-                            placeholder="https://github.com/org/repo"
+                            placeholder="https://github.com/username/repo"
                             className="bg-[#0A0118]/60 border-[#A020F0]/30 text-[#F0F0F0] placeholder:text-[#A0A0A0] focus:border-[#A020F0] focus:ring-[#A020F0]/20 h-12 rounded-xl transition-all duration-300 hover:border-[#A020F0]/50"
                           />
                           <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#A020F0]/5 to-transparent pointer-events-none"></div>
                         </div>
-                        <p className="text-xs text-[#A0A0A0]">Must be a GitHub repository URL</p>
+                        <p className="text-xs text-[#A0A0A0]">Must be a GitHub repository URL (e.g., https://github.com/user/repo)</p>
                       </motion.div>
                     </div>
                   </motion.div>
@@ -810,8 +844,18 @@ export default function FinalsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1.3 }}
-                    className="flex justify-center pt-6"
+                    className="flex justify-center gap-4 pt-6"
                   >
+                    <motion.button
+                      type="button"
+                      onClick={testAPI}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg transition-all duration-300"
+                    >
+                      Test API
+                    </motion.button>
+                    
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
