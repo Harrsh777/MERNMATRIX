@@ -18,12 +18,11 @@ function isValidUrl(value: string): boolean {
   }
 }
 
-function getTodayWindow() {
+function getSubmissionWindow() {
   const now = new Date()
-  const start = new Date(now)
-  start.setHours(20, 0, 0, 0) // 8:00 PM today
-  const end = new Date(now)
-  end.setHours(24, 0, 0, 0) // Midnight
+  // September 24th, 8:00 PM to September 25th, 12:00 AM
+  const start = new Date(now.getFullYear(), 8, 24, 20, 0, 0, 0) // September 24th, 8:00 PM
+  const end = new Date(now.getFullYear(), 8, 25, 0, 0, 0, 0) // September 25th, 12:00 AM
   return { now, start, end }
 }
 
@@ -40,9 +39,9 @@ function getServerSupabase() {
 
 export async function POST(req: Request) {
   try {
-    const { now, start, end } = getTodayWindow()
+    const { now, start, end } = getSubmissionWindow()
     if (now < start || now >= end) {
-      return NextResponse.json({ error: "Submissions are currently closed" }, { status: 403 })
+      return NextResponse.json({ error: "Submissions are currently closed. Opens September 24th at 8:00 PM" }, { status: 403 })
     }
 
     const body = (await req.json()) as Body

@@ -134,7 +134,25 @@ const HomePage = () => {
       
       <MERNLoadingPage />
       <div className={`min-h-screen font-sans overflow-hidden text-[#F0F0F0] bg-black relative`}>
-        {/* Hyperspeed Background - 19cm height with interactive functionality */}
+        {/* Animated dark purple/black background layers */}
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          {/* Base vertical gradient */}
+          <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_50%_-10%,rgba(160,32,240,0.15),transparent_60%),radial-gradient(800px_400px_at_10%_20%,rgba(203,195,227,0.12),transparent_60%),linear-gradient(to_bottom,#07020f,#05010b_30%,#000000)]" />
+
+          {/* Subtle grid overlay */}
+          <div className="absolute inset-0 opacity-[0.05] mix-blend-screen" style={{
+            backgroundImage:
+              "repeating-linear-gradient(0deg, rgba(203,195,227,0.15) 0, rgba(203,195,227,0.15) 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, rgba(203,195,227,0.15) 0, rgba(203,195,227,0.15) 1px, transparent 1px, transparent 40px)"
+          }} />
+
+          {/* Animated glow orbs */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-40 -left-40 w-[60vw] h-[60vw] rounded-full bg-[#A020F0]/18 blur-[110px] animate-pulse" />
+            <div className="absolute -bottom-40 -right-40 w-[55vw] h-[55vw] rounded-full bg-[#CBC3E3]/16 blur-[120px]" />
+          </div>
+        </div>
+
+        {/* Hyperspeed Background - keep, with purple tint above */}
         <div className="absolute top-0 left-0 right-0 h-[19.5cm] z-0">
           <Hyperspeed
             effectOptions={{
@@ -164,14 +182,14 @@ const HomePage = () => {
               carShiftX: [-0.8, 0.8],
               carFloorSeparation: [0, 5],
               colors: {
-                roadColor: 0x080808,
-                islandColor: 0x0a0a0a,
+                roadColor: 0x090311,
+                islandColor: 0x0a0712,
                 background: 0x000000,
                 shoulderLines: 0xFFFFFF,
                 brokenLines: 0xFFFFFF,
-                leftCars: [0xD856BF, 0x6750A2, 0xC247AC],
-                rightCars: [0x03B3C3, 0x0E5EA5, 0x324555],
-                sticks: 0x03B3C3,
+                leftCars: [0xA020F0, 0x6B46C1, 0xC084FC],
+                rightCars: [0x5BCEFA, 0x8B5CF6, 0x7C3AED],
+                sticks: 0xA020F0,
               }
             }}
           />
