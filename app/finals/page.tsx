@@ -336,18 +336,17 @@ function GuidelinesSection() {
 }
 
 export default function FinalsPage() {
-  // Set specific date: September 24th, 8:00 PM
-  const eightPM = useMemo(() => getTargetDateSpecific(9, 24, 20, 0), []);
-  const midnight = useMemo(() => getTargetDateSpecific(9, 25, 0, 0), []); // September 25th midnight
-  const { isExpired: isAfterEight } = useCountdown(eightPM);
-  const { isExpired: isAfterMidnight } = useCountdown(midnight);
-
-  // Real-time countdown for the top timer
-  const { timeLeft: realTimeLeft, mounted: countdownMounted } = useRealTimeCountdown(midnight);
+  // Set today's date at 1:00 PM for form closure
+  const onePM = useMemo(() => getTargetDateToday(13, 0), []); // 1:00 PM today
   
-  // Override the time checks - FOR TESTING, ALWAYS SHOW FORM
-  const showForm = true; // isAfterEight;
-  const showClosed = false; // isAfterMidnight;
+  const { isExpired: isAfterOnePM } = useCountdown(onePM);
+
+  // Real-time countdown for the top timer (counts down to 1:00 PM)
+  const { timeLeft: realTimeLeft, mounted: countdownMounted } = useRealTimeCountdown(onePM);
+  
+  // Show form if it's before 1:00 PM, close it exactly at 1:00 PM
+  const showForm = !isAfterOnePM;
+  const showClosed = isAfterOnePM;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -474,7 +473,7 @@ export default function FinalsPage() {
               }}
               className="text-xs font-semibold text-[#CBC3E3] mb-3 tracking-wide uppercase"
             >
-              Time left to submit
+              Time left until form closes
             </motion.p>
             <div className="grid grid-cols-4 gap-2">
               {!countdownMounted ? (
@@ -560,7 +559,7 @@ export default function FinalsPage() {
                   Hackathon
                 </h1>
                 <p className="text-lg text-[#E0E0E0] max-w-2xl mx-auto leading-relaxed">
-                  Submit your project by 8:00 PM today. The form opens when the timer ends.
+                  Submit your project before 1:00 PM today. The form closes exactly at 1:00 PM.
                 </p>
               </motion.div>
               
@@ -570,7 +569,7 @@ export default function FinalsPage() {
                 transition={{ delay: 0.4, duration: 0.6 }}
                 className="w-full"
               >
-                <CountdownDisplay label="Time left until submissions open" target={eightPM} />
+                <CountdownDisplay label="Time left until submissions close" target={onePM} />
               </motion.div>
             </motion.div>
           )}
@@ -617,7 +616,7 @@ export default function FinalsPage() {
                   Submit your hackathon project details below. Make sure all information is accurate and complete.
                 </p>
                 <p className="text-sm text-[#A0A0A0] mb-8">
-                  Submissions close at midnight on September 25th
+                  Submissions close at exactly 1:00 PM today
                 </p>
               </motion.div>
 
