@@ -19,6 +19,7 @@ import { MERNBentoGrid } from './components/bentohover';
 import PortfolioGrid from './components/projects';
 import MERNMasterySection from './components/merncheat';
 import CommunitySection from './components/socials';
+import { Robot } from './components/Robot';
 
 
 
@@ -506,7 +507,7 @@ const HomePage = () => {
                   whileTap={{ scale: 0.97 }}
                   className="bg-[#A020F0] text-[#0A0118] px-8 py-3 rounded-lg font-medium transition-all shadow-md hover:shadow-lg border border-[#CBC3E3]/20 flex items-center gap-2 mx-auto"
                 >
-                  Final Submission <FaArrowRight className="text-sm" />
+                  Winners <FaArrowRight className="text-sm" />
                 </motion.button>
               </Link>
               <Link href="/hackathon-details">
@@ -564,6 +565,7 @@ const HomePage = () => {
         <div id="timeline" className="scroll-mt-32">
           <MERNClubTimeline/>
         </div>
+        <Robot/>
         <div id="projects" className="scroll-mt-32">
           <PortfolioGrid/>
         </div>
